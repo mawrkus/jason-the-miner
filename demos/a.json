@@ -1,0 +1,28 @@
+{
+  "baseUrl": "[write the base URL here]",
+  "uri": "[write the URI here]",
+  "search": {
+    "queryParam": "q"
+  },
+  "pagination": {
+    "mode": "all",
+    "config": {
+      "queryParam": "pg",
+      "selector": ".pagination li:nth-last-child(2) > a"
+    }
+  },
+  "title": "Some quotes",
+  "elements": {
+    "container": ".bqSearchResultQt",
+    "parts": [{
+      "quote": ".bqQuoteLink > a"
+    }, {
+      "author": ".bq-aut > a"
+    }, {
+      "tags": {
+        "selector": ".bq_boxyRelatedLeft > a",
+        "extractor": "array:text"
+      }
+    }]
+  }
+}

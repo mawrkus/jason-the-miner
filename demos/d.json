@@ -1,0 +1,33 @@
+{
+  "baseUrl": "[write the base URL here]",
+  "uri": "[write the URI]",
+  "headers": {
+    "Accept-Language": "en"
+  },
+  "pagination": {
+    "mode": "follow",
+    "config": {
+      "selector": "a#load_next_episodes"
+    }
+  },
+  "title": "All episodes",
+  "elements": {
+    "container": ".eplist .list_item",
+    "parts": [{
+      "number": ".hover-over-image > div"
+    }, {
+      "title": ".info a[itemprop=name]"
+    }, {
+      "air date": {
+        "selector": ".info .airdate",
+        "filter": "trim"
+      }
+    }, {
+      "description": {
+        "selector": ".item_description",
+        "filter": "trim"
+      }
+    }]
+  },
+  "outputFile": "demos/results/d.results.json"
+}

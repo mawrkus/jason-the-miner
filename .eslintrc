@@ -1,0 +1,9 @@
+{
+  "extends": "airbnb/base",
+  "parser":"babel-eslint",
+  "rules": {
+    "comma-dangle": 0,
+    "indent": [1, 2, {"SwitchCase": 1}],
+    "strict": 0
+  }
+}

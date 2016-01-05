@@ -1,0 +1,27 @@
+{
+  "baseUrl": "[write the base URL here]",
+  "uri": "[write the URI here]",
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+  },
+  "title": "A tracklist",
+  "elements": {
+    "container": ".tracklist_track",
+    "parts": [{
+      "title": "span.tracklist_track_title"
+    }, {
+      "artist": ".tracklist_track_artists > a"
+    }, {
+      "extra-artist": {
+        "selector": "blockquote > .tracklist_extra_artist_span",
+        "extractor": "array:text"
+      }
+    }, {
+      "duration": {
+        "selector": ".tracklist_track_duration",
+        "filter": "trim"
+      }
+    }]
+  },
+  "outputFile": "demos/results/b.results.json"
+}

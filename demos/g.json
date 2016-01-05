@@ -1,0 +1,25 @@
+{
+  "baseUrl": "[write the base URL here]",
+  "uri": "[write the URI]",
+  "pagination": {
+    "mode": "follow",
+    "config": {
+      "selector": ".pagination a.next",
+      "max": 4
+    }
+  },
+  "title": "The results",
+  "elements": {
+    "container": ".package-details",
+    "parts": [{
+      "name": ".name"
+    }, {
+      "version": ".version"
+    }, {
+      "description": ".description"
+    }, {
+      "author": ".author > a:last-child"
+    }]
+  },
+  "outputFile": "demos/results/g.results.json"
+}

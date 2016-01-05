@@ -1,0 +1,12 @@
+{
+  "baseUrl": "[write the base URL here]",
+  "uri": "[write the URI]",
+  "title": "The list",
+  "elements": {
+    "container": "#mw-pages li",
+    "parts": [{
+      "character": "a"
+    }]
+  },
+  "outputFile": "demos/results/h.results.json"
+}
