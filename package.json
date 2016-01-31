@@ -1,6 +1,6 @@
 {
     "name": "jason-the-miner",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "",
     "bin": {
         "jason-the-miner": "bin/jason-the-miner.js"
