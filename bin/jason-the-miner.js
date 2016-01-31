@@ -23,7 +23,7 @@ cli.main((args, options) => {
     let settings;
 
     try {
-      settings = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
+      settings = JSON.parse(fs.readFileSync(configFile, 'utf8'));
     } catch (err) {
       console.error('Ooops! Unable to load config file %s!', configFile);
       console.error(err);
