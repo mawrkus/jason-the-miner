@@ -63,4 +63,3 @@ This project started as a prototype and evolved to a slightly more complex progr
 2. Babel => full usage of ES2015
 3. Templating? JSON output => CSV/XML/HTML/Anything
 4. Comments classes/objects methods
-5. ...
