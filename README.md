@@ -1,3 +1,18 @@
+https://www.npmjs.com/package/babel-preset-es2015-node4
+
+***********************
+
+npm install babel-register babel-preset-es2015 --save-dev
+
+require('babel-register');
+
+.babelrc in root folder
+{
+  "presets": [ "es2015" ]
+}
+
+--------------------------------------------------------------------------------------------------------------------
+
 # Jason The Miner
 
 A Web scraper/harvester/data extractor.
