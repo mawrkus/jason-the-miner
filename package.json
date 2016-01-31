@@ -1,6 +1,6 @@
 {
     "name": "jason-the-miner",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "A Web scraper/harvester/data extractor",
     "bin": {
         "jason-the-miner": "bin/jason-the-miner.js"
@@ -12,7 +12,6 @@
     "author": "mawrkus",
     "license": "MIT",
     "homepage": "https://github.com/mawrkus/jason-the-miner",
-    "license": "MIT",
     "repository": {
       "type": "git",
       "url": "https://github.com/mawrkus/jason-the-miner.git"
