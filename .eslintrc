@@ -1,9 +1,12 @@
 {
-  "extends": "airbnb/base",
-  "parser":"babel-eslint",
+  "extends": "airbnb-base",
   "rules": {
+    "arrow-parens": 0,
     "comma-dangle": 0,
-    "indent": [1, 2, {"SwitchCase": 1}],
-    "strict": 0
+    "no-plusplus": 0,
+    "no-shadow": 0,
+    "no-underscore-dangle": 0,
+    "quotes": 0,
+    "quote-props": 0
   }
 }

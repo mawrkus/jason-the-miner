@@ -1,30 +1,56 @@
 {
-    "name": "jason-the-miner",
-    "version": "0.1.5",
-    "description": "A Web scraper/harvester/data extractor",
-    "bin": {
-        "jason-the-miner": "bin/jason-the-miner.js"
-    },
-    "main": "lib/scraper.js",
-    "scripts": {
-        "lint": "eslint lib bin"
-    },
-    "author": "mawrkus",
-    "license": "MIT",
-    "homepage": "https://github.com/mawrkus/jason-the-miner",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/mawrkus/jason-the-miner.git"
-    },
-    "dependencies": {
-        "cheerio": "^0.19.0",
-        "cli": "^0.11.1",
-        "request-promise": "^1.0.2"
-    },
-    "devDependencies": {
-        "babel-eslint": "^4.1.5",
-        "eslint": "^1.10.1",
-        "eslint-config-airbnb": "^1.0.0"
-    },
-    "engines" : { "node" : ">=4.0.0" }
+  "name": "jason-the-miner",
+  "version": "0.1.5",
+  "description": "A modular Web scraper/harvester/data extractor",
+  "author": "mawrkus <web@sparring-partner.be>",
+  "license": "MIT",
+  "homepage": "https://github.com/mawrkus/jason-the-miner",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mawrkus/jason-the-miner.git"
+  },
+  "keywords": [
+    "web",
+    "scraper",
+    "scrape",
+    "harvester",
+    "crawler",
+    "data extraction",
+    "data grabbing",
+    "data harvesting",
+    "content extraction"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mawrkus/jason-the-miner.git"
+  },
+  "main": "lib/jason-the-miner.js",
+  "bin": "bin/index.js",
+  "engines": {
+    "node": ">= 6.5"
+  },
+  "file": [
+    "bin",
+    "lib"
+  ],
+  "scripts": {
+    "lint": "eslint lib bin",
+    "demo": "npm run demo:clean && node demo/index.js",
+    "demo:clean": "clear && rm -rf demo/data/out/*.json && rm -rf demo/data/out/*.csv",
+    "demo:debug": "DEBUG=jason:* npm run demo"
+  },
+  "dependencies": {
+    "axios": "^0.14.0",
+    "cheerio": "^0.22.0",
+    "cli": "^1.0.0",
+    "csv-stringify": "^1.0.4",
+    "debug": "^2.2.0",
+    "mustache": "^2.2.1",
+    "nodemailer": "^2.6.4"
+  },
+  "devDependencies": {
+    "eslint": "^3.7.0",
+    "eslint-config-airbnb-base": "^8.0.0",
+    "eslint-plugin-import": "^2.0.0"
+  }
 }
