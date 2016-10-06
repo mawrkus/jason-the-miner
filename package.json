@@ -1,13 +1,15 @@
 {
   "name": "jason-the-miner",
-  "version": "0.1.5",
+  "version": "0.0.1",
   "description": "A modular Web scraper/harvester/data extractor",
   "author": "mawrkus <web@sparring-partner.be>",
   "license": "MIT",
   "homepage": "https://github.com/mawrkus/jason-the-miner",
+  "bugs": {
+    "url": "https://github.com/mawrkus/jason-the-miner/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mawrkus/jason-the-miner.git"
     "url": "git://github.com/mawrkus/jason-the-miner.git"
   },
   "keywords": [
@@ -22,7 +24,7 @@
     "content extraction"
   ],
   "main": "lib/jason-the-miner.js",
-  "bin": "bin/index.js",
+  "bin": "bin/jason-the-miner.js",
   "engines": {
     "node": ">= 6.5"
   },
@@ -32,9 +34,15 @@
   ],
   "scripts": {
     "lint": "eslint lib bin",
+    "pretest": "npm run lint",
+    "test": "echo Yes, I know...",
     "demo": "npm run demo:clean && node demo/index.js",
-    "demo:clean": "clear && rm -rf demo/data/out/*.json && rm -rf demo/data/out/*.csv",
-    "demo:debug": "DEBUG=jason:* npm run demo"
+    "demo:clean": "clear && rm -rf demo/data/out/* && touch demo/data/out/.gitkeep",
+    "demo:debug": "DEBUG=jason:* npm run demo",
+    "prerelease": "npm test",
+    "release": "npm version -m \"New version: %s\"",
+    "postrelease": "npm run push && npm publish",
+    "push": "git push origin master && git push origin --tags"
   },
   "dependencies": {
     "axios": "^0.14.0",

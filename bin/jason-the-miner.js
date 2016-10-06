@@ -7,7 +7,7 @@ const cli = require('cli');
 
 cli.parse({
   'config': ['c', 'Configuration file'],
-  'debug': ['d', 'Prints debug information']
+  'debug': ['d', 'Prints debug information ("jason:*" by default)']
 });
 
 cli.main(([config, debug], options) => {
