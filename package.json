@@ -8,6 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/mawrkus/jason-the-miner.git"
+    "url": "git://github.com/mawrkus/jason-the-miner.git"
   },
   "keywords": [
     "web",
@@ -20,10 +21,6 @@
     "data harvesting",
     "content extraction"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/mawrkus/jason-the-miner.git"
-  },
   "main": "lib/jason-the-miner.js",
   "bin": "bin/index.js",
   "engines": {
