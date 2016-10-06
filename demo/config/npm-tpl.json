@@ -1,0 +1,34 @@
+{
+  "input": {
+    "http": {
+      "url": "https://www.npmjs.com/browse/star"
+    }
+  },
+  "paginate": {
+    "url-param": {
+      "param": "offset",
+      "inc": 36,
+      "limit": 2
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          ".package-details": {
+            "name": ".name",
+            "version": ".version",
+            "description": ".description",
+            "author": ".author > a:last-child"
+          }
+        }
+      ]
+    }
+  },
+  "output": {
+    "tpl": {
+      "templatePath": "demo/data/in/npm-starred.html.tpl",
+      "outputPath": "demo/data/out/npm-starred.html"
+    }
+  }
+}

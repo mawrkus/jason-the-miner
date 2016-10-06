@@ -1,0 +1,23 @@
+{
+  "-input": {
+    "stdin": {
+      "encoding": "utf8"
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "#mw-pages li": {
+            "character": "a"
+          }
+        }
+      ]
+    }
+  },
+  "-output": {
+    "stdout": {
+      "encoding": "utf8"
+    }
+  }
+}
