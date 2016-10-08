@@ -47,11 +47,12 @@
   "dependencies": {
     "axios": "^0.14.0",
     "cheerio": "^0.22.0",
-    "cli": "^1.0.0",
+    "commander": "^2.9.0",
     "csv-stringify": "^1.0.4",
     "debug": "^2.2.0",
     "mustache": "^2.2.1",
-    "nodemailer": "^2.6.4"
+    "nodemailer": "^2.6.4",
+    "ora": "^0.3.0"
   },
   "devDependencies": {
     "eslint": "^3.7.1",

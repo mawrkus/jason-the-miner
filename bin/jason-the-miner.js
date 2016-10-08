@@ -1,34 +1,40 @@
 #!/usr/bin/env node
 
-/* eslint-disable no-console, global-require */
+/* eslint-disable no-console, no-multi-spaces */
 
 const path = require('path');
-const cli = require('cli');
+const program = require('commander');
+const ora = require('ora');
+const version = require('../package').version;
 
-cli.parse({
-  'config': ['c', 'Configuration file'],
-  'debug': ['d', 'Prints debug information ("jason:*" by default)']
-});
+program
+  .version(version)
+  .option('-c, --config [file]',  'configuration file',                       String, '')
+  .option('-d, --debug [name]',   'prints debug info ("jason:*" by default)', String)
+  .parse(process.argv);
 
-cli.main(([config, debug], options) => {
-  if (!options.config) {
-    console.error('Have you forgotten to specify a configuration file? ;)\n');
-    cli.getUsage();
-  }
+const { config, debug } = program;
 
-  if (options.debug) {
-    process.env.DEBUG = debug || 'jason:*';
-  }
+if (!config) {
+  console.error('Have you forgotten to specify a CSV keywords file? ;)');
+  program.help();
+}
 
-  const JasonTheMiner = require('..'); // must be AFTER setting the DEBUG environment variable
+if (debug) {
+  process.env.DEBUG = debug === true ? 'jason:*' : debug;
+}
 
-  const jason = new JasonTheMiner();
+const JasonTheMiner = require('..'); // must be AFTER setting the DEBUG environment variable
 
-  jason
-    .loadConfig(path.join(process.cwd(), config))
-    .then(() => jason.harvest())
-    .catch(error => {
-      console.error('Ooops! Something went wrong. :(');
-      console.error(error);
-    });
+const jason = new JasonTheMiner();
+const spinner = ora({ text: 'Harvesting...', spinner: 'dots4' }).start();
+
+jason
+.loadConfig(path.join(process.cwd(), config))
+.then(() => jason.harvest())
+.then(() => spinner.succeed())
+.catch(error => {
+  spinner.fail();
+  console.error('Ooops! Something went wrong. :(');
+  console.error(error);
 });
