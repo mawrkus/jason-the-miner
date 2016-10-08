@@ -1,0 +1,25 @@
+{
+  "input": {
+    "stdin": {
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          ".lister-list > tr": {
+            "🎥 title": ".titleColumn > a | trim",
+            "📅 year": ".secondaryInfo << regexp:[0123456789]+",
+            "⭐ rating": ".ratingColumn > strong",
+            "👥 crew": ".titleColumn > a << attr:title"
+          }
+        }
+      ]
+    }
+  },
+  "output": {
+    "csv-file": {
+      "path": "demo/data/out/imdb-top-250.csv"
+    }
+  }
+}
