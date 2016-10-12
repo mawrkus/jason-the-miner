@@ -22,7 +22,7 @@ $ npm install -g jason-the-miner
 
 ## ⛏ TL;DR Usage Example
 
-To scrape all the repos on my GitHub page:
+To scrape all the repos from my GitHub page:
 
 - a. Create the *github.json* config file:
 
@@ -113,29 +113,80 @@ $ curl https://github.com/mawrkus | jason-the-miner -c github.json > github-repo
 
 ## ⛏ Config file
 
-4 processors
-
-```json
+```js
+{
+  "input": {
+    "[processor name]": {
+      // processor config
+    }
+  },
+  "parse": {
+    "[processor name]": {
+      // processor config
+    }
+  },
+  "pagination": {
+    "[processor name]": {
+      // processor config
+    }
+  },
+  "output": {
+    "[processor name]": {
+      // processor config
+    }
+  }
+}
 ```
 
-extractors and filters
+### Input processors
 
+- http
+- file
+- stdin
+
+Fallback: stdin.
+
+### Parse processors
+
+- html
+
+Fallback: no-action.
+
+#### Extractors & filters
+
+```
 [selector] << [extractor] | [filter]
-
-## ⛏ Recipes
-
-- http > html > json
-- http > html (2 schemas) > json-file
-- http > html (2 schemas) > json-file (alternative: > out.json and debug 2> out.log)
-- curl | stdin > html > stdout
-- file > html > csv-file
-- http+paglink > html > json
-- http+pagparam > html > json
-- http > html-custom > email
-- http > html > tpl
-
-```json
 ```
+
+Extractors:
+
+- text
+- html
+- attr
+- regexp
+
+text by default.
+
+Filters:
+
+- trim
+
+trim by default.
+
+### Output processors
+
+- json-file
+- csv-file
+- stdout
+
+Fallback: stdout.
+
+### Paginators
+
+- next-link
+- url-param
+
+Fallback: no-action.
 
 ## ⛏ API
 
@@ -161,6 +212,21 @@ Check https://github.com/lapwinglabs/x-ray
 ```js
 ```
 
+## ⛏ Recipes
+
+- http > html > json
+- http > html (2 schemas) > json-file
+- http > html (2 schemas) > json-file (alternative: > out.json and debug 2> out.log)
+- curl | stdin > html > stdout
+- file > html > csv-file
+- http+paglink > html > json
+- http+pagparam > html > json
+- http > html-custom > email
+- http > html > tpl
+
+```json
+```
+
 ## ⛏ References & related links
 
 - Web Scraping With Node.js: https://www.smashingmagazine.com/2015/04/web-scraping-with-nodejs/
@@ -168,14 +234,6 @@ Check https://github.com/lapwinglabs/x-ray
 - Node.js Scraping Libraries: http://blog.webkid.io/nodejs-scraping-libraries/
 - https://www.scrapesentry.com/scraping-wiki/web-scraping-legal-or-illegal/
 - http://blog.icreon.us/web-scraping-and-you-a-legal-primer-for-one-of-its-most-useful-tools/
-
-## ⛏ Roadmap
-
-- Write examples:
-follow link pagination -> depends on the markup, if next link = uri => set baseURL and url so that only url can be changed
-- Tests
-- Check example: http://developer.telerik.com/featured/spying-on-james-bond-with-node-js/
-- New paginator: all pages => paginator.run() returns an array then use map/filter to recursion or not in the core
 
 ## ⛏ A final note...
 
