@@ -9,7 +9,7 @@ const version = require('../package').version;
 
 program
   .version(version)
-  .option('-c, --config [file]',  'configuration file',                       String, '')
+  .option('-c, --config [file]',  'configuration file, required',                       String, '')
   .option('-d, --debug [name]',   'prints debug info ("jason:*" by default)', String)
   .parse(process.argv);
 
