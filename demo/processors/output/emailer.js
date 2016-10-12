@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const debug = require('debug')('jason:out');
+const debug = require('debug')('jason:out:emailer');
 
 class Emailer {
 
@@ -26,7 +26,7 @@ class Emailer {
       nodemailer.createTransport(this._config.smtp)
         .sendMail(mailOptions, (error, info) => {
           if (error) {
-            debug('Error: %s!', error.message);
+            debug(error.message);
             reject(error);
             return;
           }

@@ -9,7 +9,7 @@
     }
   },
   "paginate": {
-    "follow-link": {
+    "next-link": {
       "selector": "a#load_next_episodes",
       "limit": 100
     }

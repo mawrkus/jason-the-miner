@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const path = require('path');
+const ora = require('ora');
 
 const JasonTheMiner = require('..');
 const MixCloudStatsParser = require('./processors/parse/mixcloud-stats-parser');
@@ -20,38 +21,56 @@ jason.registerHelper({
 });
 
 const demoFiles = [
-  // path.join(process.cwd(), 'demo/config/goodreads-http.json'),
-  // path.join(process.cwd(), 'demo/config/imdb-file.json'),
-  // path.join(process.cwd(), 'demo/config/imdb-http-paginate.json'),
-  // path.join(process.cwd(), 'demo/config/npm-tpl.json'),
-  // path.join(process.cwd(), 'demo/config/mixcloud-email.json'),
+  'goodreads-http.json',
+  'imdb-file.json',
+  'imdb-http-paginate.json',
+  'npm-tpl.json',
+  // 'mixcloud-email.json',
   // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demo:debug
-  // path.join(process.cwd(), 'demo/config/wikia-stdin.json')
+  // 'wikia-stdin.json',
   // $ npm run debug < demo/data/in/IMDbTop250.html
-  // path.join(process.cwd(), 'demo/config/imdb-file-stdin.json'),
+  // 'imdb-file-stdin.json',
 ];
 
-/* eslint-disable */
+/* eslint-disable arrow-body-style, no-console */
+
+console.log('Jason the Miner demo suite ⛏⛏⛏');
+
+const spinner = ora({ spinner: 'dots4' });
 
 const demoSequenceP = demoFiles.reduce((previousP, file) => {
   return previousP
-          .then(() => jason.loadConfig(file))
-          .then(() => jason.harvest());
+    .then(() => {
+      spinner.start().text = `Launching "${file}" demo...`;
+      const demoPath = path.join(process.cwd(), 'demo/config', file);
+      return jason.loadConfig(demoPath);
+    })
+    .then(() => jason.harvest())
+    .then(() => spinner.succeed());
 }, Promise.resolve());
 
 demoSequenceP
   .then(() => {
-    const npmConfigFile = path.join(process.cwd(), 'demo/config/npm-tpl.json');
+    const file = 'demo/config/npm-tpl.json';
+    spinner.start().text = `Launching "${file}" demo...`;
+    const demoPath = path.join(process.cwd(), file);
+    return jason.loadConfig(demoPath);
+  })
+  .then(() => {
     const outputConfig = {
       "tpl": {
         "templatePath": "demo/data/in/npm-starred.md.tpl",
         "outputPath": "demo/data/out/npm-starred.md"
       }
     };
-    return jason.loadConfig(npmConfigFile).then(() => jason.harvest({ outputConfig }));
+    return jason.harvest({ outputConfig });
   })
-  .then(() => console.log('\nAll done! :D'))
+  .then(() => {
+    spinner.succeed();
+    console.log('\nAll done! :D');
+  })
   .catch(error => {
+    spinner.fail();
     console.error('Ooops! Something went wrong. :(');
     console.error(error);
   });

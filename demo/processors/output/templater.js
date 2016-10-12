@@ -1,6 +1,6 @@
 const fs = require('fs');
 const Mustache = require('mustache');
-const debug = require('debug')('jason:out');
+const debug = require('debug')('jason:out:templater');
 
 class Templater {
 
@@ -24,7 +24,7 @@ class Templater {
 
           fs.writeFile(this._outputPath, rendered, error => {
             if (error) {
-              debug('Error: %s!', error.message);
+              debug(error.message);
               reject(error);
             }
 
@@ -38,7 +38,7 @@ class Templater {
           resolve(rendered);
         }
       } catch (error) {
-        debug('Error: %s!', error.message);
+        debug(error.message);
         reject(error);
       }
     });
