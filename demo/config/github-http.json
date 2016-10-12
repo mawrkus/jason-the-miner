@@ -1,0 +1,25 @@
+{
+  "input": {
+    "http": {
+      "url": "https://github.com/mawrkus"
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          ".pinned-repo-item": {
+            "name": ".repo",
+            "description": ".pinned-repo-desc | trim",
+            "⭐": ".pinned-repo-item-content > p:last-child << regexp:\\d+"
+          }
+        }
+      ]
+    }
+  },
+  "output": {
+    "json-file": {
+      "path": "demo/data/out/github.json"
+    }
+  }
+}
