@@ -16,7 +16,7 @@ program
 const { config, debug } = program;
 
 if (!config) {
-  console.error('Have you forgotten to specify a CSV keywords file? ;)');
+  console.error('Have you forgotten to specify a config file? ;)');
   program.help();
 }
 
@@ -27,14 +27,14 @@ if (debug) {
 const JasonTheMiner = require('..'); // must be AFTER setting the DEBUG environment variable
 
 const jason = new JasonTheMiner();
+const configPath = path.join(process.cwd(), config);
 const spinner = ora({ text: 'Harvesting...', spinner: 'dots4' }).start();
 
-jason
-.loadConfig(path.join(process.cwd(), config))
-.then(() => jason.harvest())
-.then(() => spinner.succeed())
-.catch(error => {
-  spinner.fail();
-  console.error('Ooops! Something went wrong. :(');
-  console.error(error);
-});
+jason.loadConfig(configPath)
+  .then(() => jason.harvest())
+  .then(() => spinner.succeed())
+  .catch(error => {
+    spinner.fail();
+    console.error('Ooops! Something went wrong. :(');
+    console.error(error);
+  });
