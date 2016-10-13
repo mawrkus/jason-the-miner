@@ -26,8 +26,17 @@ if (debug) {
 
 const JasonTheMiner = require('..'); // must be AFTER setting the DEBUG environment variable
 
-const jason = new JasonTheMiner();
+const jason = new JasonTheMiner({
+  fallbacks: {
+    input: 'stdin',
+    parse: 'html',
+    output: 'stdout',
+    paginate: 'no-action'
+  }
+});
+
 const configPath = path.join(process.cwd(), config);
+
 const spinner = ora({ text: 'Harvesting...', spinner: 'dots4' }).start();
 
 jason.loadConfig(configPath)
