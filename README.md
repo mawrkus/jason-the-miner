@@ -6,12 +6,12 @@ A modular Web scraper.
 
 - **Modular**, via a simple architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 4 types of processors in the chain:
   1. *input processors*, to acquire the (HTML) data (via HTTP requests, ...)
-  2. *parse processors*, to parse the data acquired and & to extract the relevant parts according to a predefined schema
+  2. *parse processors*, to parse the data acquired & to extract the relevant parts according to a predefined schema
   3. *output processors*: to write the results (to a file, via email, ...)
   4. *paginate processors*: optional, to establish a strategy when scraping multiple pages (follow the "next" link, ...)
 - **Configurable**, each processor can be chosen & configured independently via a simple config file.
 - **Extensible**, new processors can be registered.
-- **CLI-friendly**, works well with *stdin* and *stdout*.
+- **CLI-friendly**, works well with *stdin* & *stdout*.
 - **Promise-based**.
 
 ## ⛏ Installation
@@ -47,7 +47,7 @@ To scrape all the repos from my GitHub page:
   },
   "output": {
     "json-file": {
-      "path": "demo/data/out/github-repos.json"
+      "path": "repos.json"
     }
   }
 }
@@ -59,7 +59,7 @@ To scrape all the repos from my GitHub page:
 $ jason-the-miner -c github.json
 ```
 
-- c. Check the results in *github-repos.json*:
+- c. Check the results in *repos.json*:
 
 ```json
 [
@@ -86,7 +86,7 @@ $ jason-the-miner -c github.json
 ]
 ```
 
-Or alternatively, using pipes and redirections:
+Or alternatively, using pipes & redirections:
 
 *github.json*:
 
@@ -108,7 +108,7 @@ Or alternatively, using pipes and redirections:
 ```
 
 ```shell
-$ curl https://github.com/mawrkus | jason-the-miner -c github.json > github-repos.json
+$ curl https://github.com/mawrkus | jason-the-miner -c github.json > repos.json
 ```
 
 ## ⛏ Config file
@@ -140,67 +140,87 @@ $ curl https://github.com/mawrkus | jason-the-miner -c github.json > github-repo
 
 ### Input processors
 
-- http
-- file
-- stdin
+TODO: add options doc
 
-Fallback: stdin.
+Jason comes with 3 built-in input processors or loaders:
+
+- `http`
+- `file`
+- `stdin`
+
+Fallback: `stdin`.
 
 ### Parse processors
 
-- html
+TODO: add options doc (schemas)
 
-Fallback: no-action.
+There's a single built-in parser:
 
-#### Extractors & filters
+- `html`
+
+Fallback: `no-action`.
+
+#### Parse helpers
+
+It is possible to define how to extract the data from each element being parsed by using the following syntax:
 
 ```
-[selector] << [extractor] | [filter]
+[part name]: [part selector] << [extractor] | [filter]
 ```
 
 Extractors:
 
-- text
-- html
-- attr
-- regexp
+- `text`
+- `html`
+- `attr:[attribute name]`, e.g.: `.titleColumn > a << attr:title`
+- `regexp:[regexp string]`, e.g.: `.secondaryInfo << regexp:[0123456789]+`
 
-text by default.
+`text` by default.
 
 Filters:
 
-- trim
+- `trim`, e.g.: `.titleColumn > a | trim`
 
-trim by default.
+`trim` by default.
+
+And combining both extractor & filter:
+
+`.quoteText << regexp:([^―]+) | trim`
 
 ### Output processors
 
-- json-file
-- csv-file
-- stdout
+TODO: add options doc
 
-Fallback: stdout.
+- `json-file`
+- `csv-file`
+- `stdout`
+
+Fallback: `stdout`.
 
 ### Paginators
 
-- next-link
-- url-param
+TODO: add options doc
 
-Fallback: no-action.
+- `next-link`
+- `url-param`
+
+Fallback: `no-action`.
 
 ## ⛏ API
 
 Check https://github.com/lapwinglabs/x-ray
+
+### registerHelper({ category, name, helper })
+
+```js
+```
 
 ### registerProcessor({ category, name, processor })
 
 ```js
 ```
 
-### registerHelper({ category, name, helper })
-
-```js
-```
+Note on the interaction between loaders, parsers & paginators: ...
 
 ### loadConfig(configFile)
 
@@ -215,14 +235,13 @@ Check https://github.com/lapwinglabs/x-ray
 ## ⛏ Recipes
 
 - http > html > json
-- http > html (2 schemas) > json-file
-- http > html (2 schemas) > json-file (alternative: > out.json and debug 2> out.log)
 - curl | stdin > html > stdout
 - file > html > csv-file
 - http+paglink > html > json
 - http+pagparam > html > json
 - http > html-custom > email
 - http > html > tpl
+- http > html (2 schemas) > json-file
 
 ```json
 ```
