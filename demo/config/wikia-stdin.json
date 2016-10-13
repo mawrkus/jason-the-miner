@@ -8,7 +8,7 @@
     "html": {
       "schemas": [
         {
-          "#mw-pages li": {
+          "#mw-pages table li": {
             "character": "a"
           }
         }
