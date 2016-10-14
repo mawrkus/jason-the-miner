@@ -1,7 +1,7 @@
 {
   "name": "jason-the-miner",
   "version": "0.0.1",
-  "description": "A modular Web scraper",
+  "description": "A modular Web scraper for Node.js",
   "author": "mawrkus <web@sparring-partner.be>",
   "license": "MIT",
   "homepage": "https://github.com/mawrkus/jason-the-miner",

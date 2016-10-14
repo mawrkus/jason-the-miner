@@ -2,11 +2,11 @@
  [![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
 ![Node version](https://img.shields.io/node/v/jason-the-miner.svg?style=flat-square)
 
-Web scraping at the data mine.
+Harvesting data at the html mine... Jason the Miner, a modular Web scraper for Node.js.
 
 ## ⛏ Features
 
-- **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 4 types of processors:
+- **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 4 basic processors:
   1. `loaders`: to fetch the (HTML) data (via HTTP requests, ...)
   2. `parsers`, to parse the data & extract the relevant parts according to a predefined schema
   3. `transformers`: to transform and/or output the results (to a file, via email, ...)
@@ -187,7 +187,8 @@ There's a single built-in parser:
 ...
 ```
 
-A schema is just a plain object that associates a selector (`.repo-list-item`) to the definition of the parts that you want to extract. Jason will find all the elements that match the selector & for each of them, it will extract all the parts defined.
+A schema is just a plain object that associates a selector (`.repo-list-item`) to the definition of the parts that you want to extract.
+Jason will find all the elements that match the selector & for each one of them, it will extract all the parts defined.
 
 Jason also supports multiple schemas:
 
@@ -215,7 +216,7 @@ Jason also supports multiple schemas:
 
 ##### Parse helpers
 
-You can customize how to extract the value of a part:
+You can customize the extraction of the parts values:
 
 ```
 [part name]: [part selector] << [extractor] | [filter]
@@ -282,10 +283,14 @@ Examples:
 ##### registerProcessor({ category, name, processor })
 
 Registers a new processor in one of the 4 categories: `load`, `parse`, `paginate` or `transform`.
-`processor` must be a class implementing the `run` method.
+`processor` must be a class implementing the `run` method:
 
 ```js
-jason.registerProcessor({ category: 'transform', name: 'email', processor: Emailer });
+jason.registerProcessor({
+  category: 'transform',
+  name: 'email',
+  processor: Emailer
+});
 
 class Emailer {
   constructor(config) {
@@ -303,7 +308,7 @@ class Emailer {
 ```
 
 In order to enable pagination, loaders & parsers **must also implement** the `getRunContext` method.
-For instance the `html` parser returns the Cheerio object that allows the `next-link` paginator to search for the next URL:
+For instance, the `html` parser returns the Cheerio object that allows the `next-link` paginator to search for the next URL:
 
 ```js
 class HtmlParserEmailer {
@@ -395,39 +400,27 @@ jason.loadConfig('./harvest-me.json');
 Launches the process. Optional options can be passed to override the current config.
 
 ```js
-jason.configure({
-  parse: {
-    html: {
-      schemas: [
-        {
-          ".repo-list-item": {
-            "name": ".repo-list-name > a",
-            "description": ".repo-list-description | trim",
-            "⭐": "a[aria-label=Stargazers] | trim"
-          }
-        }
-      ]
+jason.loadConfig('./harvest-me.json')
+  .then(() => jason.harvest({
+    load: {
+      http: {
+        url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+      }
     }
-  }
-});
-
-jason.harvest({
-  load: {
-    http: {
-      url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
-    }
-  }
-});
+  }))
+  .catch(error => console.error(error));
 ```
 
 ## ⛏ Recipes
 
-Have a look at the `demo` folder after cloning the project:
+Clone the project...
 
 ```shell
 $ git clone https://github.com/mawrkus/jason-the-miner.git
 $ cd jason-the-miner
 ```
+
+...and have a look at the `demo` folder.
 
 To launch all the demos:
 
