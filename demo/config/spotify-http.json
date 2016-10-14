@@ -1,0 +1,30 @@
+{
+  "load": {
+    "http": {
+      "url": "https://api.spotify.com/v1/search",
+      "params": {
+        "type": "artist",
+        "q": "flying",
+        "offset": 0,
+        "limit": 10
+      }
+    }
+  },
+  "parse": {
+    "json": {
+      "schemas": [
+        {
+          "artists.items": {
+            "name": "name",
+            "popularity": "popularity",
+            "image": "images[1].url"
+          }
+        }
+      ]
+    }
+  },
+  "xtransform": {
+    "identity": {
+    }
+  }
+}
