@@ -422,16 +422,17 @@ jason.harvest({
 
 ## ⛏ Recipes
 
-- http > html > json
-- curl | stdin > html > stdout
-- file > html > csv-file
-- http+paglink > html > json
-- http+pagparam > html > json
-- http > html-custom > email
-- http > html > tpl
-- http > html (2 schemas) > json-file
+Have a look at the `demo` folder after cloning the project:
 
-```json
+```shell
+$ git clone https://github.com/mawrkus/jason-the-miner.git
+$ cd jason-the-miner
+```
+
+To launch all the demos:
+
+```shell
+$ npm i && npm run demo
 ```
 
 ## ⛏ References & related links
