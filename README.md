@@ -391,7 +391,7 @@ class NextLinkPaginator {
   run({ loaderRunContext, parserRunContext } = {}) {
     const $ = parserRunContext.$;
     const url = $(this._selector).first().attr('href');
-    return { url };
+    return [{ url }];
   }
 
   // ...

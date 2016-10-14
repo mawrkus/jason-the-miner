@@ -14,7 +14,8 @@
     "url-param": {
       "param": "offset",
       "inc": 25,
-      "limit": 2
+      "limit": 4,
+      "mode": "parallel"
     }
   },
   "parse": {
@@ -24,7 +25,7 @@
           "artists.items": {
             "name": "name",
             "popularity": "popularity",
-            "image": "images[1].url"
+            "image": "x-images[1].url"
           }
         }
       ]
