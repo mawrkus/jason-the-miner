@@ -254,8 +254,8 @@ An example combining both:
 
 ### Paginators
 
-- `next-link`: follows the "next" link. Options: `selector` and `limit`.
-- `url-param`: increment an URL query parameter. Options: `param`, `inc` & `limit`.
+- `next-link`: follows the "next" link. Options: `selector`, `limit` & `mode` ("single" or "all").
+- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit` & `mode` ("sequential" or "parallel").
 
 Examples:
 

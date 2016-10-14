@@ -23,7 +23,7 @@
     "next-link": {
       "selector": ".pagination a",
       "mode": "all",
-      "limit": 10
+      "limit": 4
     }
   },
   "transform": {
