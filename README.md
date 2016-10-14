@@ -280,6 +280,57 @@ Examples:
 
 ## ⛏ API
 
+### configure(options)
+
+(Re-)Configures Jason.
+
+```js
+jason.configure({
+  load: {
+    http: {
+      url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+    }
+  },
+  parse: {
+    html: {
+      schemas: [
+        {
+          ".repo-list-item": {
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+            "⭐": "a[aria-label=Stargazers] | trim"
+          }
+        }
+      ]
+    }
+  }
+});
+```
+
+### loadConfig(configFile)
+
+Loads a config from a JSON file.
+
+```js
+jason.loadConfig('./harvest-me.json');
+```
+
+### harvest({ load, parse, output, pagination } = {})
+
+Launches the process. Optional options can be passed to override the current config.
+
+```js
+jason.loadConfig('./harvest-me.json')
+  .then(() => jason.harvest({
+    load: {
+      http: {
+        url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+      }
+    }
+  }))
+  .catch(error => console.error(error));
+```
+
 ##### registerProcessor({ category, name, processor })
 
 Registers a new processor in one of the 4 categories: `load`, `parse`, `paginate` or `transform`.
@@ -358,57 +409,6 @@ jason.registerHelper({
   name: 'remove-protocol',
   helper: text => text.replace(/^https?:/, '')
 });
-```
-
-### configure(options)
-
-(Re-)Configures Jason.
-
-```js
-jason.configure({
-  load: {
-    http: {
-      url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
-    }
-  },
-  parse: {
-    html: {
-      schemas: [
-        {
-          ".repo-list-item": {
-            "name": ".repo-list-name > a",
-            "description": ".repo-list-description | trim",
-            "⭐": "a[aria-label=Stargazers] | trim"
-          }
-        }
-      ]
-    }
-  }
-});
-```
-
-### loadConfig(configFile)
-
-Loads a config from a JSON file.
-
-```js
-jason.loadConfig('./harvest-me.json');
-```
-
-### harvest({ load, parse, output, pagination } = {})
-
-Launches the process. Optional options can be passed to override the current config.
-
-```js
-jason.loadConfig('./harvest-me.json')
-  .then(() => jason.harvest({
-    load: {
-      http: {
-        url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
-      }
-    }
-  }))
-  .catch(error => console.error(error));
 ```
 
 ## ⛏ Recipes
