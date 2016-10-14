@@ -1,17 +1,11 @@
 {
-  "input": {
+  "load": {
     "http": {
       "baseURL": "http://www.imdb.com/title/tt1520211/episodes",
       "url": "/?season=1",
       "headers": {
         "Accept-Language": "en"
       }
-    }
-  },
-  "paginate": {
-    "next-link": {
-      "selector": "a#load_next_episodes",
-      "limit": 100
     }
   },
   "parse": {
@@ -28,7 +22,13 @@
       ]
     }
   },
-  "output": {
+  "paginate": {
+    "next-link": {
+      "selector": "a#load_next_episodes",
+      "limit": 100
+    }
+  },
+  "transform": {
     "json-file": {
       "path": "demo/data/out/imdb-episodes.json"
     }

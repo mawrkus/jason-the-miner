@@ -1,5 +1,5 @@
 {
-  "input": {
+  "load": {
     "http": {
       "url": "https://www.mixcloud.com/mawrkus",
       "headers": {
@@ -21,7 +21,7 @@
       ]
     }
   },
-  "output": {
+  "transform": {
     "email": {
       "smtp": {
         "host": "host",

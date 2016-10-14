@@ -1,4 +1,4 @@
-const HtmlParser = require('../../../lib/processors/parse/html');
+const HtmlParser = require('../../../lib/processors/parsers/html');
 const debug = require('debug')('jason:parse:mixcloud');
 
 class MixCloudStatsParser {

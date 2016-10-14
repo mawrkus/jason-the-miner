@@ -1,25 +1,26 @@
 {
-  "input": {
+  "load": {
     "http": {
-      "url": "https://github.com/mawrkus"
+      "url": "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
     }
   },
   "parse": {
     "html": {
       "schemas": [
         {
-          ".pinned-repo-item": {
-            "name": ".repo",
-            "description": ".pinned-repo-desc | trim",
-            "⭐": ".pinned-repo-item-content > p:last-child << regexp:\\d+"
+          ".repo-list-item": {
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+            "last-update": ".repo-list-meta relative-time",
+            "⭐": "a[aria-label=Stargazers] | trim"
           }
         }
       ]
     }
   },
-  "output": {
+  "transform": {
     "json-file": {
-      "path": "demo/data/out/github.json"
+      "path": "demo/data/out/github-repos.json"
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "input": {
+  "load": {
     "file": {
       "path": "demo/data/in/IMDbTop250.html"
     }
@@ -18,7 +18,7 @@
       ]
     }
   },
-  "output": {
+  "transform": {
     "csv-file": {
       "path": "demo/data/out/imdb-top-250.csv"
     }

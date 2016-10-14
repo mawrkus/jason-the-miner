@@ -1,5 +1,5 @@
 {
-  "input": {
+  "load": {
     "stdin": {
     }
   },
@@ -17,7 +17,7 @@
       ]
     }
   },
-  "output": {
+  "transform": {
     "csv-file": {
       "path": "demo/data/out/imdb-top-250.csv"
     }

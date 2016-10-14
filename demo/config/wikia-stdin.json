@@ -1,8 +1,6 @@
 {
-  "-input": {
-    "stdin": {
-      "encoding": "utf8"
-    }
+  "load": {
+    "stdin": {}
   },
   "parse": {
     "html": {
@@ -15,9 +13,7 @@
       ]
     }
   },
-  "-output": {
-    "stdout": {
-      "encoding": "utf8"
-    }
+  "transform": {
+    "stdout": {}
   }
 }

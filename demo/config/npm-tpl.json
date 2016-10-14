@@ -1,5 +1,5 @@
 {
-  "input": {
+  "load": {
     "http": {
       "url": "https://www.npmjs.com/browse/star"
     }
@@ -25,7 +25,7 @@
       ]
     }
   },
-  "output": {
+  "transform": {
     "tpl": {
       "templatePath": "demo/data/in/npm-starred.html.tpl",
       "outputPath": "demo/data/out/npm-starred.html"

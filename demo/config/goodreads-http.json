@@ -1,5 +1,5 @@
 {
-  "input": {
+  "load": {
     "http": {
       "url": "http://www.goodreads.com/quotes/search",
       "params": {
@@ -21,7 +21,7 @@
       ]
     }
   },
-  "output": {
+  "transform": {
     "json-file": {
       "path": "demo/data/out/goodreads.json"
     }

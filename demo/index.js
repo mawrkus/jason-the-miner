@@ -3,19 +3,20 @@
 const path = require('path');
 const ora = require('ora');
 
+const MixCloudStatsParser = require('./processors/parsers/mixcloud-stats-parser');
+const Emailer = require('./processors/transformers/emailer');
+const Templater = require('./processors/transformers/templater');
+
 const JasonTheMiner = require('..');
-const MixCloudStatsParser = require('./processors/parse/mixcloud-stats-parser');
-const Emailer = require('./processors/output/emailer');
-const Templater = require('./processors/output/templater');
 
 const jason = new JasonTheMiner();
 
 jason.registerProcessor({ category: 'parse', name: 'mixcloud-stats', processor: MixCloudStatsParser });
-jason.registerProcessor({ category: 'output', name: 'email', processor: Emailer });
-jason.registerProcessor({ category: 'output', name: 'tpl', processor: Templater });
+jason.registerProcessor({ category: 'transform', name: 'email', processor: Emailer });
+jason.registerProcessor({ category: 'transform', name: 'tpl', processor: Templater });
 
 jason.registerHelper({
-  category: 'filters',
+  category: 'filter',
   name: 'remove-protocol',
   helper: text => text.replace(/^https?:/, '')
 });
@@ -51,19 +52,19 @@ const demoSequenceP = demoFiles.reduce((previousP, file) => {
 
 demoSequenceP
   .then(() => {
-    const file = 'demo/config/npm-tpl.json';
-    spinner.start().text = `Launching "${file}" demo...`;
-    const demoPath = path.join(process.cwd(), file);
+    const file = 'npm-tpl.json';
+    spinner.start().text = `Launching again "${file}" demo...`;
+    const demoPath = path.join(process.cwd(), 'demo/config', file);
     return jason.loadConfig(demoPath);
   })
   .then(() => {
-    const outputConfig = {
+    const transform = {
       "tpl": {
         "templatePath": "demo/data/in/npm-starred.md.tpl",
         "outputPath": "demo/data/out/npm-starred.md"
       }
     };
-    return jason.harvest({ outputConfig });
+    return jason.harvest({ transform });
   })
   .then(() => {
     spinner.succeed();
