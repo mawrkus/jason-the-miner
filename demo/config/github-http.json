@@ -1,7 +1,8 @@
 {
   "load": {
     "http": {
-      "url": "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+      "baseURL": "https://github.com",
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
     }
   },
   "parse": {
@@ -16,6 +17,13 @@
           }
         }
       ]
+    }
+  },
+  "paginate": {
+    "next-link": {
+      "selector": ".pagination a",
+      "mode": "all",
+      "limit": 10
     }
   },
   "transform": {

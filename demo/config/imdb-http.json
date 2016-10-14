@@ -25,7 +25,7 @@
   "paginate": {
     "next-link": {
       "selector": "a#load_next_episodes",
-      "limit": 100
+      "limit": 1
     }
   },
   "transform": {
