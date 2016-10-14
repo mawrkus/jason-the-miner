@@ -50,6 +50,7 @@
     "commander": "^2.9.0",
     "csv-stringify": "^1.0.4",
     "debug": "^2.2.0",
+    "lodash.get": "^4.4.2",
     "mustache": "^2.2.1",
     "nodemailer": "^2.6.4",
     "ora": "^0.3.0"
