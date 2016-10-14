@@ -28,10 +28,10 @@ const JasonTheMiner = require('..'); // must be AFTER setting the DEBUG environm
 
 const jason = new JasonTheMiner({
   fallbacks: {
-    input: 'stdin',
+    load: 'stdin',
     parse: 'html',
-    output: 'stdout',
-    paginate: 'no-action'
+    paginate: 'no-action',
+    transform: 'stdout'
   }
 });
 
