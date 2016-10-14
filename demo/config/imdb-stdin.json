@@ -1,7 +1,6 @@
 {
   "load": {
-    "stdin": {
-    }
+    "stdin": {}
   },
   "parse": {
     "html": {

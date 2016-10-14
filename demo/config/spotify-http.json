@@ -6,8 +6,15 @@
         "type": "artist",
         "q": "flying",
         "offset": 0,
-        "limit": 10
+        "limit": 25
       }
+    }
+  },
+  "paginate": {
+    "url-param": {
+      "param": "offset",
+      "inc": 25,
+      "limit": 2
     }
   },
   "parse": {
@@ -21,10 +28,6 @@
           }
         }
       ]
-    }
-  },
-  "xtransform": {
-    "identity": {
     }
   }
 }
