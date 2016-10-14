@@ -1,18 +1,24 @@
-# Jason the Miner [![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
+# Jason the Miner
+ [![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
+![Node version](https://img.shields.io/node/v/jason-the-miner.svg?style=flat-square)
 
-A modular Web scraper.
+Web scraping at the data mine.
 
 ## ⛏ Features
 
-- **Modular**, via a simple architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 4 types of processors in the chain:
-  1. *input processors*, to acquire the (HTML) data (via HTTP requests, ...)
-  2. *parse processors*, to parse the data acquired & to extract the relevant parts according to a predefined schema
-  3. *output processors*: to write the results (to a file, via email, ...)
-  4. *paginate processors*: optional, to establish a strategy when scraping multiple pages (follow the "next" link, ...)
-- **Configurable**, each processor can be chosen & configured independently via a simple config file.
-- **Extensible**, new processors can be registered.
-- **CLI-friendly**, works well with *stdin* & *stdout*.
-- **Promise-based**.
+- **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 4 types of processors:
+  1. `loaders`: to fetch the (HTML) data (via HTTP requests, ...)
+  2. `parsers`, to parse the data & extract the relevant parts according to a predefined schema
+  3. `transformers`: to transform and/or output the results (to a file, via email, ...)
+  4. `paginators`: optional, to establish a strategy when scraping multiple pages (follow the "next" link, ...)
+
+- **Configurable:** each processor can be chosen & configured independently.
+
+- **Extensible:** new processors can be registered.
+
+- **CLI-friendly:** Jason the Miner works well with pipes & redirections.
+
+- **Promise-based API**.
 
 ## ⛏ Installation
 
@@ -20,34 +26,37 @@ A modular Web scraper.
 $ npm install -g jason-the-miner
 ```
 
-## ⛏ TL;DR Usage Example
+## ⛏ Examples
 
-To scrape all the repos from my GitHub page:
+#### CLI
 
-- a. Create the *github.json* config file:
+Let's find the most starred Javascript scrapers from GitHub:
+
+- a. Create the *github-config.json* config file:
 
 ```json
 {
-  "input": {
+  "load": {
     "http": {
-      "url": "https://github.com/mawrkus"
+      "url": "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
     }
   },
   "parse": {
     "html": {
       "schemas": [
         {
-          ".pinned-repo-item": {
-            "name": ".repo",
-            "description": ".pinned-repo-desc"
+          ".repo-list-item": {
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+            "⭐": "a[aria-label=Stargazers] | trim"
           }
         }
       ]
     }
   },
-  "output": {
+  "transform": {
     "json-file": {
-      "path": "repos.json"
+      "path": "demo/data/out/github-repos.json"
     }
   }
 }
@@ -56,39 +65,14 @@ To scrape all the repos from my GitHub page:
 - b. Execute this shell command:
 
 ```shell
-$ jason-the-miner -c github.json
+$ jason-the-miner -c github-config.json
 ```
 
-- c. Check the results in *repos.json*:
-
-```json
-[
-  {
-    "name": "tinycore",
-    "description": "🛰 A tiny JavaScript modular architecture library"
-  },
-  {
-    "name": "js-unit-testing-guide",
-    "description": "📙 A guide to unit testing in JavaScript"
-  },
-  {
-    "name": "kaiten",
-    "description": "🌊 A jQuery plugin which offers a new navigation model for web applications."
-  },
-  {
-    "name": "enlighten-me",
-    "description": "🍵 Wisdom within the tea bag."
-  },
-  {
-    "name": "jason-the-miner",
-    "description": "⛏ A Web scraper / harvester / data extractor."
-  }
-]
-```
+- c. Check the results in *github-repos.json*.
 
 Or alternatively, using pipes & redirections:
 
-*github.json*:
+*github-config.json*:
 
 ```json
 {
@@ -96,9 +80,10 @@ Or alternatively, using pipes & redirections:
     "html": {
       "schemas": [
         {
-          ".pinned-repo-item": {
-            "name": ".repo",
-            "description": ".pinned-repo-desc"
+          ".repo-list-item": {
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+            "⭐": "a[aria-label=Stargazers] | trim"
           }
         }
       ]
@@ -108,128 +93,331 @@ Or alternatively, using pipes & redirections:
 ```
 
 ```shell
-$ curl https://github.com/mawrkus | jason-the-miner -c github.json > repos.json
+$ curl https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories | jason-the-miner -c github-config.json > github-repos.json
+```
+
+#### API
+
+```js
+const JasonTheMiner = require('jason-the-miner');
+
+const jason = new JasonTheMiner();
+
+jason.configure({
+  load: {
+    http: {
+      url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+    }
+  },
+  parse: {
+    html: {
+      schemas: [
+        {
+          ".repo-list-item": {
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+            "⭐": "a[aria-label=Stargazers] | trim"
+          }
+        }
+      ]
+    }
+  }
+});
+
+jason.harvest().then(results => console.log(results));
 ```
 
 ## ⛏ Config file
 
 ```js
 {
-  "input": {
-    "[processor name]": {
-      // processor config
+  "load": {
+    "[loader name]": {
+      // loader options
     }
   },
   "parse": {
-    "[processor name]": {
-      // processor config
+    "[parser name]": {
+      // parser options
     }
   },
-  "pagination": {
-    "[processor name]": {
-      // processor config
+  "paginate": {
+    "[paginator name]": {
+      // paginator options
     }
   },
-  "output": {
-    "[processor name]": {
-      // processor config
+  "transform": {
+    "[transformer name]": {
+      // transformer options
     }
   }
 }
 ```
 
-### Input processors
+### Loaders
 
-TODO: add options doc
+Jason the Miner comes with 3 built-in loaders:
 
-Jason comes with 3 built-in input processors or loaders:
+- `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same configuration options.  
+- `file`: reads the content of a file. Options: `path`.
+- `stdin`: reads the content from the standard input. Options: `encoding`.
 
-- `http`
-- `file`
-- `stdin`
-
-Fallback: `stdin`.
-
-### Parse processors
-
-TODO: add options doc (schemas)
+### Parsers
 
 There's a single built-in parser:
 
-- `html`
+- `html`: uses [Cheerio](https://github.com/cheeriojs/cheerio) as HTML parser. Options: `schemas`.
 
-Fallback: `no-action`.
+#### Schemas definition
 
-#### Parse helpers
+```json
+...
+  "html": {
+    "schemas": [
+      {
+        ".repo-list-item": {
+          "name": ".repo-list-name > a",
+          "description": ".repo-list-description | trim",
+          "last-update": ".repo-list-meta relative-time",
+          "⭐": "a[aria-label=Stargazers] | trim"
+        }
+      }
+    ]
+  }
+...
+```
 
-It is possible to define how to extract the data from each element being parsed by using the following syntax:
+A schema is just a plain object that associates a selector (`.repo-list-item`) to the definition of the parts that you want to extract. Jason will find all the elements that match the selector & for each of them, it will extract all the parts defined.
+
+Jason also supports multiple schemas:
+
+```json
+...
+  "html": {
+    "schemas": [
+      {
+        "head": {
+          "page-title": "title"
+        }
+      },
+      {
+        ".repo-list-item": {
+          "name": ".repo-list-name > a",
+          "description": ".repo-list-description | trim",
+          "last-update": ".repo-list-meta relative-time",
+          "⭐": "a[aria-label=Stargazers] | trim"
+        }
+      }
+    ]
+  }
+...
+```
+
+##### Parse helpers
+
+You can customize how to extract the value of a part:
 
 ```
 [part name]: [part selector] << [extractor] | [filter]
 ```
 
-Extractors:
+Jason has 4 built-in **extractors** (`text` by default):
 
 - `text`
 - `html`
-- `attr:[attribute name]`, e.g.: `.titleColumn > a << attr:title`
-- `regexp:[regexp string]`, e.g.: `.secondaryInfo << regexp:[0123456789]+`
+- `attr:[attribute name]`
+- `regexp:[regexp string]`
 
-`text` by default.
+And 1 built-in **filter**:
 
-Filters:
+- `trim`
 
-- `trim`, e.g.: `.titleColumn > a | trim`
+An example combining both:
 
-`trim` by default.
+```json
+...
+  ".lister-list > tr": {
+    "🎥 title": ".titleColumn > a | trim",
+    "📅 year": ".secondaryInfo << regexp:[0123456789]+",
+    "⭐ rating": ".ratingColumn > strong",
+    "👥 crew": ".titleColumn > a << attr:title | trim"
+  }
+...
+```
 
-And combining both extractor & filter:
+### Transformers
 
-`.quoteText << regexp:([^―]+) | trim`
-
-### Output processors
-
-TODO: add options doc
-
-- `json-file`
-- `csv-file`
-- `stdout`
-
-Fallback: `stdout`.
+- `json-file`: writes the results to a JSON file. Options: `path`.
+- `csv-file`: uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same configuration options, as well as `path`.
+- `stdout`: writes the results to stdout. Options: `encoding`.
 
 ### Paginators
 
-TODO: add options doc
+- `next-link`: follows the "next" link. Options: `selector` and `limit`.
+- `url-param`: increment an URL query parameter. Options: `param`, `inc` & `limit`.
 
-- `next-link`
-- `url-param`
+Examples:
 
-Fallback: `no-action`.
+```json
+...
+  "next-link": {
+    "selector": "a#load_next_episodes",
+    "limit": 20
+  }
+...
+```
+
+```json
+...
+  "url-param": {
+    "param": "p",
+    "inc": 1,
+    "limit": 3
+  }
+...
+```
 
 ## ⛏ API
 
-Check https://github.com/lapwinglabs/x-ray
+##### registerProcessor({ category, name, processor })
 
-### registerHelper({ category, name, helper })
-
-```js
-```
-
-### registerProcessor({ category, name, processor })
+Registers a new processor in one of the 4 categories: `load`, `parse`, `paginate` or `transform`.
+`processor` must be a class implementing the `run` method.
 
 ```js
+jason.registerProcessor({ category: 'transform', name: 'email', processor: Emailer });
+
+class Emailer {
+  constructor(config) {
+    // receives automatically its config
+  }
+
+  /**
+   * @param {*}
+   * @return {Promise.<*>}
+   */
+  run() {
+    // must be implemented.
+  }
+}
 ```
 
-Note on the interaction between loaders, parsers & paginators: ...
+In order to enable pagination, loaders & parsers **must also implement** the `getRunContext` method.
+For instance the `html` parser returns the Cheerio object that allows the `next-link` paginator to search for the next URL:
+
+```js
+class HtmlParserEmailer {
+  // ...
+
+   /**
+    * @param {string} html
+    * @return {Promise.<Object[]>}
+    */
+   run(html) {
+    // ...
+    this._$ = cheerio.load(html);
+    // ...
+   }
+
+   /**
+    * @return {Object}
+    */
+    getRunContext() {
+      return { $: this._$ };
+    }
+
+  // ...
+}
+
+class NextLinkPaginator {
+  // ...
+  //
+  run({ loaderRunContext, parserRunContext } = {}) {
+    const $ = parserRunContext.$;
+    const url = $(this._selector).first().attr('href');
+    return { url };
+  }
+
+  // ...
+}
+```
+
+##### registerHelper({ category, name, helper })
+
+Register a parse helpers in one of the 2 categories: `extract` or `filter`.
+`helper` must be a function.
+
+```js
+jason.registerHelper({
+  category: 'filter',
+  name: 'remove-protocol',
+  helper: text => text.replace(/^https?:/, '')
+});
+```
+
+### configure(options)
+
+(Re-)Configures Jason.
+
+```js
+jason.configure({
+  load: {
+    http: {
+      url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+    }
+  },
+  parse: {
+    html: {
+      schemas: [
+        {
+          ".repo-list-item": {
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+            "⭐": "a[aria-label=Stargazers] | trim"
+          }
+        }
+      ]
+    }
+  }
+});
+```
 
 ### loadConfig(configFile)
 
+Loads a config from a JSON file.
+
 ```js
+jason.loadConfig('./harvest-me.json');
 ```
 
-### harvest({ loadConfig, parseConfig, outputConfig, paginationConfig } = {})
+### harvest({ load, parse, output, pagination } = {})
+
+Launches the process. Optional options can be passed to override the current config.
 
 ```js
+jason.configure({
+  parse: {
+    html: {
+      schemas: [
+        {
+          ".repo-list-item": {
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+            "⭐": "a[aria-label=Stargazers] | trim"
+          }
+        }
+      ]
+    }
+  }
+});
+
+jason.harvest({
+  load: {
+    http: {
+      url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+    }
+  }
+});
 ```
 
 ## ⛏ Recipes
