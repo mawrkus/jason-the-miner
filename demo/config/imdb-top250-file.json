@@ -1,7 +1,7 @@
 {
   "load": {
     "file": {
-      "path": "demo/data/in/IMDbTop250.html"
+      "path": "demo/data/in/imdb-top250.html"
     }
   },
   "parse": {

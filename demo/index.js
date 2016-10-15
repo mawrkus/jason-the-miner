@@ -22,16 +22,19 @@ jason.registerHelper({
 });
 
 const demoFiles = [
-  'goodreads-http.json',
-  'imdb-file.json',
-  'imdb-http.json',
+  'github-search.json',
+  'goodreads-search.json',
+  'imdb-episodes.json',
   // $ npm run debug < demo/data/in/IMDbTop250.html
-  // 'imdb-stdin.json',
-  // 'mixcloud-email.json',
-  'npm-tpl.json',
-  'spotify-http.json',
+  // 'imdb-top250-csv.json',
+  'imdb-top250-file.json',
+  // 'mixcloud-stats.json',
+  'npm-starred.json',
+  'ra-clubs.json',
+  'ra-events.json',
+  'spotify-search.json',
   // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demo:debug
-  // 'wikia-stdin.json',
+  // 'wikia-characters.json',
 ];
 
 /* eslint-disable arrow-body-style, no-console */
@@ -53,7 +56,7 @@ const demoSequenceP = demoFiles.reduce((previousP, file) => {
 
 demoSequenceP
   .then(() => {
-    const file = 'npm-tpl.json';
+    const file = 'npm-starred.json';
     spinner.start().text = `Launching again "${file}" demo...`;
     const demoPath = path.join(process.cwd(), 'demo/config', file);
     return jason.loadConfig(demoPath);
