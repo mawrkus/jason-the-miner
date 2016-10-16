@@ -42,7 +42,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demo/data/out/exceed-events.json"
+      "path": "demo/data/out/xceed-events.json"
     }
   }
 }

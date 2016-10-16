@@ -43,7 +43,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demo/data/out/exceed-clubs.json"
+      "path": "demo/data/out/xceed-clubs.json"
     }
   }
 }
