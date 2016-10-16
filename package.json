@@ -53,7 +53,8 @@
     "lodash.get": "^4.4.2",
     "mustache": "^2.2.1",
     "nodemailer": "^2.6.4",
-    "ora": "^0.3.0"
+    "ora": "^0.3.0",
+    "promise-throttle": "^0.2.0"
   },
   "devDependencies": {
     "eslint": "^3.7.1",

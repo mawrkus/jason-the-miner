@@ -7,7 +7,8 @@
         "Accept-Language": "en",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
       },
-      "timeout": 30000
+      "timeout": 30000,
+      "rps": 10
     }
   },
   "parse": {
@@ -24,8 +25,10 @@
         {
           "html": {
             "club-name": "title << regexp:RA:(.+)- Barcelona nightclub | trim",
-            "club-capacity": "#detail li:nth-child(2) << html",
-            "club-links": "#detail li:nth-child(3) << html"
+            "address": "#detail li:nth-child(1) span[itemprop=street-address] | trim",
+            "details-2": "#detail li:nth-child(2) << html",
+            "details-3": "#detail li:nth-child(3) << html",
+            "details-4": "#detail li:nth-child(4) << html"
           }
         }
       ]
