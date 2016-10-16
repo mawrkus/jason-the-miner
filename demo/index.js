@@ -30,8 +30,6 @@ const demoFiles = [
   'imdb-top250-file.json',
   // 'mixcloud-stats.json',
   'npm-starred.json',
-  'ra-clubs.json',
-  'ra-events.json',
   'spotify-search.json',
   // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demo:debug
   // 'wikia-characters.json',

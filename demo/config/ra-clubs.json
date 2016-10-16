@@ -2,7 +2,7 @@
   "load": {
     "http": {
       "baseURL": "https://www.residentadvisor.net",
-      "url": "/clubs.aspx?ai=20",
+      "url": "/clubs.aspx",
       "headers": {
         "Accept-Language": "en",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"

@@ -15,7 +15,7 @@
           ".event-item": {
             "name": "h1[itemprop=summary] > a",
             "artists": ".bbox .grey | trim",
-            "place": "h1[itemprop=summary] > span > a",
+            "venue": "h1[itemprop=summary] > span > a",
             "date": "time",
             "attendees": ".attending > span"
           }

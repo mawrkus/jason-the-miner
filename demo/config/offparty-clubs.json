@@ -1,0 +1,30 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "http://offparty.com",
+      "url": "/clubs.php",
+      "headers": {
+        "Accept-Language": "en",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          ".singleton": {
+            "name": "h2",
+            "address": ".shp << regexp:(\\S+)",
+            "city": ".shp > a"
+          }
+        }
+      ]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demo/data/out/offparty-clubs.json"
+    }
+  }
+}

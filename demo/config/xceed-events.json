@@ -1,0 +1,48 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://xceed.me",
+      "url": "/events/barcelona",
+      "headers": {
+        "Accept-Language": "en",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          ".eventCard": {
+            "name": ".cardTitle",
+            "artists": "*[itemprop=performer] > *[itemprop=name] << attr:content",
+            "venue-name": ".cardVenue *[itemprop=name]",
+            "venue-address": ".cardVenue *[itemprop=streetAddress] << attr:content",
+            "venue-locality": "*[itemprop=addressLocality] << attr:content",
+            "startDate": ".cardDate *[itemprop=startDate] << attr:datetime",
+            "endDate": ".cardDate *[itemprop=endDate] << attr:content",
+            "music": ".cardMusic | trim",
+            "atmosphere": ".cardAtmosphere | trim"
+          }
+        },
+        {
+          "*[itemprop=performer]": {
+            "artist-name": "*[itemprop=name] << attr:content",
+            "artist-soudcloud": "*[itemprop=sameAs] << attr:href"
+          }
+        }
+      ]
+    }
+  },
+  "paginate": {
+    "next-link": {
+      "selector": "#moreLink",
+      "limit": 2
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demo/data/out/exceed-events.json"
+    }
+  }
+}

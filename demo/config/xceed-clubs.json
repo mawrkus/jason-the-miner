@@ -1,0 +1,49 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://xceed.me",
+      "url": "/clubs-in-barcelona",
+      "headers": {
+        "Accept-Language": "en",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          ".eventCard": {
+            "name": ".cardTitle",
+            "address": "*[itemprop=streetAddress] << attr:content",
+            "locality": "*[itemprop=addressLocality] << attr:content",
+            "music": ".cardMusic | trim",
+            "atmosphere": ".cardAtmosphere | trim"
+          }
+        },
+        {
+          "main": {
+            "club-name": "#info h1",
+            "club-location": "#info .location | trim",
+            "club-tags": "#tags > span",
+            "club-description": "#venue-desc",
+            "club-atmosphere": ".atmoOuter .tagsSecond | trim",
+            "club-door-policy": ".doorOuter .tagsSecond | trim"
+          }
+        }
+      ]
+    }
+  },
+  "paginate": {
+    "next-link": {
+      "selector": ".eventCardOuter > a",
+      "mode": "all",
+      "limit": "1"
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demo/data/out/exceed-clubs.json"
+    }
+  }
+}
