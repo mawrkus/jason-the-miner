@@ -22,14 +22,14 @@ jason.registerHelper({
 });
 
 const demoFiles = [
-  'github-search.json',
-  'goodreads-search.json',
-  'imdb/imdb-episodes.json',
-  'imdb/imdb-top250.json',
+  // 'github-search.json',
+  // 'goodreads-search.json',
+  'imdb/imdb-serie.json',
+  // 'imdb/imdb-top250.json',
   // $ npm run demo:debug < demo/data/in/imdb-top250.html
   // 'imdb/imdb-top250-file.json',
   // 'mixcloud-stats.json',
-  'npm-starred.json',
+  // 'npm-starred.json',
   // 'spotify-search.json',
   // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demo:debug
   // 'wikia-characters.json',
@@ -53,24 +53,9 @@ const demoSequenceP = demoFiles.reduce((previousP, file) => {
 }, Promise.resolve());
 
 demoSequenceP
-  .then(() => {
-    const file = 'npm-starred.json';
-    spinner.start().text = `Launching again "${file}" demo...`;
-    const demoPath = path.join(process.cwd(), 'demo/config', file);
-    return jason.loadConfig(demoPath);
-  })
-  .then(() => {
-    const transform = {
-      "tpl": {
-        "templatePath": "demo/data/in/npm-starred.md.tpl",
-        "outputPath": "demo/data/out/npm-starred.md"
-      }
-    };
-    return jason.harvest({ transform });
-  })
-  .then(() => {
+  .then((a) => {
     spinner.succeed();
-    console.log('\nAll done! :D');
+    console.log('\nAll done! :D', a);
   })
   .catch(error => {
     spinner.fail();
