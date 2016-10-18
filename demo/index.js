@@ -24,13 +24,13 @@ jason.registerHelper({
 const demoFiles = [
   'github-search.json',
   'goodreads-search.json',
-  'imdb-episodes.json',
-  // $ npm run debug < demo/data/in/IMDbTop250.html
-  // 'imdb-top250-csv.json',
-  'imdb-top250-file.json',
+  'imdb/imdb-episodes.json',
+  'imdb/imdb-top250.json',
+  // $ npm run demo:debug < demo/data/in/imdb-top250.html
+  // 'imdb/imdb-top250-file.json',
   // 'mixcloud-stats.json',
   'npm-starred.json',
-  'spotify-search.json',
+  // 'spotify-search.json',
   // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demo:debug
   // 'wikia-characters.json',
 ];

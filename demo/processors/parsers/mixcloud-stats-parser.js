@@ -14,10 +14,10 @@ class MixCloudStatsParser {
   }
 
   run(html) {
-    return this._htmlParser.run(html).then(results => {
-      const plays = results.map(curr => curr.plays).join('/');
+    return this._htmlParser.run(html).then(({ mixes }) => {
+      const plays = mixes.map(curr => curr.plays).join('/');
       const subject = `🎧 Mixcloud stats → ${plays}`;
-      const listItems = results.reduce((acc, mix) => `${acc}<li>${mix.name} → <b>${mix.plays}</b> plays (${mix.pubDate})</li>`, '');
+      const listItems = mixes.reduce((acc, mix) => `${acc}<li>${mix.name} → <b>${mix.plays}</b> plays (${mix.pubDate})</li>`, '');
       const body = `<ol>${listItems}</ol>`;
       return { subject, body };
     });

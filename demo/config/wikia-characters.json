@@ -6,9 +6,7 @@
     "html": {
       "schemas": [
         {
-          "#mw-pages table li": {
-            "character": "a"
-          }
+          "characters": "#mw-pages table li a"
         }
       ]
     }

@@ -1,14 +1,18 @@
 {
   "load": {
+    "file": {
+      "path": "demo/data/in/imdb-top250.html"
+    },
     "stdin": {}
   },
   "parse": {
     "html": {
       "schemas": [
         {
-          ".lister-list > tr": {
+          "movies": {
+            "_$": ".lister-list > tr",
             "🎥 title": ".titleColumn > a | trim",
-            "📅 year": ".secondaryInfo << regexp:[0123456789]+",
+            "📅 year": ".secondaryInfo << regexp:(\\d+)",
             "⭐ rating": ".ratingColumn > strong",
             "👥 crew": ".titleColumn > a << attr:title"
           }

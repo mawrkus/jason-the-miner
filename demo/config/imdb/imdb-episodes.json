@@ -12,7 +12,15 @@
     "html": {
       "schemas": [
         {
-          ".eplist .list_item": {
+          "titles": {
+            "_$": ".article.listo.list",
+            "serie": ".subpage_title_block h3 a",
+            "season": "#episode_top"
+          }
+        },
+        {
+          "episodes": {
+            "_$": ".eplist .list_item",
             "number": ".hover-over-image > div",
             "title": ".info a[itemprop=name]",
             "air date": ".info .airdate | trim",
@@ -25,7 +33,7 @@
   "paginate": {
     "next-link": {
       "selector": "a#load_next_episodes",
-      "limit": 1
+      "limit": 100
     }
   },
   "transform": {

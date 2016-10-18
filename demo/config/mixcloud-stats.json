@@ -12,7 +12,8 @@
     "mixcloud-stats": {
       "schemas": [
         {
-          ".card-elements-container": {
+          "mixes": {
+            "_$": ".card-elements-container",
             "name": ".card-cloudcast-title span << attr:title",
             "plays": ".card-plays",
             "pubDate": ".card-date > time"

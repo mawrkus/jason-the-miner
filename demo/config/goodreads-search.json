@@ -11,11 +11,11 @@
     "html": {
       "schemas": [
         {
-          ".quoteDetails": {
-            "quote": ".quoteText << regexp:([^―]+) | trim",
+          "quotes": {
+            "_$": ".quoteDetails",
+            "text": ".quoteText << regexp:([^―]+) | trim",
             "author": ".quoteText > .authorOrTitle",
-            "tags": ".quoteFooter .left a",
-            "tags-uri": ".quoteFooter .left a << attr:href"
+            "tags": ".quoteFooter .left a"
           }
         }
       ]
@@ -23,7 +23,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demo/data/out/goodreads.json"
+      "path": "demo/data/out/goodreads-quotes.json"
     }
   }
 }

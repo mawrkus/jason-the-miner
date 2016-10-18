@@ -9,21 +9,19 @@
     "html": {
       "schemas": [
         {
-          ".repo-list-item": {
+          "repos": {
+            "_$": ".repo-list-item",
             "name": ".repo-list-name > a",
             "description": ".repo-list-description | trim",
             "last-update": ".repo-list-meta relative-time",
-            "⭐": "a[aria-label=Stargazers] | trim"
+            "stats": {
+              "_$": ".repo-list-stats",
+              "⭐": "a[aria-label=Stargazers] | trim",
+              "forks": "a[aria-label=Forks] | trim"
+            }
           }
         }
       ]
-    }
-  },
-  "paginate": {
-    "next-link": {
-      "selector": ".pagination a",
-      "mode": "all",
-      "limit": 4
     }
   },
   "transform": {

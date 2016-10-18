@@ -8,14 +8,16 @@
     "url-param": {
       "param": "offset",
       "inc": 36,
-      "limit": 2
+      "limit": 4,
+      "mode": "parallel"
     }
   },
   "parse": {
     "html": {
       "schemas": [
         {
-          ".package-details": {
+          "packages": {
+            "_$": ".package-details",
             "name": ".name",
             "version": ".version",
             "description": ".description",

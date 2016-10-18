@@ -22,7 +22,8 @@
     "json": {
       "schemas": [
         {
-          "artists.items": {
+          "artists": {
+            "_$": "artists.items",
             "name": "name",
             "popularity": "popularity",
             "image": "x-images[1].url"
