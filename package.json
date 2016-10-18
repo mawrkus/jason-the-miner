@@ -14,14 +14,17 @@
   },
   "keywords": [
     "web",
-    "scraper",
+    "html",
     "scrape",
-    "harvester",
+    "scraper",
+    "scraping",
     "crawler",
+    "harvester",
     "data extraction",
     "data grabbing",
     "data harvesting",
-    "content extraction"
+    "content extraction",
+    "cheerio"
   ],
   "main": "lib/jason-the-miner.js",
   "bin": "bin/jason-the-miner.js",
