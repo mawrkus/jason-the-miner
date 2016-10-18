@@ -250,7 +250,7 @@ An example combining both:
 
 - `json-file`: writes the results to a JSON file. Options: `path`.
 - `csv-file`: uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same configuration options, as well as `path`.
-- `stdout`: writes the results to stdout. Options: -.
+- `stdout`: writes the results to stdout. Options: `encoding`.
 
 ### Paginators
 
