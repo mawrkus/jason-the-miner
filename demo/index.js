@@ -24,7 +24,7 @@ jason.registerHelper({
 const demoFiles = [
   // 'github-search.json',
   // 'goodreads-search.json',
-  'imdb/imdb-serie.json',
+  // 'imdb/imdb-serie.json',
   // 'imdb/imdb-top250.json',
   // $ npm run demo:debug < demo/data/in/imdb-top250.html
   // 'imdb/imdb-top250-file.json',
