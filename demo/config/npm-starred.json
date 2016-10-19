@@ -1,15 +1,15 @@
 {
   "load": {
     "http": {
-      "url": "https://www.npmjs.com/browse/star"
+      "url": "https://www.npmjs.com/browse/star",
+      "rps": 1
     }
   },
   "paginate": {
     "url-param": {
       "param": "offset",
       "inc": 36,
-      "limit": 4,
-      "mode": "parallel"
+      "limit": 4
     }
   },
   "parse": {

@@ -14,8 +14,7 @@
     "url-param": {
       "param": "offset",
       "inc": 25,
-      "limit": 4,
-      "mode": "parallel"
+      "limit": 4
     }
   },
   "parse": {
