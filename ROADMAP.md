@@ -1,12 +1,9 @@
 ## ⛏ Roadmap
 
-- Update JSON parser
-- Review pagination
-- Update parties configs
-- HTML/JSON parsers: .on('name') + cancelable?
 - Demos: create META config > https://github.com/ianstormtaylor/metascraper
 - Doc: add no JS > no client-side-rendered pages
-- Doc: refs > add https://github.com/eeshi/node-scrapy
+- Update parties configs
+- HTML/JSON parsers: .on('name') + cancelable?
 - Check example: http://developer.telerik.com/featured/spying-on-james-bond-with-node-js/
 - Tests
 

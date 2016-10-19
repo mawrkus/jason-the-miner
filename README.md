@@ -2,7 +2,7 @@
  [![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
 ![Node version](https://img.shields.io/node/v/jason-the-miner.svg?style=flat-square)
 
-Harvesting data at the html mine... Jason the Miner, a versatile Web scraper for Node.js.
+Harvesting data at the HTML mine... Jason the Miner, a versatile Web scraper for Node.js.
 
 ## ⛏ Features
 
@@ -20,35 +20,65 @@ Harvesting data at the html mine... Jason the Miner, a versatile Web scraper for
 
 - **Promise-based API**.
 
+- **MIT-licensed**.
+
 ## ⛏ Installation
 
 ```shell
 $ npm install -g jason-the-miner
 ```
 
-## ⛏ Examples
+## ⛏ Usage
 
-#### CLI
+#### CLI example
 
 Let's find the most starred Javascript scrapers from GitHub:
 
-- a. Create the *github-config.json* config file:
+*github-config.json*:
+
+```json
+{
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "repos": {
+            "_$": ".repo-list-item",
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+          }
+        }
+      ]
+    }
+  },
+}
+```
+
+```shell
+$ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories&s=stars&o=desc | jason-the-miner -c github-config.json > github-repos.json
+
+cat ./github-repos.json
+```
+
+- Or without pipes & redirections:
+
+*github-config.json*:
 
 ```json
 {
   "load": {
     "http": {
-      "url": "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+      "url": "https://github.com/search?q=scraper&l=JavaScript&type=Repositories&s=stars&o=desc"
     }
   },
   "parse": {
     "html": {
       "schemas": [
         {
-          ".repo-list-item": {
+          "repos": {
+            "_$": ".repo-list-item",
             "name": ".repo-list-name > a",
             "description": ".repo-list-description | trim",
-            "⭐": "a[aria-label=Stargazers] | trim"
           }
         }
       ]
@@ -62,41 +92,11 @@ Let's find the most starred Javascript scrapers from GitHub:
 }
 ```
 
-- b. Execute this shell command:
-
 ```shell
 $ jason-the-miner -c github-config.json
 ```
 
-- c. Check the results in *github-repos.json*.
-
-Or alternatively, using pipes & redirections:
-
-*github-config.json*:
-
-```json
-{
-  "parse": {
-    "html": {
-      "schemas": [
-        {
-          ".repo-list-item": {
-            "name": ".repo-list-name > a",
-            "description": ".repo-list-description | trim",
-            "⭐": "a[aria-label=Stargazers] | trim"
-          }
-        }
-      ]
-    }
-  }
-}
-```
-
-```shell
-$ curl https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories | jason-the-miner -c github-config.json > github-repos.json
-```
-
-#### API
+#### API example
 
 ```js
 const JasonTheMiner = require('jason-the-miner');
@@ -104,19 +104,14 @@ const JasonTheMiner = require('jason-the-miner');
 const jason = new JasonTheMiner();
 
 jason.configure({
-  load: {
-    http: {
-      url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
-    }
-  },
   parse: {
     html: {
       schemas: [
         {
-          ".repo-list-item": {
-            "name": ".repo-list-name > a",
-            "description": ".repo-list-description | trim",
-            "⭐": "a[aria-label=Stargazers] | trim"
+          repos: {
+            _$: ".repo-list-item",
+            name: ".repo-list-name > a",
+            description: ".repo-list-description | trim",
           }
         }
       ]
@@ -124,10 +119,22 @@ jason.configure({
   }
 });
 
-jason.harvest().then(results => console.log(results));
+const load = {
+  http: {
+    url: "https://github.com/search?q=scraper",
+    params: {
+      l: JavaScript,
+      type: Repositories
+      s: stars,
+      o: desc
+    }
+  }
+};
+
+jason.harvest({ load }).then(results => console.log(results));
 ```
 
-## ⛏ Config file
+## ⛏ The config file
 
 ```js
 {
@@ -158,15 +165,14 @@ jason.harvest().then(results => console.log(results));
 
 Jason the Miner comes with 3 built-in loaders:
 
-- `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same configuration options.  
+- `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same options (including headers, proxy, etc.). You can also limit the number of requests per second via `_rps` (see "Paginators" below).
 - `file`: reads the content of a file. Options: `path`.
 - `stdin`: reads the content from the standard input. Options: `encoding`.
 
 ### Parsers
 
-There's a single built-in parser:
-
 - `html`: uses [Cheerio](https://github.com/cheeriojs/cheerio) as HTML parser. Options: `schemas`.
+- `json`: uses [lodash.get](https://lodash.com/docs/4.16.4#get) as JSON parser. Options: `schemas`.
 
 #### Schemas definition
 
@@ -175,11 +181,17 @@ There's a single built-in parser:
   "html": {
     "schemas": [
       {
-        ".repo-list-item": {
+        "repos": {
+          "_$": ".repo-list-item",
+          "_slice": "0,5",
           "name": ".repo-list-name > a",
           "description": ".repo-list-description | trim",
           "last-update": ".repo-list-meta relative-time",
-          "⭐": "a[aria-label=Stargazers] | trim"
+          "stats": {
+            "_$": ".repo-list-stats",
+            "⭐": "a[aria-label=Stargazers] | trim",
+            "forks": "a[aria-label=Forks] | trim"
+          }
         }
       }
     ]
@@ -187,27 +199,38 @@ There's a single built-in parser:
 ...
 ```
 
-A schema is just a plain object that associates a selector (`.repo-list-item`) to the definition of the parts that you want to extract.
-Jason will find all the elements that match the selector & for each one of them, it will extract all the parts defined.
+A schema is just a plain object that defines:
 
-Jason also supports multiple schemas:
+- the name of the collection of elements you want to extract: `repos`,
+- the selector **_$** to find those elements: `.repo-list-item`,
+- for each element found:
+  - the properties to extract (`name`, `description`, ...) and
+  - how to extract each of them: the selector to use, as well as an optional extractor and/or filter (see "Parse helpers below")
+- you can also limit the number of elements with the **_slice** option
+
+The definition is *recursive*. Inception-style, without limits.
+
+Jason also supports *multiple* schemas:
 
 ```json
 ...
   "html": {
     "schemas": [
       {
-        "head": {
-          "page-title": "title"
-        }
-      },
-      {
-        ".repo-list-item": {
+        "repos": {
+          "_$": ".repo-list-item",
           "name": ".repo-list-name > a",
           "description": ".repo-list-description | trim",
           "last-update": ".repo-list-meta relative-time",
-          "⭐": "a[aria-label=Stargazers] | trim"
+          "stats": {
+            "_$": ".repo-list-stats",
+            "⭐": "a[aria-label=Stargazers] | trim",
+            "forks": "a[aria-label=Forks] | trim"
+          }
         }
+      },
+      {
+        "metas": "meta[property] << attr:property"
       }
     ]
   }
@@ -216,10 +239,10 @@ Jason also supports multiple schemas:
 
 ##### Parse helpers
 
-You can customize the extraction of the parts values:
+You can define how to extract a property value using this syntax:
 
 ```
-[part name]: [part selector] << [extractor] | [filter]
+[property name]: [selector] << [extractor] | [filter]
 ```
 
 Jason has 4 built-in **extractors** (`text` by default):
@@ -229,9 +252,10 @@ Jason has 4 built-in **extractors** (`text` by default):
 - `attr:[attribute name]`
 - `regexp:[regexp string]`
 
-And 1 built-in **filter**:
+And 2 built-in **filter**:
 
 - `trim`
+- `digits`
 
 An example combining both:
 
@@ -239,7 +263,7 @@ An example combining both:
 ...
   ".lister-list > tr": {
     "🎥 title": ".titleColumn > a | trim",
-    "📅 year": ".secondaryInfo << regexp:[0123456789]+",
+    "📅 year": ".secondaryInfo << regexp:(\\d+)",
     "⭐ rating": ".ratingColumn > strong",
     "👥 crew": ".titleColumn > a << attr:title | trim"
   }
@@ -248,32 +272,33 @@ An example combining both:
 
 ### Transformers
 
-- `json-file`: writes the results to a JSON file. Options: `path`.
-- `csv-file`: uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same configuration options, as well as `path`.
 - `stdout`: writes the results to stdout. Options: `encoding`.
+- `json-file`: writes the results to a JSON file. Options: `path`.
+- `csv-file`: uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same configuration options, as well as `path`. If multiple schemas are defined, one file per schema will be created. The name of the schema will be appended to the name of the file.
 
 ### Paginators
 
-- `next-link`: follows the "next" link. Options: `selector`, `limit` & `mode` ("single" or "all").
-- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit` & `mode` ("sequential" or "parallel").
+- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit`.
+- `follow-link`: follows a single or more links. Options: `selector`, `limit` & `mode` ("single" or "all").
 
 Examples:
 
 ```json
 ...
-  "next-link": {
-    "selector": "a#load_next_episodes",
-    "limit": 20
-  }
+"url-param": {
+  "param": "p",
+  "inc": 1,
+  "limit": 3
+}
 ...
 ```
 
 ```json
 ...
-  "url-param": {
-    "param": "p",
-    "inc": 1,
-    "limit": 3
+  "follow-link": {
+    "selector": ".episode",
+    "mode": "all",
+    "limit": 2
   }
 ...
 ```
@@ -286,11 +311,6 @@ Examples:
 
 ```js
 jason.configure({
-  load: {
-    http: {
-      url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
-    }
-  },
   parse: {
     html: {
       schemas: [
@@ -302,6 +322,14 @@ jason.configure({
           }
         }
       ]
+    }
+  }
+});
+
+jason.configure({
+  load: {
+    http: {
+      url: "https://github.com/search?q=scraper&l=Go&type=Repositories"
     }
   }
 });
@@ -317,18 +345,31 @@ jason.loadConfig('./harvest-me.json');
 
 ### harvest({ load, parse, output, pagination } = {})
 
-Launches the process. Optional options can be passed to override the current config.
+Launches the process. Options can be passed to override the current config.
 
 ```js
 jason.loadConfig('./harvest-me.json')
   .then(() => jason.harvest({
     load: {
       http: {
-        url: "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+        url: "https://github.com/search?q=scraper&l=Python&type=Repositories"
       }
     }
   }))
   .catch(error => console.error(error));
+```
+
+##### registerHelper({ category, name, helper })
+
+Register a parse helpers in one of the 2 categories: `extract` or `filter`.
+`helper` must be a function.
+
+```js
+jason.registerHelper({
+  category: 'filter',
+  name: 'remove-protocol',
+  helper: text => text.replace(/^https?:/, '')
+});
 ```
 
 ##### registerProcessor({ category, name, processor })
@@ -359,7 +400,7 @@ class Emailer {
 ```
 
 In order to enable pagination, loaders & parsers **must also implement** the `getRunContext` method.
-For instance, the `html` parser returns the Cheerio object that allows the `next-link` paginator to search for the next URL:
+For instance, the `html` parser returns the Cheerio object that allows the `follow-link` paginator to search for the next URL:
 
 ```js
 class HtmlParserEmailer {
@@ -385,7 +426,7 @@ class HtmlParserEmailer {
   // ...
 }
 
-class NextLinkPaginator {
+class FollowLinkPaginator {
   // ...
   //
   run({ loaderRunContext, parserRunContext } = {}) {
@@ -396,19 +437,6 @@ class NextLinkPaginator {
 
   // ...
 }
-```
-
-##### registerHelper({ category, name, helper })
-
-Register a parse helpers in one of the 2 categories: `extract` or `filter`.
-`helper` must be a function.
-
-```js
-jason.registerHelper({
-  category: 'filter',
-  name: 'remove-protocol',
-  helper: text => text.replace(/^https?:/, '')
-});
 ```
 
 ## ⛏ Recipes
@@ -432,6 +460,7 @@ $ npm i && npm run demo
 
 - Web Scraping With Node.js: https://www.smashingmagazine.com/2015/04/web-scraping-with-nodejs/
 - X-ray, The next web scraper. See through the <html> noise: https://github.com/lapwinglabs/x-ray
+- Simple, lightweight and expressive web scraping with Node.js: https://github.com/eeshi/node-scrapy
 - Node.js Scraping Libraries: http://blog.webkid.io/nodejs-scraping-libraries/
 - https://www.scrapesentry.com/scraping-wiki/web-scraping-legal-or-illegal/
 - http://blog.icreon.us/web-scraping-and-you-a-legal-primer-for-one-of-its-most-useful-tools/
