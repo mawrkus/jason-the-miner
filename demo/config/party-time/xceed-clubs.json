@@ -35,7 +35,7 @@
     }
   },
   "paginate": {
-    "next-link": {
+    "follow-link": {
       "selector": ".eventCardOuter > a",
       "mode": "all",
       "limit": "1"
