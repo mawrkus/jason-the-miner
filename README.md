@@ -117,12 +117,13 @@ jason.configure({
 
 const load = {
   http: {
-    url: "https://github.com/search?q=scraper",
+    url: "https://github.com/search",
     params: {
-      l: JavaScript,
-      type: Repositories
-      s: stars,
-      o: desc
+      q: "scraper",
+      l: "JavaScript",
+      type: "Repositories",
+      s: "stars",
+      o: "desc"
     }
   }
 };
@@ -241,9 +242,9 @@ You can define how to extract a property value using this syntax:
 [property name]: [selector] < [extractor] | [filter]
 ```
 
-Jason has 4 built-in **extractors** (`text` by default):
+Jason has 4 built-in **extractors**:
 
-- `text`
+- `text` (by default)
 - `html`
 - `attr:[attribute name]`
 - `regexp:[regexp string]`
@@ -403,6 +404,25 @@ class Emailer {
     // must be implemented.
   }
 }
+
+jason.configure({
+  transform: {
+    email: {
+      "smtp": {
+        "host": "host",
+        "port": 1337,
+        "secure": true,
+        "auth": {
+          "user": "user",
+          "pass": "pass"
+        }
+      },
+      "from": "\"⛏ Jason the Miner\" <jason@mine.org>",
+      "to": "jack@ripper.biz",
+      "subject": "Check this out..."
+    }
+  }
+});
 ```
 
 In order to enable pagination, loaders & parsers **must also implement** the `getRunContext` method.
