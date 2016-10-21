@@ -165,7 +165,7 @@ jason.harvest({ load }).then(results => console.log(results));
 
 Jason the Miner comes with 3 built-in loaders:
 
-- `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same options (including headers, proxy, etc.). You can also limit the number of requests per second via `_rps` (see "Paginators" below).
+- `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same options (including "headers", "proxy", etc.).
 - `file`: reads the content of a file. Options: `path`.
 - `stdin`: reads the content from the standard input. Options: `encoding`.
 
@@ -278,8 +278,10 @@ An example combining both:
 
 ### Paginators
 
-- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit`.
-- `follow-link`: follows a single or more links. Options: `selector`, `limit` & `mode` ("single" or "all").
+- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit` & `rps`.
+- `follow-link`: follows a single or more links. Options: `selector`, `limit`, `mode` ("single" or "all") & `rps`.
+
+The `rps` option limits the number of requests par second.
 
 Examples:
 
@@ -288,20 +290,26 @@ Examples:
 "url-param": {
   "param": "p",
   "inc": 1,
-  "limit": 3
+  "limit": 99,
+  "rps": 10
 }
 ...
 ```
 
+Will result in 100 requests, incrementing the "p" parameter by 1 from one request to the next one.
+
 ```json
 ...
   "follow-link": {
-    "selector": ".episode",
+    "selector": "episode",
+    "slice": "0,3",
     "mode": "all",
-    "limit": 2
+    "limit": 1
   }
 ...
 ```
+
+Will create 3 requests, from the href attributes of the 3 first ".episode" links.
 
 ## ⛏ API
 
