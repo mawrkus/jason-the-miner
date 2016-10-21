@@ -37,7 +37,7 @@
   "paginate": {
     "follow-link": {
       "selector": "#moreLink",
-      "limit": 2
+      "limit": 1
     }
   },
   "transform": {

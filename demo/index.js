@@ -22,15 +22,15 @@ jason.registerHelper({
 });
 
 const demoFiles = [
-  // 'github-search.json',
-  // 'goodreads-search.json',
-  // 'imdb/imdb-serie.json',
-  // 'imdb/imdb-top250.json',
+  'imdb/imdb-serie.json',
+  'imdb/imdb-top250.json',
+  'github-search.json',
+  'goodreads-search.json',
+  'npm-starred.json',
+  'spotify-search.json',
   // $ npm run demo:debug < demo/data/in/imdb-top250.html
-  // 'imdb/imdb-top250-file.json',
+  // 'imdb/imdb-top250.json',
   // 'mixcloud-stats.json',
-  // 'npm-starred.json',
-  // 'spotify-search.json',
   // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demo:debug
   // 'wikia-characters.json',
 ];
@@ -53,9 +53,9 @@ const demoSequenceP = demoFiles.reduce((previousP, file) => {
 }, Promise.resolve());
 
 demoSequenceP
-  .then((a) => {
+  .then(() => {
     spinner.succeed();
-    console.log('\nAll done! :D', a);
+    console.log('\nAll done! :D');
   })
   .catch(error => {
     spinner.fail();

@@ -37,8 +37,8 @@
     }
   },
   "transform": {
-    "csv-file": {
-      "path": "demo/data/out/imdb-serie.csv"
+    "json-file": {
+      "path": "demo/data/out/imdb-serie.json"
     }
   }
 }

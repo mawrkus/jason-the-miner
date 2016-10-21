@@ -23,12 +23,6 @@
       ]
     }
   },
-  "-paginate": {
-    "follow-link": {
-      "selector": "a#load_next_episodes",
-      "limit": 1
-    }
-  },
   "transform": {
     "json-file": {
       "path": "demo/data/out/ra-events.json"

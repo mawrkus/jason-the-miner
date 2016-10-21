@@ -38,7 +38,8 @@
     "follow-link": {
       "selector": ".eventCardOuter > a",
       "mode": "all",
-      "limit": "1"
+      "limit": "1",
+      "rps": 10
     }
   },
   "transform": {
