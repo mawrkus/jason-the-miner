@@ -13,22 +13,24 @@
     "html": {
       "schemas": [
         {
-          ".eventCard": {
+          "clubs": {
+            "_$": ".eventCard",
             "name": ".cardTitle",
-            "address": "*[itemprop=streetAddress] << attr:content",
-            "locality": "*[itemprop=addressLocality] << attr:content",
-            "music": ".cardMusic | trim",
-            "atmosphere": ".cardAtmosphere | trim"
+            "address": "*[itemprop=streetAddress] < attr:content",
+            "locality": "*[itemprop=addressLocality] < attr:content",
+            "music": ".cardMusic | single-space",
+            "atmosphere": ".cardAtmosphere | single-space"
           }
         },
         {
-          "main": {
-            "club-name": "#info h1",
-            "club-location": "#info .location | trim",
-            "club-tags": "#tags > span",
-            "club-description": "#venue-desc",
-            "club-atmosphere": ".atmoOuter .tagsSecond | trim",
-            "club-door-policy": ".doorOuter .tagsSecond | trim"
+          "club-details": {
+            "_$": "main",
+            "name": "#info h1",
+            "location": "#info .location | trim",
+            "tags": "#tags > span",
+            "description": "#venue-desc",
+            "atmosphere": ".atmoOuter .tagsSecond | single-space",
+            "door-policy": ".doorOuter .tagsSecond | single-space"
           }
         }
       ]

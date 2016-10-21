@@ -14,20 +14,21 @@
     "html": {
       "schemas": [
         {
-          "main ul.content-list li section.content.clearfix div.plus8 div.fl.col4-6 ul ul li.clearfix": {
-            "club": "div.fl a | trim",
+          "clubs": {
+            "_$": "main ul.content-list li section.content.clearfix div.plus8 div.fl.col4-6 ul ul li.clearfix",
+            "name": "div.fl a | trim",
             "location": "div.fl.grey.mobile-off | trim",
-            "club-url": "div.fl a << attr:href",
-            "club-id": "div.fl a << attr:href | digits"
+            "id": "div.fl a < attr:href"
           }
         },
         {
-          "html": {
-            "club-name": "title << regexp:RA:(.+)- Barcelona nightclub | trim",
+          "clubs-details": {
+            "_$": "html",
+            "name": "title < regexp:RA:(.+)- Barcelona nightclub | trim",
             "address": "#detail li:nth-child(1) span[itemprop=street-address] | trim",
-            "details-2": "#detail li:nth-child(2) << html",
-            "details-3": "#detail li:nth-child(3) << html",
-            "details-4": "#detail li:nth-child(4) << html"
+            "details-2": "#detail li:nth-child(2) < html",
+            "details-3": "#detail li:nth-child(3) < html",
+            "details-4": "#detail li:nth-child(4) < html"
           }
         }
       ]

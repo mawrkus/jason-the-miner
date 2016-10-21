@@ -14,7 +14,7 @@
         {
           "mixes": {
             "_$": ".card-elements-container",
-            "name": ".card-cloudcast-title span << attr:title",
+            "name": ".card-cloudcast-title span < attr:title",
             "plays": ".card-plays",
             "pubDate": ".card-date > time"
           }

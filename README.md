@@ -230,7 +230,7 @@ Jason also supports *multiple* schemas:
         }
       },
       {
-        "metas": "meta[property] << attr:property"
+        "metas": "meta[property] < attr:property"
       }
     ]
   }
@@ -242,7 +242,7 @@ Jason also supports *multiple* schemas:
 You can define how to extract a property value using this syntax:
 
 ```
-[property name]: [selector] << [extractor] | [filter]
+[property name]: [selector] < [extractor] | [filter]
 ```
 
 Jason has 4 built-in **extractors** (`text` by default):
@@ -263,9 +263,9 @@ An example combining both:
 ...
   ".lister-list > tr": {
     "🎥 title": ".titleColumn > a | trim",
-    "📅 year": ".secondaryInfo << regexp:(\\d+)",
+    "📅 year": ".secondaryInfo < regexp:(\\d+)",
     "⭐ rating": ".ratingColumn > strong",
-    "👥 crew": ".titleColumn > a << attr:title | trim"
+    "👥 crew": ".titleColumn > a < attr:title | trim"
   }
 ...
 ```

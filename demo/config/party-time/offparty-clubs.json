@@ -1,5 +1,8 @@
 {
   "load": {
+    "file": {
+      "path": "demo/data/in/offparty-clubs.html"
+    },
     "http": {
       "baseURL": "http://offparty.com",
       "url": "/clubs.php",
@@ -13,9 +16,10 @@
     "html": {
       "schemas": [
         {
-          ".singleton": {
+          "clubs": {
+            "_$": ".singleton",
             "name": "h2",
-            "address": ".shp << regexp:(\\S+)",
+            "address": ".shp < html",
             "city": ".shp > a"
           }
         }

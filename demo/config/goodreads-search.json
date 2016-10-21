@@ -13,7 +13,7 @@
         {
           "quotes": {
             "_$": ".quoteDetails",
-            "text": ".quoteText << regexp:([^―]+) | trim",
+            "text": ".quoteText < regexp:([^―]+) | trim",
             "author": ".quoteText > .authorOrTitle",
             "tags": ".quoteFooter .left a"
           }

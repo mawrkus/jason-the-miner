@@ -12,9 +12,9 @@
           "movies": {
             "_$": ".lister-list > tr",
             "🎥 title": ".titleColumn > a | trim",
-            "📅 year": ".secondaryInfo << regexp:(\\d+)",
+            "📅 year": ".secondaryInfo < regexp:(\\d+)",
             "⭐ rating": ".ratingColumn > strong",
-            "👥 crew": ".titleColumn > a << attr:title"
+            "👥 crew": ".titleColumn > a < attr:title"
           }
         }
       ]

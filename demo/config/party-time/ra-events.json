@@ -12,7 +12,8 @@
     "html": {
       "schemas": [
         {
-          ".event-item": {
+          "events": {
+            "_$": ".event-item",
             "name": "h1[itemprop=summary] > a",
             "artists": ".bbox .grey | trim",
             "venue": "h1[itemprop=summary] > span > a",

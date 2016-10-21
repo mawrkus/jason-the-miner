@@ -13,22 +13,24 @@
     "html": {
       "schemas": [
         {
-          ".eventCard": {
+          "events": {
+            "_$": ".eventCard",
             "name": ".cardTitle",
-            "artists": "*[itemprop=performer] > *[itemprop=name] << attr:content",
-            "venue-name": ".cardVenue *[itemprop=name]",
-            "venue-address": ".cardVenue *[itemprop=streetAddress] << attr:content",
-            "venue-locality": "*[itemprop=addressLocality] << attr:content",
-            "startDate": ".cardDate *[itemprop=startDate] << attr:datetime",
-            "endDate": ".cardDate *[itemprop=endDate] << attr:content",
-            "music": ".cardMusic | trim",
-            "atmosphere": ".cardAtmosphere | trim"
+            "artists": "*[itemprop=performer] > *[itemprop=name] < attr:content",
+            "venue": ".cardVenue *[itemprop=name]",
+            "address": ".cardVenue *[itemprop=streetAddress] < attr:content",
+            "locality": "*[itemprop=addressLocality] < attr:content",
+            "startDate": ".cardDate *[itemprop=startDate] < attr:datetime",
+            "endDate": ".cardDate *[itemprop=endDate] < attr:content",
+            "music": ".cardMusic | single-space",
+            "atmosphere": ".cardAtmosphere | single-space"
           }
         },
         {
-          "*[itemprop=performer]": {
-            "artist-name": "*[itemprop=name] << attr:content",
-            "artist-soudcloud": "*[itemprop=sameAs] << attr:href"
+          "soundclouds": {
+            "_$": "*[itemprop=performer]",
+            "artist": "*[itemprop=name] < attr:content",
+            "url": "*[itemprop=sameAs] < attr:href"
           }
         }
       ]

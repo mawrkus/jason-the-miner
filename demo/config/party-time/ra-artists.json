@@ -13,9 +13,7 @@
     "html": {
       "schemas": [
         {
-          ".content-list span a": {
-            "artist": "| trim"
-          }
+          "artist": ".content-list span a | trim"
         }
       ]
     }
