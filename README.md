@@ -455,7 +455,7 @@ $ cd jason-the-miner
 To launch all the demos:
 
 ```shell
-$ npm i && npm run demo
+$ npm install && npm run demo
 ```
 
 ## ⛏ References & related links
