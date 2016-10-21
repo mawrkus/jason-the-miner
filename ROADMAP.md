@@ -1,8 +1,9 @@
 ## ⛏ Roadmap
 
+- Rgexp filter: allow (a|b), fix conflict with filter
 - Demos: create META config > https://github.com/ianstormtaylor/metascraper
 - Doc: add no JS > no client-side-rendered pages
-- Update parties configs
+- Update freedonia configs
 - HTML/JSON parsers: .on('name') + cancelable?
 - Check example: http://developer.telerik.com/featured/spying-on-james-bond-with-node-js/
 - Tests
