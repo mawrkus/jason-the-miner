@@ -299,7 +299,7 @@ Will result in 100 requests, incrementing the "p" parameter by 1 from one reques
 ```js
 ...
   "follow-link": {
-    "selector": "episode",
+    "selector": "a.episode",
     "slice": "0,3",
     "mode": "all",
     "limit": 1
