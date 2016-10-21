@@ -11,7 +11,6 @@ Harvesting data at the HTML mine... Jason the Miner, a versatile Web scraper for
   2. `parsers`, to parse the data & extract the relevant parts according to a predefined schema
   3. `transformers`: to transform and/or output the results (to a file, via email, ...)
   4. `paginators`: optional, to establish a strategy when scraping multiple pages (follow the "next" link, ...)
-
 - **Configurable:** each processor can be chosen & configured independently.
 - **Extensible:** new processors can be registered.
 - **CLI-friendly:** Jason the Miner works well with pipes & redirections.
