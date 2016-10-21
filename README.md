@@ -13,13 +13,9 @@ Harvesting data at the HTML mine... Jason the Miner, a versatile Web scraper for
   4. `paginators`: optional, to establish a strategy when scraping multiple pages (follow the "next" link, ...)
 
 - **Configurable:** each processor can be chosen & configured independently.
-
 - **Extensible:** new processors can be registered.
-
 - **CLI-friendly:** Jason the Miner works well with pipes & redirections.
-
 - **Promise-based API**.
-
 - **MIT-licensed**.
 
 ## ⛏ Installation
@@ -30,41 +26,12 @@ $ npm install -g jason-the-miner
 
 ## ⛏ Usage
 
-#### CLI example
+#### CLI usage example
 
 Let's find the most starred Javascript scrapers from GitHub:
 
 *github-config.json*:
-
-```json
-{
-  "parse": {
-    "html": {
-      "schemas": [
-        {
-          "repos": {
-            "_$": ".repo-list-item",
-            "name": ".repo-list-name > a",
-            "description": ".repo-list-description | trim",
-          }
-        }
-      ]
-    }
-  },
-}
-```
-
-```shell
-$ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories&s=stars&o=desc | jason-the-miner -c github-config.json > github-repos.json
-
-cat ./github-repos.json
-```
-
-- Or without pipes & redirections:
-
-*github-config.json*:
-
-```json
+```js
 {
   "load": {
     "http": {
@@ -92,11 +59,40 @@ cat ./github-repos.json
 }
 ```
 
+*Shell*:
 ```shell
 $ jason-the-miner -c github-config.json
 ```
 
-#### API example
+OR alternatively, with pipes & redirections:
+
+*github-config.json:*
+```js
+{
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "repos": {
+            "_$": ".repo-list-item",
+            "name": ".repo-list-name > a",
+            "description": ".repo-list-description | trim",
+          }
+        }
+      ]
+    }
+  },
+}
+```
+
+*Shell:*
+```shell
+$ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories | jason-the-miner -c github-config.json > github-repos.json
+
+$ cat ./github-repos.json
+```
+
+#### API usage example
 
 ```js
 const JasonTheMiner = require('jason-the-miner');
@@ -176,7 +172,7 @@ Jason the Miner comes with 3 built-in loaders:
 
 #### Schemas definition
 
-```json
+```js
 ...
   "html": {
     "schemas": [
@@ -202,17 +198,17 @@ Jason the Miner comes with 3 built-in loaders:
 A schema is just a plain object that defines:
 
 - the name of the collection of elements you want to extract: `repos`,
-- the selector **_$** to find those elements: `.repo-list-item`,
+- the selector `_$` to find those elements: `.repo-list-item`,
 - for each element found:
   - the properties to extract (`name`, `description`, ...) and
   - how to extract each of them: the selector to use, as well as an optional extractor and/or filter (see "Parse helpers below")
-- you can also limit the number of elements with the **_slice** option
+- you can also limit the number of elements with the `_slice` option
 
 The definition is *recursive*. Inception-style, without limits.
 
-Jason also supports *multiple* schemas:
+Jason also supports multiple schemas:
 
-```json
+```js
 ...
   "html": {
     "schemas": [
@@ -259,13 +255,14 @@ And 2 built-in **filter**:
 
 An example combining both:
 
-```json
+```js
 ...
-  ".lister-list > tr": {
+  "movies": {
+    "_$": ".lister-list > tr",
     "🎥 title": ".titleColumn > a | trim",
     "📅 year": ".secondaryInfo < regexp:(\\d+)",
     "⭐ rating": ".ratingColumn > strong",
-    "👥 crew": ".titleColumn > a < attr:title | trim"
+    "👥 crew": ".titleColumn > a < attr:title"
   }
 ...
 ```
@@ -285,20 +282,20 @@ The `rps` option limits the number of requests par second.
 
 Examples:
 
-```json
+```js
 ...
-"url-param": {
-  "param": "p",
-  "inc": 1,
-  "limit": 99,
-  "rps": 10
-}
-...
+  "url-param": {
+    "param": "p",
+    "inc": 1,
+    "limit": 99,
+    "rps": 10
+  }
+  ...
 ```
 
 Will result in 100 requests, incrementing the "p" parameter by 1 from one request to the next one.
 
-```json
+```js
 ...
   "follow-link": {
     "selector": "episode",
@@ -309,7 +306,7 @@ Will result in 100 requests, incrementing the "p" parameter by 1 from one reques
 ...
 ```
 
-Will create 3 requests, from the href attributes of the 3 first ".episode" links.
+Will create 3 requests, from the href attributes of the first 3 ".episode" links.
 
 ## ⛏ API
 
@@ -323,7 +320,8 @@ jason.configure({
     html: {
       schemas: [
         {
-          ".repo-list-item": {
+          "repos": {
+            "_$": ".repo-list-item",
             "name": ".repo-list-name > a",
             "description": ".repo-list-description | trim",
             "⭐": "a[aria-label=Stargazers] | trim"
@@ -369,7 +367,7 @@ jason.loadConfig('./harvest-me.json')
 
 ##### registerHelper({ category, name, helper })
 
-Register a parse helpers in one of the 2 categories: `extract` or `filter`.
+Registers a parse helpers in one of the 2 categories: `extract` or `filter`.
 `helper` must be a function.
 
 ```js
@@ -408,7 +406,7 @@ class Emailer {
 ```
 
 In order to enable pagination, loaders & parsers **must also implement** the `getRunContext` method.
-For instance, the `html` parser returns the Cheerio object that allows the `follow-link` paginator to search for the next URL:
+For instance, the `html` parser returns the Cheerio object that allows the `follow-link` paginator to search for the "next" URL:
 
 ```js
 class HtmlParserEmailer {
