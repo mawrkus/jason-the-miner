@@ -1,6 +1,6 @@
 const fs = require('fs');
 const Mustache = require('mustache');
-const debug = require('debug')('jason:out:templater');
+const debug = require('debug')('jason:transform:templater');
 
 class Templater {
 

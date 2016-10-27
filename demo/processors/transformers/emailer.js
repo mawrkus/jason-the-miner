@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const debug = require('debug')('jason:out:emailer');
+const debug = require('debug')('jason:transform:emailer');
 
 class Emailer {
 
