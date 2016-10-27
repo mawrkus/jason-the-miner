@@ -1,0 +1,23 @@
+{
+  "load": {
+    "http": {
+      "url": "https://www.sala-apolo.com/ca/programacio-entrades"
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "images": ".event_related figure img < attr:src"
+        }
+      ]
+    }
+  },
+  "transform": {
+    "download-file": {
+      "baseURL": "https://www.sala-apolo.com",
+      "folder": "./demo/data/out/downloads",
+      "rps": 1
+    }
+  }
+}
