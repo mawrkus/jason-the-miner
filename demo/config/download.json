@@ -1,21 +1,20 @@
 {
   "load": {
     "http": {
-      "url": "https://www.sala-apolo.com/ca/programacio-entrades"
+      "url": "https://www.amnesty.org/en/latest/research/2016/02/annual-report-201516/"
     }
   },
   "parse": {
     "html": {
       "schemas": [
         {
-          "images": ".event_related figure img < attr:src"
+          "images": ".custom-select option[value] < attr:value"
         }
       ]
     }
   },
   "transform": {
     "download-file": {
-      "baseURL": "https://www.sala-apolo.com",
       "folder": "./demo/data/out/downloads",
       "rps": 1
     }
