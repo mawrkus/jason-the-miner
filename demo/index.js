@@ -4,7 +4,6 @@ const path = require('path');
 const ora = require('ora');
 
 const MixCloudStatsParser = require('./processors/parsers/mixcloud-stats-parser');
-const Emailer = require('./processors/transformers/emailer');
 const Templater = require('./processors/transformers/templater');
 
 const JasonTheMiner = require('..');
@@ -12,7 +11,6 @@ const JasonTheMiner = require('..');
 const jason = new JasonTheMiner();
 
 jason.registerProcessor({ category: 'parse', name: 'mixcloud-stats', processor: MixCloudStatsParser });
-jason.registerProcessor({ category: 'transform', name: 'email', processor: Emailer });
 jason.registerProcessor({ category: 'transform', name: 'tpl', processor: Templater });
 
 jason.registerHelper({
