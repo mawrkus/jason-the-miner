@@ -375,11 +375,11 @@ Registers a new processor in one of the 4 categories: `load`, `parse`, `paginate
 ```js
 jason.registerProcessor({
   category: 'transform',
-  name: 'email',
-  processor: Emailer
+  name: 'template',
+  processor: Templater
 });
 
-class Emailer {
+class Templater {
   constructor(config) {
     // receives automatically its config
   }
@@ -395,19 +395,9 @@ class Emailer {
 
 jason.configure({
   transform: {
-    email: {
-      "smtp": {
-        "host": "host",
-        "port": 1337,
-        "secure": true,
-        "auth": {
-          "user": "user",
-          "pass": "pass"
-        }
-      },
-      "from": "\"⛏ Jason the Miner\" <jason@mine.org>",
-      "to": "jack@ripper.biz",
-      "subject": "Check this out..."
+    template: {
+      "templatePath": "my-template.tpl",
+      "outputPath": "my-page.html"
     }
   }
 });
@@ -417,7 +407,7 @@ In order to enable pagination, loaders & parsers **must also implement** the `ge
 For instance, the `html` parser returns the Cheerio object that allows the `follow-link` paginator to search for the "next" URL:
 
 ```js
-class HtmlParserEmailer {
+class HtmlParser {
   // ...
    /**
     * @param {string} html
