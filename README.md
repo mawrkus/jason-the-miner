@@ -312,37 +312,6 @@ Will create 3 requests, from the href attributes of the first 3 ".episode" links
 
 ## ⛏ API
 
-### configure(options)
-
-(Re-)Configures Jason.
-
-```js
-jason.configure({
-  parse: {
-    html: {
-      schemas: [
-        {
-          "repos": {
-            "_$": ".repo-list-item",
-            "name": ".repo-list-name > a",
-            "description": ".repo-list-description | trim",
-            "⭐": "a[aria-label=Stargazers] | trim"
-          }
-        }
-      ]
-    }
-  }
-});
-
-jason.configure({
-  load: {
-    http: {
-      url: "https://github.com/search?q=scraper&l=Go&type=Repositories"
-    }
-  }
-});
-```
-
 ### loadConfig(configFile)
 
 Loads a config from a JSON file.
@@ -353,10 +322,18 @@ jason.loadConfig('./harvest-me.json');
 
 ### harvest({ load, parse, output, pagination } = {})
 
-Launches the process. Options can be passed to override the current config.
+Launches the whole harvesting process:
 
 ```js
-jason.loadConfig('./harvest-me.json')
+jason.loadConfig('./config.json')
+  .then(() => jason.harvest())
+  .catch(error => console.error(error));
+```
+
+Options can also be passed to temporarily override the current config:
+
+```js
+jason.loadConfig('./config.json')
   .then(() => jason.harvest({
     load: {
       http: {
@@ -364,6 +341,16 @@ jason.loadConfig('./harvest-me.json')
       }
     }
   }))
+  .catch(error => console.error(error));
+```
+
+To permanently override the current config, you can directly modify Jason's `config` property:
+
+```js
+jason.loadConfig('./harvest-me.json')
+  .then(() => {
+    jason.config.load.http.url = 'https://github.com/search?q=scraper&l=Python&type=Repositories';
+  })
   .catch(error => console.error(error));
 ```
 
