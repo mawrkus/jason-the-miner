@@ -87,7 +87,6 @@ OR alternatively, with pipes & redirections:
 *Shell:*
 ```shell
 $ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories | jason-the-miner -c github-config.json > github-repos.json
-
 $ cat ./github-repos.json
 ```
 
@@ -162,7 +161,7 @@ jason.harvest({ load }).then(results => console.log(results));
 Jason the Miner comes with 3 built-in loaders:
 
 - `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same options (including "headers", "proxy", etc.).
-- `file`: reads the content of a file. Options: `path`.
+- `file`: reads the content of a file. Options: `path` and `stream`.
 - `stdin`: reads the content from the standard input. Options: `encoding`.
 
 ### Parsers
@@ -204,7 +203,7 @@ A schema is just a plain object that defines:
   - how to extract each of them: the selector to use, as well as an optional extractor and/or filter (see "Parse helpers below")
 - you can also limit the number of elements with the `_slice` option
 
-The definition is *recursive*. Inception-style, without limits.
+The definition is *recursive*. Inception-style.
 
 Jason also supports multiple schemas:
 
@@ -235,7 +234,7 @@ Jason also supports multiple schemas:
 
 ##### Parse helpers
 
-You can define how to extract a property value using this syntax:
+You can specify how to extract a value with this syntax:
 
 ```
 [property name]: [selector] < [extractor] | [filter]
@@ -248,12 +247,14 @@ Jason has 4 built-in **extractors**:
 - `attr:[attribute name]`
 - `regexp:[regexp string]`
 
-And 2 built-in **filter**:
+And 4 built-in **filters**:
 
 - `trim`
-- `digits`
+- `single-space`
+- `lowercase`
+- `uppercase`
 
-An example combining both:
+For example:
 
 ```js
 ...
@@ -272,6 +273,7 @@ An example combining both:
 - `stdout`: writes the results to stdout. Options: `encoding`.
 - `json-file`: writes the results to a JSON file. Options: `path`.
 - `csv-file`: uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same configuration options, as well as `path`. If multiple schemas are defined, one file per schema will be created. The name of the schema will be appended to the name of the file.
+- `email`: uses [nodemailer](https://github.com/nodemailer/nodemailer/) & supports the same configuration options.
 
 ### Paginators
 
