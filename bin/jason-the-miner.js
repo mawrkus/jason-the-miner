@@ -30,7 +30,7 @@ const jason = new JasonTheMiner({
   fallbacks: {
     load: 'stdin',
     parse: 'html',
-    paginate: 'no-action',
+    paginate: 'noop',
     transform: 'stdout'
   }
 });
