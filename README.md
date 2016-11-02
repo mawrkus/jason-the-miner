@@ -184,7 +184,7 @@ Jason the Miner comes with 3 built-in loaders:
           "last-update": ".repo-list-meta relative-time",
           "stats": {
             "_$": ".repo-list-stats",
-            "⭐": "a[aria-label=Stargazers] | trim",
+            "stars": "a[aria-label=Stargazers] | trim",
             "forks": "a[aria-label=Forks] | trim"
           }
         }
@@ -203,7 +203,7 @@ A schema is just a plain object that defines:
   - how to extract each of them: the selector to use, as well as an optional extractor and/or filter (see "Parse helpers below")
 - you can also limit the number of elements with the `_slice` option
 
-The definition is *recursive*. Inception-style.
+The definition is *recursive*.
 
 Jason also supports multiple schemas:
 
@@ -219,7 +219,7 @@ Jason also supports multiple schemas:
           "last-update": ".repo-list-meta relative-time",
           "stats": {
             "_$": ".repo-list-stats",
-            "⭐": "a[aria-label=Stargazers] | trim",
+            "stars": "a[aria-label=Stargazers] | trim",
             "forks": "a[aria-label=Forks] | trim"
           }
         }
@@ -263,7 +263,7 @@ For example:
     "🎥 title": ".titleColumn > a | trim",
     "📅 year": ".secondaryInfo < regexp:(\\d+)",
     "⭐ rating": ".ratingColumn > strong",
-    "👥 crew": ".titleColumn > a < attr:title"
+    "👥 crew": ".titleColumn > a < attr:title | trim"
   }
 ...
 ```
@@ -347,9 +347,18 @@ jason.loadConfig('./config.json')
 To permanently override the current config, you can directly modify Jason's `config` property:
 
 ```js
+const allResults = [];
+
 jason.loadConfig('./harvest-me.json')
-  .then(() => {
+  .then(results => {
+    allResults.push(results);
+
     jason.config.load.http.url = 'https://github.com/search?q=scraper&l=Python&type=Repositories';
+
+    return jason.harvest();
+  })
+  .then(results => {
+    allResults.push(results);
   })
   .catch(error => console.error(error));
 ```
@@ -389,18 +398,16 @@ class Templater {
    * @return {Promise.<*>}
    */
   run() {
-    // must be implemented.
+    // must be implemented and must return a promise.
   }
 }
 
-jason.configure({
-  transform: {
-    template: {
-      "templatePath": "my-template.tpl",
-      "outputPath": "my-page.html"
-    }
+jason.config.transform = {
+  template: {
+    "templatePath": "my-template.tpl",
+    "outputPath": "my-page.html"
   }
-});
+};
 ```
 
 In order to enable pagination, loaders & parsers **must also implement** the `getRunContext` method.
