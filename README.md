@@ -97,22 +97,6 @@ const JasonTheMiner = require('jason-the-miner');
 
 const jason = new JasonTheMiner();
 
-jason.configure({
-  parse: {
-    html: {
-      schemas: [
-        {
-          repos: {
-            _$: ".repo-list-item",
-            name: ".repo-list-name > a",
-            description: ".repo-list-description | trim",
-          }
-        }
-      ]
-    }
-  }
-});
-
 const load = {
   http: {
     url: "https://github.com/search",
@@ -126,7 +110,23 @@ const load = {
   }
 };
 
-jason.harvest({ load }).then(results => console.log(results));
+const parse = {
+  parse: {
+    html: {
+      schemas: [
+        {
+          repos: {
+            _$: ".repo-list-item",
+            name: ".repo-list-name > a",
+            description: ".repo-list-description | trim",
+          }
+        }
+      ]
+    }
+  }
+};
+
+jason.harvest({ load, parse }).then(results => console.log(results));
 ```
 
 ## ⛏ The config file
