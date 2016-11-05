@@ -453,6 +453,7 @@ Clone the project...
 ```shell
 $ git clone https://github.com/mawrkus/jason-the-miner.git
 $ cd jason-the-miner
+$ npm install
 ```
 
 ...and have a look at the `demos` folder.
@@ -460,7 +461,7 @@ $ cd jason-the-miner
 To launch all the demos:
 
 ```shell
-$ npm install && npm run demos
+$ npm run demos
 ```
 
 ## ⛏ Tests
@@ -468,6 +469,7 @@ $ npm install && npm run demos
 ```shell
 $ git clone https://github.com/mawrkus/jason-the-miner.git
 $ cd jason-the-miner
+$ npm install
 $ npm run test
 ```
 
