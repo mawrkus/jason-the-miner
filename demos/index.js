@@ -26,16 +26,16 @@ const demoFiles = [
   'goodreads-search.json',
   'npm-starred.json',
   'spotify-search.json',
-  // $ npm run demo:debug < demo/data/in/imdb-top250.html
+  // $ npm run demos:debug < demos/data/in/imdb-top250.html
   // 'imdb/imdb-top250.json',
   // 'mixcloud-stats.json',
-  // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demo:debug
+  // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demos:debug
   // 'wikia-characters.json',
 ];
 
 /* eslint-disable arrow-body-style, no-console */
 
-console.log('Jason the Miner demo suite ⛏⛏⛏');
+console.log('Jason the Miner demos suite ⛏⛏⛏');
 
 const spinner = ora({ spinner: 'dots4' });
 
@@ -43,7 +43,7 @@ const demoSequenceP = demoFiles.reduce((previousP, file) => {
   return previousP
     .then(() => {
       spinner.start().text = `Launching "${file}" demo...`;
-      const demoPath = path.join(process.cwd(), 'demo/config', file);
+      const demoPath = path.join(process.cwd(), 'demos/config', file);
       return jason.loadConfig(demoPath);
     })
     .then(() => jason.harvest())

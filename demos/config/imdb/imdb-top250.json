@@ -1,7 +1,7 @@
 {
   "load": {
     "file": {
-      "path": "demo/data/in/imdb-top250.html"
+      "path": "demos/data/in/imdb-top250.html"
     },
     "stdin": {}
   },
@@ -22,7 +22,7 @@
   },
   "transform": {
     "csv-file": {
-      "path": "demo/data/out/imdb-top-250.csv"
+      "path": "demos/data/out/imdb-top-250.csv"
     }
   }
 }

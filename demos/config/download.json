@@ -15,7 +15,7 @@
   },
   "transform": {
     "download-file": {
-      "folder": "./demo/data/out/downloads",
+      "folder": "./demos/data/out/downloads",
       "rps": 1
     }
   }

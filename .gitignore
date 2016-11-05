@@ -1,5 +1,5 @@
 node_modules
-demo/config/party-time
-demo/data/out/*
-!demo/data/out/.gitkeep
+demos/config/party-time
+demos/data/out/*
+!demos/data/out/.gitkeep
 ROADMAP.md

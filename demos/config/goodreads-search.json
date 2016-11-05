@@ -23,7 +23,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demo/data/out/goodreads-quotes.json"
+      "path": "demos/data/out/goodreads-quotes.json"
     }
   }
 }

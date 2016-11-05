@@ -29,8 +29,8 @@
   },
   "transform": {
     "tpl": {
-      "templatePath": "demo/data/in/npm-starred.html.tpl",
-      "outputPath": "demo/data/out/npm-starred.html"
+      "templatePath": "demos/data/in/npm-starred.html.tpl",
+      "outputPath": "demos/data/out/npm-starred.html"
     }
   }
 }

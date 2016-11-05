@@ -6,7 +6,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demo/data/out/metas.json"
+      "path": "demos/data/out/metas.json"
     }
   },
   "parse": {

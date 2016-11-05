@@ -42,9 +42,9 @@ Let's find the most starred Javascript scrapers from GitHub:
       "schemas": [
         {
           "repos": {
-            "_$": ".repo-list-item",
-            "name": ".repo-list-name > a",
-            "description": ".repo-list-description | trim",
+            "_$": ".repo-list li",
+            "name": "h3 > a",
+            "description": "p | trim"
           }
         }
       ]
@@ -52,7 +52,7 @@ Let's find the most starred Javascript scrapers from GitHub:
   },
   "transform": {
     "json-file": {
-      "path": "demo/data/out/github-repos.json"
+      "path": "./github-repos.json"
     }
   }
 }
@@ -73,9 +73,9 @@ OR alternatively, with pipes & redirections:
       "schemas": [
         {
           "repos": {
-            "_$": ".repo-list-item",
-            "name": ".repo-list-name > a",
-            "description": ".repo-list-description | trim",
+            "_$": ".repo-list li",
+            "name": "h3 > a",
+            "description": "p | trim"
           }
         }
       ]
@@ -116,9 +116,9 @@ const parse = {
       schemas: [
         {
           repos: {
-            _$: ".repo-list-item",
-            name: ".repo-list-name > a",
-            description: ".repo-list-description | trim",
+            "_$": ".repo-list li",
+            "name": "h3 > a",
+            "description": "p | trim"
           }
         }
       ]
@@ -177,13 +177,13 @@ Jason the Miner comes with 3 built-in loaders:
     "schemas": [
       {
         "repos": {
-          "_$": ".repo-list-item",
+          "_$": ".repo-list li",
           "_slice": "0,5",
-          "name": ".repo-list-name > a",
-          "description": ".repo-list-description | trim",
-          "last-update": ".repo-list-meta relative-time",
+          "name": "h3 > a",
+          "description": "p | trim",
+          "last-update": "relative-time < attr:datetime",
           "stats": {
-            "_$": ".repo-list-stats",
+            "_$": "div:last-child",
             "stars": "a[aria-label=Stargazers] | trim",
             "forks": "a[aria-label=Forks] | trim"
           }
@@ -213,12 +213,12 @@ Jason also supports multiple schemas:
     "schemas": [
       {
         "repos": {
-          "_$": ".repo-list-item",
-          "name": ".repo-list-name > a",
-          "description": ".repo-list-description | trim",
-          "last-update": ".repo-list-meta relative-time",
+          "_$": ".repo-list li",
+          "name": "h3 > a",
+          "description": "p | trim",
+          "last-update": "relative-time < attr:datetime",
           "stats": {
-            "_$": ".repo-list-stats",
+            "_$": "div:last-child",
             "stars": "a[aria-label=Stargazers] | trim",
             "forks": "a[aria-label=Forks] | trim"
           }
@@ -455,12 +455,20 @@ $ git clone https://github.com/mawrkus/jason-the-miner.git
 $ cd jason-the-miner
 ```
 
-...and have a look at the `demo` folder.
+...and have a look at the `demos` folder.
 
 To launch all the demos:
 
 ```shell
-$ npm install && npm run demo
+$ npm install && npm run demos
+```
+
+## ⛏ Tests
+
+```shell
+$ git clone https://github.com/mawrkus/jason-the-miner.git
+$ cd jason-the-miner
+$ npm run test
 ```
 
 ## ⛏ References & related links

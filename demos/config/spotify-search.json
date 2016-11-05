@@ -25,13 +25,15 @@
             "_$": "artists.items",
             "name": "name",
             "popularity": "popularity",
-            "cover": "images[1]"
+            "cover": "images[1].url"
           }
         }
       ]
     }
   },
   "transform": {
-    "stdout": {}
+    "csv-file": {
+      "path": "demos/data/out/spotify-psychedelic.csv"
+    }
   }
 }

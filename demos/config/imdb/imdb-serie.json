@@ -38,7 +38,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demo/data/out/imdb-serie.json"
+      "path": "demos/data/out/imdb-serie.json"
     }
   }
 }
