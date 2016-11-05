@@ -1,4 +1,5 @@
-.DS_Store
 node_modules
-demos/results/*
-!demos/results/.gitkeep
+demos/config/party-time
+demos/data/out/*
+!demos/data/out/.gitkeep
+ROADMAP.md

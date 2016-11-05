@@ -1,0 +1,49 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://www.residentadvisor.net",
+      "url": "/clubs.aspx",
+      "headers": {
+        "Accept-Language": "en",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+      },
+      "timeout": 30000
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "venues-list": {
+            "_$": "main ul.content-list li section.content.clearfix div.plus8 div.fl.col4-6 ul ul li.clearfix",
+            "name": "div.fl a | trim",
+            "location": "div.fl.grey.mobile-off | trim"
+          }
+        },
+        {
+          "venues": {
+            "_$": "html",
+            "name": "title < regexp:RA:(.+)- Barcelona nightclub | trim",
+            "address": "#detail li:nth-child(1) span[itemprop=street-address] | trim",
+            "details-2": "#detail li:nth-child(2) < html",
+            "details-3": "#detail li:nth-child(3) < html",
+            "details-4": "#detail li:nth-child(4) < html"
+          }
+        }
+      ]
+    }
+  },
+  "paginate": {
+    "follow-link": {
+      "selector": "main ul.content-list li section.content.clearfix div.plus8 div.fl.col4-6 ul ul li.clearfix div.fl a",
+      "limit": 1,
+      "mode": "all",
+      "rps": 10
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/ra-clubs.json"
+    }
+  }
+}

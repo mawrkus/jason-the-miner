@@ -1,0 +1,23 @@
+{
+  "load": {
+    "test-loader": {
+      "params": "load params"
+    }
+  },
+  "parse": {
+    "test-parser": {
+      "params": "parse params"
+    }
+  },
+  "ignore-me": {},
+  "transform": {
+    "test-transformer": {
+      "params": "transform params"
+    }
+  },
+  "paginate": {
+    "test-paginator": {
+      "params": "paginate params"
+    }
+  }
+}

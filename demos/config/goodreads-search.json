@@ -1,0 +1,29 @@
+{
+  "load": {
+    "http": {
+      "url": "http://www.goodreads.com/quotes/search",
+      "params": {
+        "q": "wormhole"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "quotes": {
+            "_$": ".quoteDetails",
+            "text": ".quoteText < regexp:([^―]+) | trim",
+            "author": ".quoteText > .authorOrTitle",
+            "tags": ".quoteFooter .left a"
+          }
+        }
+      ]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/goodreads-quotes.json"
+    }
+  }
+}

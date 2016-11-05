@@ -1,0 +1,32 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "repos": {
+            "_$": ".repo-list li",
+            "name": "h3 > a",
+            "description": "p | trim",
+            "last-update": "relative-time < attr:datetime",
+            "stats": {
+              "_$": "div:last-child",
+              "⭐": "a[aria-label=Stargazers] | trim",
+              "forks": "a[aria-label=Forks] | trim"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/github-repos.json"
+    }
+  }
+}

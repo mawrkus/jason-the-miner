@@ -1,0 +1,28 @@
+{
+  "load": {
+    "file": {
+      "path": "demos/data/in/imdb-top250.html"
+    },
+    "stdin": {}
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "movies": {
+            "_$": ".lister-list > tr",
+            "🎥 title": ".titleColumn > a | trim",
+            "📅 year": ".secondaryInfo < regexp:(\\d+)",
+            "⭐ rating": ".ratingColumn > strong",
+            "👥 crew": ".titleColumn > a < attr:title"
+          }
+        }
+      ]
+    }
+  },
+  "transform": {
+    "csv-file": {
+      "path": "demos/data/out/imdb-top-250.csv"
+    }
+  }
+}

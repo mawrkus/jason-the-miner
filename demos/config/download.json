@@ -1,0 +1,22 @@
+{
+  "load": {
+    "http": {
+      "url": "https://www.amnesty.org/en/latest/research/2016/02/annual-report-201516/"
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "images": ".custom-select option[value] < attr:value"
+        }
+      ]
+    }
+  },
+  "transform": {
+    "download-file": {
+      "folder": "./demos/data/out/downloads",
+      "rps": 1
+    }
+  }
+}

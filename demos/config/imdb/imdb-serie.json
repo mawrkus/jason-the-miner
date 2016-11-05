@@ -1,0 +1,44 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "http://www.imdb.com/title/tt1520211/episodes",
+      "url": "/?season=1",
+      "headers": {
+        "Accept-Language": "en"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "titles": {
+            "_$": ".article.listo.list",
+            "serie": ".subpage_title_block h3 a",
+            "season": "#episode_top"
+          }
+        },
+        {
+          "episodes": {
+            "_$": ".eplist .list_item",
+            "number": ".hover-over-image > div",
+            "title": ".info a[itemprop=name]",
+            "air date": ".info .airdate | trim",
+            "description": ".item_description | trim"
+          }
+        }
+      ]
+    }
+  },
+  "paginate": {
+    "follow-link": {
+      "selector": "a#load_next_episodes",
+      "limit": 100
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/imdb-serie.json"
+    }
+  }
+}

@@ -1,60 +1,49 @@
 #!/usr/bin/env node
 
-/* eslint-disable no-console */
+/* eslint-disable no-console, no-multi-spaces */
 
-'use strict';
+const path = require('path');
+const program = require('commander');
+const ora = require('ora');
+const version = require('../package').version;
 
-const cli = require('cli');
-const fs = require('fs');
-const JasonTheMiner = require('..');
+program
+  .version(version)
+  .option('-c, --config [file]',  'configuration file, required',             String, '')
+  .option('-d, --debug [name]',   'prints debug info ("jason:*" by default)', String)
+  .parse(process.argv);
 
-cli.parse({
-  'config': ['c', 'Config file', 'string'],
-  'baseUrl': ['u', 'Base URL (optional)', 'string', ''],
-  'title': ['t', 'Title (optional)', 'string', ''],
-  'searchTerm': ['s', 'Search term (optional)', 'string', ''],
-  'outputFile': ['o', 'Output file (optional)', 'string', ''],
-  'verbose': ['v', 'Verbose', 'boolean', false]
-});
+const { config, debug } = program;
 
-cli.main((args, options) => {
-  if (options.config) {
-    const configFile = options.config;
-    let settings;
+if (!config) {
+  console.error('Have you forgotten to specify a config file? ;)');
+  program.help();
+}
 
-    try {
-      settings = JSON.parse(fs.readFileSync(configFile, 'utf8'));
-    } catch (err) {
-      console.error('Ooops! Unable to load config file %s!', configFile);
-      console.error(err);
-      process.exit(1);
-    }
+if (debug) {
+  process.env.DEBUG = debug === true ? 'jason:*' : debug;
+}
 
-    ['baseUrl', 'title', 'outputFile', 'verbose'].forEach(name => {
-      if (options[name]) {
-        settings[name] = options[name];
-      }
-    });
+const JasonTheMiner = require('..'); // must be AFTER setting the DEBUG environment variable
 
-    const scraper = new JasonTheMiner(settings);
-    const searchTerm = options.searchTerm;
-    const promise = searchTerm ? scraper.searchAndScrape(searchTerm) : scraper.scrape();
-
-    promise
-      .then(result => {
-        if (!settings.outputFile) {
-          process.stdout.write(JSON.stringify(result) + '\n');
-        }
-      })
-      .catch(err => {
-        console.info('Ooops! Something went wrong...');
-        console.error(err.stack);
-        console.info('Cannot complete scraping. Sorry :(');
-        process.exit(1);
-      });
-  } else {
-    cli.getUsage();
+const jason = new JasonTheMiner({
+  fallbacks: {
+    load: 'stdin',
+    parse: 'html',
+    paginate: 'noop',
+    transform: 'stdout'
   }
 });
 
-/* eslint-enable no-console */
+const configPath = path.join(process.cwd(), config);
+
+const spinner = ora({ text: 'Harvesting...', spinner: 'dots4' }).start();
+
+jason.loadConfig(configPath)
+  .then(() => jason.harvest())
+  .then(() => spinner.succeed())
+  .catch(error => {
+    spinner.fail();
+    console.error('Ooops! Something went wrong. :(');
+    console.error(error);
+  });

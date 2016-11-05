@@ -1,0 +1,17 @@
+{
+  "load": {
+    "stdin": {}
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "characters": "#mw-pages table li a"
+        }
+      ]
+    }
+  },
+  "transform": {
+    "stdout": {}
+  }
+}

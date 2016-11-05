@@ -1,0 +1,50 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://xceed.me",
+      "url": "/events/barcelona",
+      "headers": {
+        "Accept-Language": "en",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "events": {
+            "_$": ".eventCard",
+            "name": ".cardTitle",
+            "artists": "*[itemprop=performer] > *[itemprop=name] < attr:content",
+            "venue": ".cardVenue *[itemprop=name]",
+            "address": ".cardVenue *[itemprop=streetAddress] < attr:content",
+            "locality": "*[itemprop=addressLocality] < attr:content",
+            "startDate": ".cardDate *[itemprop=startDate] < attr:datetime",
+            "endDate": ".cardDate *[itemprop=endDate] < attr:content",
+            "music": ".cardMusic | single-space",
+            "atmosphere": ".cardAtmosphere | single-space"
+          }
+        },
+        {
+          "soundclouds": {
+            "_$": "*[itemprop=performer]",
+            "artist": "*[itemprop=name] < attr:content",
+            "url": "*[itemprop=sameAs] < attr:href"
+          }
+        }
+      ]
+    }
+  },
+  "paginate": {
+    "follow-link": {
+      "selector": "#moreLink",
+      "limit": 1
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/xceed-events.json"
+    }
+  }
+}

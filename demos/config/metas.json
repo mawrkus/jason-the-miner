@@ -1,0 +1,118 @@
+{
+  "load": {
+    "http":{
+      "url": "https://github.com/ianstormtaylor/metascraper"
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/metas.json"
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "title": {
+            "_$": "html",
+            "open-graph": "meta[property=\"og:title\"] < attr:content | trim",
+            "twitter": "meta[name=\"twitter:title\"] < attr:content | trim",
+            "sailthru": "meta[name=\"sailthru.title\"] < attr:content | trim",
+            "post-title": ".post-title | trim",
+            "entry-title": ".entry-title | trim",
+            "schema": "[itemtype=\"http://schema.org/BlogPosting] [itemprop=name\"] | trim",
+            "h1-link": "h1[class*=\"title\"] a | trim",
+            "h1": "h1[class*=\"title\"] | trim",
+            "title": "title | trim"
+          }
+        },
+        {
+          "description": {
+            "_$": "html",
+            "open-graph": "meta[property=\"og:description\"] < attr:content | trim",
+            "twitter": "meta[name=\"twitter:description\"] < attr:content | trim",
+            "meta": "meta[name=\"description\"] < attr:content | trim",
+            "sailthru": "meta[name=\"sailthru.description\"] < attr:content | trim",
+            "schema": "[itemprop=\"description\"] < attr:content | trim",
+            "post-content": ".post-content p:first-child | trim",
+            "entry-content": ".entry-content p:first-child | trim",
+            "article-p": "article p:first-child | trim"
+          }
+        },
+        {
+          "author": {
+            "_$": "html",
+            "meta-article": "meta[property=\"article:author\"] < attr:content | trim",
+            "meta": "meta[name=\"author\"] < attr:content | trim",
+            "sailthru": "meta[name=\"sailthru.author\"] < attr:content | trim",
+            "rel": "[rel=\"author\"]:first-child | trim",
+            "schema-1": "[itemprop*=\"author] [itemprop=name\"]:first-child | trim",
+            "schema-2": "[itemprop*=\"author\"]:first-child | trim",
+            "book": "meta[property=\"book:author\"] < attr:content | trim",
+            "link-1": "a[class*=\"author\"]:first-child | trim",
+            "link-2": "[class*=\"author\"] a:first-child | trim",
+            "class-author": "[class*=\"author\"]:first-child | trim",
+            "class-byline": "[class*=\"byline\"] | trim",
+            "href": "a[href*=\"/author/\"] | trim"
+          }
+        },
+        {
+          "date": {
+            "_$": "html",
+            "meta-article": "meta[property=\"article:published_time\"] < attr:content | trim",
+            "dc": "meta[name=\"dc.date\"] < attr:content | trim",
+            "DC": "meta[name=\"DC.date\"] < attr:content | trim",
+            "dc-issued": "meta[name=\"dc.date.issued\"] < attr:content | trim",
+            "D-issued": "meta[name=\"DC.date.issued\"] < attr:content | trim",
+            "dc-created": "meta[name=\"dc.date.created\"] < attr:content | trim",
+            "DC-created": "meta[name=\"DC.date.created\"] < attr:content | trim",
+            "DC-Date": "meta[name=\"DC.Date\"] < attr:content | trim",
+            "meta": "meta[name=\"date\"] < attr:content | trim",
+            "meta-dcterms": "meta[name=\"dcterms.date\"] < attr:content | trim",
+            "schema-datePublished": "[itemprop=\"datePublished\"] < attr:content | trim",
+            "schema-pubDate": "time[itemprop*=\"pubDate\"] < attr:datetime | trim",
+            "schema-pubdate": "time[itemprop*=\"pubdate\"] < attr:datetime | trim",
+            "dc:date": "[property*=\"dc:date\"] < attr:content | trim",
+            "dc:created": "[property*=\"dc:created\"] < attr:content | trim",
+            "time-pubdate": "time[datetime][pubdate] < attr:datetime | trim",
+            "sailthru": "meta[name=\"sailthru.date\"] < attr:content | trim",
+            "meta-book": "meta[property=\"book:release_date\"] < attr:content | trim",
+            "time": "time[datetime] < attr:datetime | trim",
+            "class-byline": "[class*=\"byline\"] | trim",
+            "class-dateline": "[class*=\"dateline\"] | trim",
+            "class-date": "[class*=\"date\"] | trim",
+            "id-date": "[id*=\"date\"] | trim",
+            "class-post-meta": "[class*=\"post-meta\"] | trim"
+          }
+        },
+        {
+          "image": {
+            "_$": "html",
+            "open-graph-secure_url": "meta[property=\"og:image:secure_url\"] < attr:content | trim",
+            "open-graph-url": "meta[property=\"og:image:url\"] < attr:content | trim",
+            "open-graph": "meta[property=\"og:image\"] < attr:content | trim",
+            "twitter-1": "meta[name=\"twitter:image\"] < attr:content | trim",
+            "twitter-2": "meta[property=\"twitter:image\"] < attr:content | trim",
+            "twitter-3": "meta[name=\"twitter:image:src\"] < attr:content | trim",
+            "twitter-4": "meta[property=\"twitter:image:src\"] < attr:content | trim",
+            "sailthru": "meta[name=\"sailthru.image\"] < attr:content | trim",
+            "sailthru-full": "meta[name=\"sailthru.image.full\"] < attr:content | trim",
+            "sailthru-thumb": "meta[name=\"sailthru.image.thumb\"] < attr:content | trim",
+            "article-img": "article img[src]:first-child < attr:src | trim",
+            "content-img": "#content img[src]:first-child < attr:src | trim",
+            "class-article-img": "[class*=\"article] img[src\"]:first-child < attr:src | trim",
+            "img": "img[src]:first-child < attr:src | trim"
+          }
+        },
+        {
+          "url": {
+            "_$": "html",
+            "open-graph": "meta[property=\"og:url\"] < attr:content | trim",
+            "twitter": "meta[name=\"twitter:url\"] < attr:content | trim",
+            "canonical": "link[rel=\"canonical\"] < attr:href | trim"
+          }
+        }
+      ]
+    }
+  }
+}

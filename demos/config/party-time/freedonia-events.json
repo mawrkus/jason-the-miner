@@ -1,0 +1,47 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "http://www.freedonia.eu",
+      "url": "/index.php",
+      "headers": {
+        "Accept-Language": "en",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "schemas": [
+        {
+          "#eventos_table tr:nth-child(9n+3)": {
+            "title": "a.titol | trim"
+          },
+          "slice": "0,12"
+        },
+        {
+          "#eventos_table tr:nth-child(9n+4)": {
+            "date": ".subtitol1"
+          },
+          "slice": "0,12"
+        },
+        {
+          "#eventos_table tr:nth-child(9n+5)": {
+            "price": ".subtitol1"
+          },
+          "slice": "0,12"
+        },
+        {
+          "#eventos_table tr:nth-child(9n+8)": {
+            "description": ".eventtext | trim"
+          },
+          "slice": "0,12"
+        }
+      ]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/freedonia-events.json"
+    }
+  }
+}
