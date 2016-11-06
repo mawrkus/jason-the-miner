@@ -197,7 +197,7 @@ Jason the Miner comes with 3 built-in loaders:
 A schema is just a plain object that defines:
 
 - the name of the collection of elements you want to extract: `repos`,
-- the selector `_$` to find those elements: `.repo-list-item`,
+- the selector `_$` to find those elements: `.repo-list li`,
 - for each element found:
   - the properties to extract (`name`, `description`, ...) and
   - how to extract each of them: the selector to use, as well as an optional extractor and/or filter (see "Parse helpers below")
