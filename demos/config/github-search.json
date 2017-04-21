@@ -10,7 +10,7 @@
       "schemas": [
         {
           "repos": {
-            "_$": ".repo-list li",
+            "_$": ".repo-list .repo-list-item",
             "name": "h3 > a",
             "description": "p | trim",
             "last-update": "relative-time < attr:datetime",
