@@ -54,6 +54,7 @@ demoSequenceP
   .then(() => {
     spinner.succeed();
     console.log('\nAll done! :D');
+    console.log('Check the "demos/data/out" folder.');
   })
   .catch(error => {
     spinner.fail();
