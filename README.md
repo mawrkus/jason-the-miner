@@ -275,10 +275,8 @@ For example:
 
 ### Paginators
 
-- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit` & `rps`.
-- `follow-link`: follows a single or more links. Options: `selector`, `limit`, `mode` ("single" or "all") & `rps`.
-
-The `rps` option limits the number of requests par second.
+- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit` & `concurrency`.
+- `follow-link`: follows a single or more links. Options: `selector`, `limit`, `mode` ("single" or "all") & `concurrency`.
 
 Examples:
 
@@ -288,12 +286,12 @@ Examples:
     "param": "p",
     "inc": 1,
     "limit": 99,
-    "rps": 10
+    "concurrency": 8
   }
 ...
 ```
 
-Will result in 100 requests, incrementing the "p" parameter by 1 from one request to the next one.
+Will result in 100 requests, incrementing the "p" parameter by 1 from one request to the next one and limiting the whole process to a maximum of 8 simultaneous requests.
 
 ```js
 ...

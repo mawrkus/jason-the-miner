@@ -417,7 +417,7 @@ describe('JasonTheMiner', () => {
 
           TestPaginator.prototype.run.onFirstCall().returns({
             runConfigs: ['next config #1', 'next config #2'],
-            throttler: fn => fn()
+            concurrency: 2
           });
 
           TestPaginator.prototype.run.onSecondCall().returns(null);
@@ -449,7 +449,7 @@ describe('JasonTheMiner', () => {
 
           TestPaginator.prototype.run.onFirstCall().returns({
             runConfigs: ['next config #1', 'next config #2'],
-            throttler: fn => fn()
+            concurrency: 2
           });
 
           TestPaginator.prototype.run.onSecondCall().returns(null);
@@ -516,7 +516,7 @@ describe('JasonTheMiner', () => {
 
             TestPaginator.prototype.run.onFirstCall().returns({
               runConfigs: ['next config #1', 'next config #2'],
-              throttler: fn => fn()
+              concurrency: 2
             });
 
             TestPaginator.prototype.run.onSecondCall().returns(null);
