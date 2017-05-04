@@ -7,8 +7,8 @@ Harvesting data at the HTML mine... Jason the Miner, a versatile Web scraper for
 ## ⛏ Features
 
 - **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 4 basic processors:
-  1. `loaders`: to fetch the (HTML) data (via HTTP requests, ...)
-  2. `parsers`, to parse the data & extract the relevant parts according to a predefined schema
+  1. `loaders`: to fetch the data (via HTTP requests, by reading text files, ...)
+  2. `parsers`: to parse the data & extract the relevant parts according to predefined schemas
   3. `transformers`: to transform and/or output the results (to a file, via email, ...)
   4. `paginators`: optional, to establish a strategy when scraping multiple pages (follow the "next" link, ...)
 - **Configurable:** each processor can be chosen & configured independently.
@@ -42,7 +42,7 @@ Let's find the most starred Javascript scrapers from GitHub:
       "schemas": [
         {
           "repos": {
-            "_$": ".repo-list li",
+            "_$": ".repo-list .repo-list-item",
             "name": "h3 > a",
             "description": "p | trim"
           }
@@ -73,7 +73,7 @@ OR alternatively, with pipes & redirections:
       "schemas": [
         {
           "repos": {
-            "_$": ".repo-list li",
+            "_$": ".repo-list .repo-list-item",
             "name": "h3 > a",
             "description": "p | trim"
           }
@@ -111,18 +111,16 @@ const load = {
 };
 
 const parse = {
-  parse: {
-    html: {
-      schemas: [
-        {
-          repos: {
-            "_$": ".repo-list li",
-            "name": "h3 > a",
-            "description": "p | trim"
-          }
+  html: {
+    schemas: [
+      {
+        repos: {
+          "_$": ".repo-list .repo-list-item",
+          "name": "h3 > a",
+          "description": "p | trim"
         }
-      ]
-    }
+      }
+    ]
   }
 };
 
@@ -161,7 +159,7 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 Jason the Miner comes with 3 built-in loaders:
 
 - `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same options (including "headers", "proxy", etc.).
-- `file`: reads the content of a file. Options: `path` and `stream`.
+- `file`: reads the content of a file. Options: `path` and `stream` (false by default).
 - `stdin`: reads the content from the standard input. Options: `encoding`.
 
 ### Parsers
@@ -177,7 +175,7 @@ Jason the Miner comes with 3 built-in loaders:
     "schemas": [
       {
         "repos": {
-          "_$": ".repo-list li",
+          "_$": ".repo-list .repo-list-item",
           "_slice": "0,5",
           "name": "h3 > a",
           "description": "p | trim",
@@ -197,7 +195,7 @@ Jason the Miner comes with 3 built-in loaders:
 A schema is just a plain object that defines:
 
 - the name of the collection of elements you want to extract: `repos`,
-- the selector `_$` to find those elements: `.repo-list li`,
+- the selector `_$` to find those elements: `.repo-list .repo-list-item`,
 - for each element found:
   - the properties to extract (`name`, `description`, ...) and
   - how to extract each of them: the selector to use, as well as an optional extractor and/or filter (see "Parse helpers below")
@@ -213,7 +211,7 @@ Jason also supports multiple schemas:
     "schemas": [
       {
         "repos": {
-          "_$": ".repo-list li",
+          "_$": ".repo-list .repo-list-item",
           "name": "h3 > a",
           "description": "p | trim",
           "last-update": "relative-time < attr:datetime",
@@ -350,6 +348,7 @@ To permanently override the current config, you can directly modify Jason's `con
 const allResults = [];
 
 jason.loadConfig('./harvest-me.json')
+  .then(() => jason.harvest())
   .then(results => {
     allResults.push(results);
 
