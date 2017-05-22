@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
+    "bluebird": "^3.5.0",
     "cheerio": "^0.22.0",
     "commander": "^2.9.0",
     "content-disposition": "^0.5.1",
@@ -61,7 +62,6 @@
     "nodemailer": "^2.6.4",
     "ora": "^0.3.0",
     "pad-left": "^2.1.0",
-    "promise-throttle": "^0.2.0",
     "uuid": "^2.0.3"
   },
   "devDependencies": {

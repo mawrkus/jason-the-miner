@@ -9,7 +9,7 @@
       "param": "offset",
       "inc": 36,
       "limit": 2,
-      "rps": 1
+      "concurrency": 1
     }
   },
   "parse": {

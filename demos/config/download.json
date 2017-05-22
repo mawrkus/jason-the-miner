@@ -8,7 +8,7 @@
     "html": {
       "schemas": [
         {
-          "images": ".custom-select option[value] < attr:value"
+          "reports": ".annual-report__download-dropdown .custom-select option[value] < attr:value"
         }
       ]
     }
@@ -16,7 +16,7 @@
   "transform": {
     "download-file": {
       "folder": "./demos/data/out/downloads",
-      "rps": 1
+      "concurrency": 2
     }
   }
 }
