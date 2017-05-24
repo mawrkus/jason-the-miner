@@ -1,0 +1,504 @@
+{
+  "artists": [
+    {
+      "name": "The Psychedelic Furs",
+      "popularity": 54,
+      "cover": "https://i.scdn.co/image/9e6ac700644bdea1ad6ef5887baee47ff669a0a6"
+    },
+    {
+      "name": "Psychedelic Porn Crumpets",
+      "popularity": 42,
+      "cover": "https://i.scdn.co/image/0241214c22e2e012e16cc13b56d61884d2b5629e"
+    },
+    {
+      "name": "PSYCHEDELIC TEEPEE",
+      "popularity": 15,
+      "cover": "https://i.scdn.co/image/0a6571d10709cf3bb61d5aaad56e8bc72c28d851"
+    },
+    {
+      "name": "Psychedelic Witchcraft",
+      "popularity": 21,
+      "cover": "https://i.scdn.co/image/066fad98b883d6da8310735ffe4b26d385099436"
+    },
+    {
+      "name": "Psychedelic",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/76fb3362f1d9a0596dcc46db74a3350dd79826ad"
+    },
+    {
+      "name": "Psychedelic Horseshit",
+      "popularity": 5,
+      "cover": "https://i.scdn.co/image/05c10b2d8d9ac8ead863481e4c7b3c978ee18514"
+    },
+    {
+      "name": "The Psychedelic Aliens",
+      "popularity": 13,
+      "cover": "https://i.scdn.co/image/af0a400522eef2855c7b56ac05b45a6b53f84217"
+    },
+    {
+      "name": "Psychedelic Europop",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic House",
+      "popularity": 1,
+      "cover": "https://i.scdn.co/image/60a87adf9a9498dfa1a4d7a425db7a354a5fa366"
+    },
+    {
+      "name": "Psychedelic Tranceforce",
+      "popularity": 2,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Shag",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/140047751a1e3aaf70e25a7f05c10d0d08f7bbff"
+    },
+    {
+      "name": "Psychedelic Rain",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Warriors",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/ea0919113924c7cbbf44c480f1169791ea8e2807"
+    },
+    {
+      "name": "Psychedelic Mist",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/08af46a650829093b68fe9b20a0503575c25b1a8"
+    },
+    {
+      "name": "Psychedelic Mooj",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/c4338d41a8d569efb2238f8835bec0528b843d22"
+    },
+    {
+      "name": "Psychedelic Synesthesia",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/ed94d0dcb72da5fcab9fc8b04323a49e8a82d0b4"
+    },
+    {
+      "name": "Psychedelic Mindfreak",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Monkeys",
+      "popularity": 1,
+      "cover": "https://i.scdn.co/image/d7cdb69fb972ae23c88b6f87bc49b5fb92d8ee00"
+    },
+    {
+      "name": "Psychedelic Morning",
+      "popularity": 1,
+      "cover": "https://i.scdn.co/image/d9224f4145081f9bb5c95c421a089903ac79d2c1"
+    },
+    {
+      "name": "Psychedelic Aire",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/f195e6ae8e259bf9eba3f6e603e8ccb31d55f50f"
+    },
+    {
+      "name": "Psychedelic Goldfish",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/e9c527dbf34a2a61aeac5fc1d33fb483a9cc0198"
+    },
+    {
+      "name": "Sunwheel Psychedelic",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/d2e0cec69c944cd92be6feee3c654d96215d775d"
+    },
+    {
+      "name": "Psychedelic Elevator",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/c4808a8a20d68026626376c93de717a197c9a810"
+    },
+    {
+      "name": "Psychedelic Ensemble. ",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/b81a3a4b0b91c5bb20feb7b4d7c0e41aa6d5dbcd"
+    },
+    {
+      "name": "Psychedelic Drum",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Elders",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/e89ff2c9c5ecb39926e9c51da22f14fc82e68ee9"
+    },
+    {
+      "name": "Psychedelic Consort",
+      "popularity": 9,
+      "cover": "https://i.scdn.co/image/d9567c9604cf03612fa3e7db629b1afb425987af"
+    },
+    {
+      "name": "Psychedelic Grass",
+      "popularity": 8,
+      "cover": "https://i.scdn.co/image/9f870e68fefacbd5051860e1e0a07a11691abfc4"
+    },
+    {
+      "name": "Psychedelic Seeds",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/07c9b1ea9aab8e9214bd1feb927f5251ec072b19"
+    },
+    {
+      "name": "Psychedelic Orchestra",
+      "popularity": 3,
+      "cover": "https://i.scdn.co/image/a26d43fddd96dd78c2bbbe5bb8a55fa46f930f24"
+    },
+    {
+      "name": "Psychedelic Nursery",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/b8bfab8cad82f106bdefaff689c1a92de9eaa119"
+    },
+    {
+      "name": "Psychedelic Pirates",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/01e3eb595f1c324f73dd9b7db9354ea3ca15da3a"
+    },
+    {
+      "name": "Psychedelic Quest",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/baea796fba5cce603b796df918cbb4ae3ef33675"
+    },
+    {
+      "name": "Psychedelic Dirt",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/9e6c5cbcc736865f25d98b33bb200e1052eea03e"
+    },
+    {
+      "name": "Psychedelic Funk",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/82fbecad0475e374dace6e7eb1b39cebd5f6bdeb"
+    },
+    {
+      "name": "Psychedelic Scorpio",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic dragon",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/cedd6a85d1125eeb17e167b818f77cfc42475b4f"
+    },
+    {
+      "name": "Psychedelic Algorithm",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/75bbde2d09ea8b9f3e564a5bb306c3c86da76146"
+    },
+    {
+      "name": "Psychedelic Savage",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/eb693655c2616bea34c66d9f838500fc42d95e4f"
+    },
+    {
+      "name": "Psychedelic Folk",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Sleep Systems",
+      "popularity": 6,
+      "cover": "https://i.scdn.co/image/563f9f8145ced29dfe179806a048788b012aeb15"
+    },
+    {
+      "name": "The Psychedelic Ensemble",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/ab6c579570df6b6c05a8845dd16f757534bc49a4"
+    },
+    {
+      "name": "The Psychedelic Manifesto",
+      "popularity": 1,
+      "cover": "https://i.scdn.co/image/4f17879a813a9c0356db8fd9dd99c6f76187303e"
+    },
+    {
+      "name": "The Psychedelic Squirrel",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/a9eaebe01c691f38c42982b9d35ad9aa0fe1a2ba"
+    },
+    {
+      "name": "The Psychedelic River Chickens",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/622700c792960730aca069f5880b234b45645afc"
+    },
+    {
+      "name": "The Psychedelic Psyncopators",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Disco Angels",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/5d595e328042391141cc427c8f1d0b44e9de3c3b"
+    },
+    {
+      "name": "Kenny Håkansson Psychedelic Dream",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/dc6a9cb6972267535ef342dd11b61e282abe2013"
+    },
+    {
+      "name": "The Psychedelic Riverchickens",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/05d36a69296441fa5af001351c5b0edc07d8ffb0"
+    },
+    {
+      "name": "The Psychedelic Funk Movement",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/cdd95ba1870a187fd95e0640ad1eea09eb4f4635"
+    },
+    {
+      "name": "Greg Gardner / Psychedelic Survivor",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/9db0031043acaff233af7d03ac25e3ec04e4263e"
+    },
+    {
+      "name": "The Psychedelic Avengers/V.A.",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/cfaccb4838dec66381404666d3e6a77bb4c18334"
+    },
+    {
+      "name": "The Psychedelic Scorzonera",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/afd99c74d7e5e36b66fed8e403f77ce5215e771e"
+    },
+    {
+      "name": "The Psychedelic Psychonauts",
+      "popularity": 1,
+      "cover": "https://i.scdn.co/image/f786338d5713190dd50f15dcca28d02e6f87b8fd"
+    },
+    {
+      "name": "Psychedelic Sid Kavanagh",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/67b25affc46c12bb4ffca1e8a542e691a2b42248"
+    },
+    {
+      "name": "Psychedelic Three Inch Tommy",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/c08d996d9559541e8499dae68493199cd930cbb9"
+    },
+    {
+      "name": "Seymour the Psychedelic Mouse",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Goa Trance",
+      "popularity": 1,
+      "cover": null
+    },
+    {
+      "name": "The Psychedelic Hippies",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/7846dab81921bc7de9340999b0051ffdbbe6cb18"
+    },
+    {
+      "name": "The Psychedelic Shafferson Jetplane",
+      "popularity": 2,
+      "cover": "https://i.scdn.co/image/cca11472c905bafe138cbf03fd3f9a8d4eecf4f3"
+    },
+    {
+      "name": "Fullon Psychedelic Trance Doc",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Trance Doc",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Clown Car",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/56047590aa6eb25ae34a9ed5fe968afb6c5b0dc3"
+    },
+    {
+      "name": "The Psychedelic Schafferson Jetplane",
+      "popularity": 2,
+      "cover": "https://i.scdn.co/image/5cfa6615c67c1cb8144d33a0a824cdefd9db6a18"
+    },
+    {
+      "name": "The Psychedelic Waltons",
+      "popularity": 3,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic Rave Doc",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "The Psychedelic Filberts",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "At The Psychedelic Circus",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/f5f4303d2499167f63b5460a51373a5bbed9f343"
+    },
+    {
+      "name": "The Psychedelic Power Kompany",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "The Psychedelic Space-Monkey",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/fa31ba8e5db37f3aa1524efede517a28f7e099de"
+    },
+    {
+      "name": "Psychedelic Kazoo Band",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Zeus The Psychedelic",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "The Psychedelic Warlords",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/8cf519835473aa71b8cc9090b5806c0251861aff"
+    },
+    {
+      "name": "Chandra Jazz Rock Psychedelic Group",
+      "popularity": 1,
+      "cover": "https://i.scdn.co/image/477a5406dacc090b9cf46f909b0aa0cdb6697edb"
+    },
+    {
+      "name": "Funk’A’Dads Psychedelic Edition With Overheads",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/30b80b4620dbd964eda736a6da7ded4f3fed4284"
+    },
+    {
+      "name": "The Cult Of Psychedelic Murder",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/229a4ea5e6b08eff92b4be7c5332141bbb3c1960"
+    },
+    {
+      "name": "Psychedelic Mushrooms Infected With Hallucinogens",
+      "popularity": 13,
+      "cover": "https://i.scdn.co/image/4ce2b1dd1a6224eb48b5e1971fa98d9dcf8bf673"
+    },
+    {
+      "name": "Random The Psychedelic Goa Master",
+      "popularity": 1,
+      "cover": null
+    },
+    {
+      "name": "The Georgia Psychedelic Power Horns",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Sandviken Symphony Orchestra - psychedelic faction",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Infected With Hallucinogens & Psychedelic Mushrooms",
+      "popularity": 11,
+      "cover": "https://i.scdn.co/image/c39304256b011ef4b666ee87a8ac52b758c5082d"
+    },
+    {
+      "name": "By Infected With Hallucinogens & Psychedelic Mushrooms",
+      "popularity": 3,
+      "cover": "https://i.scdn.co/image/d415c4d7ee4d988eb194f93248ccf8b138d7cc39"
+    },
+    {
+      "name": "Erin Hill & Her Psychedelic Harp",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/df1e0ea551344ae2d78703134a16bc7cd66d3102"
+    },
+    {
+      "name": "Eddie Edwards & the Psychedelic Spurs",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/9ee4b1b3c47805b1ded6de9ef3af261b42687e88"
+    },
+    {
+      "name": "Andre Foxxe & The Psychedelic Ghetto Pimpz",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/160b8f55266f3ec9154743d43cc4e8c20f0dd0d9"
+    },
+    {
+      "name": "Izzy Starchild and The Psychedelic Rose",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/7755ba1540997da81170c699711a2ae2e3ab59e5"
+    },
+    {
+      "name": "Luigi Bruno & Mediterranean Psychedelic Orkestra",
+      "popularity": 2,
+      "cover": "https://i.scdn.co/image/1dddf30aafeb54abd4010dd06a0db8ee1816fc12"
+    },
+    {
+      "name": "Psychedelic Saunterpog Jones and the Mishmash",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/18d6814257adf299a298de70db2fe31a26819186"
+    },
+    {
+      "name": "Captain Wah-Wah and the Psychedelic Monks",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/f76cbe8a067e406d9fdd113dcf2e5a21f927ec08"
+    },
+    {
+      "name": "Plastic Jack & The Psychedelic Rhombus Gang",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/2787c4a24f1a5e542b41dc91997a02e74701eceb"
+    },
+    {
+      "name": "Bare Foot Will & the Psychedelic Raccoon Garden",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/ea9ac35b3a6f64ae287413716a7e0bc1de49307d"
+    },
+    {
+      "name": "Seymour the Psychedelic Mouse feat. Benjamin Wheatley, Vince Oltan, & Michale Gregory",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/785b0302f05ccf4adabee700e27cb16e3b0901b3"
+    },
+    {
+      "name": "Psychedelic Sun's",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/493aede7ba030e675da62e623e477291a83ed313"
+    },
+    {
+      "name": "Seb's Psychedelic Dreams",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/37b44cb851e584296c6242f6e661a27377322216"
+    },
+    {
+      "name": "Matt McCourt's Psychedelic Metal Blues Experience",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/b420da81d80b63345273862d0d25f687af529caa"
+    },
+    {
+      "name": "Archie Thompson's Soul & Psychedelic Funk Crew",
+      "popularity": 10,
+      "cover": "https://i.scdn.co/image/70f2d3fdfc0220ea4e75003883fc2fd8695438d0"
+    },
+    {
+      "name": "Psychedelic Trance",
+      "popularity": 25,
+      "cover": "https://i.scdn.co/image/a57d26dc41db8d286af2d0b4a38e22be315063ef"
+    },
+    {
+      "name": "Psychedelic Sam",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/93c4f45944566d603da6bfe782d9f2a4051406b9"
+    },
+    {
+      "name": "The Psychedelic Mormones",
+      "popularity": 0,
+      "cover": null
+    },
+    {
+      "name": "Psychedelic All-Stars",
+      "popularity": 0,
+      "cover": "https://i.scdn.co/image/614bb1d0a85f6668f3a87bd3aeb2cfbc685993fc"
+    }
+  ]
+}
