@@ -275,36 +275,36 @@ For example:
 
 ### Paginators
 
-- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit` & `concurrency`.
-- `follow-link`: follows links. Options: `selector`, `slice`, `depth` & `concurrency`.
+- `url-param`: increment an URL query parameter. Options: `param`, `inc=1`, `max=1` & `concurrency=1`.
+- `follow-link`: follows links. Options: `selector`, `slice`, `depth=1` & `concurrency=1`.
 
 Examples:
 
 ```js
 ...
   "url-param": {
-    "param": "p",
-    "inc": 1,
-    "limit": 99,
-    "concurrency": 8
+    "param": "offset",
+    "inc": 25,
+    "max": 250,
+    "concurrency": 3
   }
 ...
 ```
 
-Will result in 100 requests, incrementing the "p" parameter by 1 from one request to the next one and limiting the whole process to a maximum of 8 simultaneous requests.
+Will create as many requests as needed for the "offset" parameter to reach 250, incrementing it by 25 from one request to the next one and limiting the whole process to a maximum of 3 concurrent requests.
 
 ```js
 ...
   "follow-link": {
     "selector": "a.episode",
-    "slice": "0,3",
-    "concurrency": 3,
-    "depth": "1"
+    "slice": "0,1",
+    "concurrency": 1,
+    "depth": "10"
   }
 ...
 ```
 
-Will create 3 concurrent requests, from the href attributes of the first 3 ".episode" links.
+Will follow 10 times the first ".episode" link (by extracting its "href" attribute).
 
 ## ⛏ API
 
