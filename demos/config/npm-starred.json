@@ -8,8 +8,8 @@
     "url-param": {
       "param": "offset",
       "inc": 36,
-      "limit": 2,
-      "concurrency": 1
+      "max": 108,
+      "concurrency": 2
     }
   },
   "parse": {

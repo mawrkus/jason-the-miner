@@ -14,7 +14,7 @@
     "url-param": {
       "param": "offset",
       "inc": 25,
-      "limit": 4,
+      "max": 100,
       "concurrency": 2
     }
   },
