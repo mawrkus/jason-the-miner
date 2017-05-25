@@ -276,7 +276,7 @@ For example:
 ### Paginators
 
 - `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit` & `concurrency`.
-- `follow-link`: follows a single or more links. Options: `selector`, `limit`, `mode` ("single" or "all") & `concurrency`.
+- `follow-link`: follows links. Options: `selector`, `slice`, `depth` & `concurrency`.
 
 Examples:
 
@@ -298,13 +298,13 @@ Will result in 100 requests, incrementing the "p" parameter by 1 from one reques
   "follow-link": {
     "selector": "a.episode",
     "slice": "0,3",
-    "mode": "all",
-    "limit": 1
+    "concurrency": 3,
+    "depth": "1"
   }
 ...
 ```
 
-Will create 3 requests, from the href attributes of the first 3 ".episode" links.
+Will create 3 concurrent requests, from the href attributes of the first 3 ".episode" links.
 
 ## ⛏ API
 
