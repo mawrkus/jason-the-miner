@@ -299,7 +299,7 @@ Will create as many requests as needed for the "offset" parameter to reach 250, 
     "selector": "a.episode",
     "slice": "0,1",
     "concurrency": 1,
-    "depth": "10"
+    "depth": 10
   }
 ...
 ```
