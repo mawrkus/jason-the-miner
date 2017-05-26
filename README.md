@@ -160,7 +160,7 @@ Jason the Miner comes with 3 built-in loaders:
 
 - `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same options (including "headers", "proxy", etc.).
 - `file`: reads the content of a file. Options: `path` and `stream=false`
-- `stdin`: reads the content from the standard input. Options: `encoding='utf8'`.
+- `stdin`: reads the content from the standard input. Options: `encoding="utf8"`.
 
 ### Parsers
 
@@ -268,7 +268,7 @@ For example:
 
 ### Transformers
 
-- `stdout`: writes the results to stdout. Options: `encoding='utf8'`.
+- `stdout`: writes the results to stdout. Options: `encoding="utf8"`.
 - `json-file`: writes the results to a JSON file. Options: `path`.
 - `csv-file`: uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same configuration options, as well as `path`. If multiple schemas are defined, one file per schema will be created. The name of the schema will be appended to the name of the file.
 - `email`: uses [nodemailer](https://github.com/nodemailer/nodemailer/) & supports the same configuration options.
@@ -276,7 +276,7 @@ For example:
 ### Paginators
 
 - `url-param`: increment an URL query parameter. Options: `param`, `inc=1`, `max=1` & `concurrency=1`.
-- `follow-link`: follows links. Options: `selector`, `slice`, `depth=1` & `concurrency=1`.
+- `follow-link`: follows links. Options: `selector`, `slice`, `depth=1` & `concurrency=1`. Note that `depth` supports also the "Infinity" value, which will be converted to... Infinity. Use with caution.
 
 Examples:
 

@@ -34,7 +34,7 @@
     "follow-link": {
       "selector": "a#load_next_episodes",
       "slice": "0,1",
-      "depth": 20
+      "depth": "Infinity"
     }
   },
   "transform": {
