@@ -113,6 +113,7 @@ describe('JasonTheMiner', () => {
 
   it('should expose a public "config" property', () => {
     const jason = new JasonTheMiner();
+
     expect(jason.config).toEqual(jasmine.any(Object));
   });
 
@@ -600,7 +601,9 @@ describe('JasonTheMiner', () => {
         jason.harvest({ parse: HARVEST_CONFIG.parse })
           .then(() => {
             const helpers = DummyProcessor.calls.argsFor(0)[1];
+
             expect(helpers.extract['test-helper']).toBe(testHelper);
+
             done();
           })
           .catch(done.fail);
@@ -628,7 +631,9 @@ describe('JasonTheMiner', () => {
         jason.harvest({ parse: HARVEST_CONFIG.parse })
           .then(() => {
             const helpers = DummyProcessor.calls.argsFor(0)[1];
+
             expect(helpers.filter['test-helper']).toBe(testHelper);
+
             done();
           })
           .catch(done.fail);
