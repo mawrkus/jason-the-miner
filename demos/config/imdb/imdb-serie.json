@@ -33,7 +33,8 @@
   "paginate": {
     "follow-link": {
       "selector": "a#load_next_episodes",
-      "limit": 100
+      "slice": "0,1",
+      "depth": "Infinity"
     }
   },
   "transform": {

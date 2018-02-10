@@ -159,8 +159,8 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 Jason the Miner comes with 3 built-in loaders:
 
 - `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client. It supports the same options (including "headers", "proxy", etc.).
-- `file`: reads the content of a file. Options: `path` and `stream` (false by default).
-- `stdin`: reads the content from the standard input. Options: `encoding`.
+- `file`: reads the content of a file. Options: `path` and `stream=false`
+- `stdin`: reads the content from the standard input. Options: `encoding="utf8"`.
 
 ### Parsers
 
@@ -268,45 +268,59 @@ For example:
 
 ### Transformers
 
-- `stdout`: writes the results to stdout. Options: `encoding`.
+- `stdout`: writes the results to stdout. Options: `encoding="utf8"`.
 - `json-file`: writes the results to a JSON file. Options: `path`.
 - `csv-file`: uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same configuration options, as well as `path`. If multiple schemas are defined, one file per schema will be created. The name of the schema will be appended to the name of the file.
 - `email`: uses [nodemailer](https://github.com/nodemailer/nodemailer/) & supports the same configuration options.
 
 ### Paginators
 
-- `url-param`: increment an URL query parameter. Options: `param`, `inc`, `limit` & `concurrency`.
-- `follow-link`: follows a single or more links. Options: `selector`, `limit`, `mode` ("single" or "all") & `concurrency`.
+- `url-param`: increment an URL query parameter. Options: `param`, `inc=1`, `max=1` & `concurrency=1`.
+- `follow-link`: follows links. Options: `selector`, `slice`, `depth=1` & `concurrency=1`. Note that `depth` supports also the "Infinity" value, which will be converted to... Infinity. Use with caution.
 
 Examples:
 
 ```js
 ...
   "url-param": {
-    "param": "p",
-    "inc": 1,
-    "limit": 99,
-    "concurrency": 8
+    "param": "offset",
+    "inc": 25,
+    "max": 250,
+    "concurrency": 3
   }
 ...
 ```
 
-Will result in 100 requests, incrementing the "p" parameter by 1 from one request to the next one and limiting the whole process to a maximum of 8 simultaneous requests.
+Will create as many requests as needed for the "offset" parameter to reach 250, incrementing it by 25 from one request to the next one and limiting the whole process to a maximum of 3 concurrent requests.
 
 ```js
 ...
   "follow-link": {
     "selector": "a.episode",
-    "slice": "0,3",
-    "mode": "all",
-    "limit": 1
+    "slice": "0,1",
+    "concurrency": 1,
+    "depth": 10
   }
 ...
 ```
 
-Will create 3 requests, from the href attributes of the first 3 ".episode" links.
+Will follow 10 times the first ".episode" link (by extracting its "href" attribute).
 
 ## ⛏ API
+
+### constructor({ fallbacks = {} } = {})
+
+`fallbacks` defines which processor will be used when not explicitly configured (or missing in the config file):
+- `load`: 'identity',
+- `parse`: 'identity',
+- `paginate`: 'noop',
+- `transform`: 'identity'
+
+The fallbacks change when using the CLI (see `bin/jason-the-miner.js`):
+- `load`: 'stdin',
+- `parse`: 'html',
+- `paginate`: 'noop',
+- `transform`: 'stdout'
 
 ### loadConfig(configFile)
 
