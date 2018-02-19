@@ -29,7 +29,7 @@
   "main": "lib/jason-the-miner.js",
   "bin": "bin/jason-the-miner.js",
   "engines": {
-    "node": ">= 6.5"
+    "node": ">= 8.9"
   },
   "files": [
     "bin",

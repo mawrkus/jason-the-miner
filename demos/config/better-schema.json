@@ -1,0 +1,39 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "http://www.imdb.com",
+      "url": "/title/tt2861424/episodes/?season=1",
+      "headers": {
+        "Accept-Language": "en"
+      }
+    },
+    "_paginate": {
+      "param": "season",
+      "inc": 1,
+      "max": 3,
+      "concurrency": 4
+    }
+  },
+  "parse": {
+    "html": {
+      "show": {
+        "_$": ".list",
+        "name": "h3[itemprop='name'] > a < text",
+        "year": "h3[itemprop='name'] > .nobr < text | trim"
+      },
+      "episodes": [
+        {
+          "_$": "div[itemprop='episodes']",
+          "_slice": "0,3",
+          "title": "a[itemprop='name'] < text",
+          "airdate": ".airdate | trim",
+          "_follow": {
+            "_$": "a[itemprop='name']",
+            "_concurrency": 4,
+            "images": [".mediastrip img < attr:src"]
+          }
+        }
+      ]
+    }
+  }
+}
