@@ -41,7 +41,7 @@
           "_$": "div[itemprop='episodes']",
           "_slice": "0,2",
           "title": "a[itemprop='name'] < text",
-          "airdate": ".airdate | trim",
+          "_airdate": ".airdate | trim",
           "_follow": {
             "_link": "a[itemprop='name']",
             "_concurrency": 4,
