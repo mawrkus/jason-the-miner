@@ -16,7 +16,7 @@
   },
   "parse": {
     "html": {
-      "_show": {
+      "show": {
         "_$": ".list",
         "name": "h3[itemprop='name'] > a < text",
         "year": "h3[itemprop='name'] > .nobr < text | trim",
@@ -41,7 +41,7 @@
           "_$": "div[itemprop='episodes']",
           "_slice": "0,2",
           "title": "a[itemprop='name'] < text",
-          "_airdate": ".airdate | trim",
+          "airdate": ".airdate | trim",
           "_follow": {
             "_link": "a[itemprop='name']",
             "_concurrency": 4,
