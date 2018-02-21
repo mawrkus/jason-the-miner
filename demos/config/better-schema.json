@@ -16,7 +16,7 @@
   },
   "parse": {
     "html": {
-      "show": {
+      "_show": {
         "_$": ".list",
         "name": "h3[itemprop='name'] > a < text",
         "year": "h3[itemprop='name'] > .nobr < text | trim",
@@ -25,16 +25,21 @@
             "_link": ".list h3[itemprop='name'] > a",
             "summary": ".plot_summary .summary_text | trim",
             "_follow": {
-              "_link": "#titleCast > div > a",
-              "cast": [".cast_list td[itemprop='actor'] *[itemprop='name']"]
+              "_link": "#titleCast .see-more a",
+              "cast": [
+                {
+                  "_$": ".cast_list td[itemprop='actor']",
+                  "actor": "*[itemprop='name']"
+                }
+              ]
             }
           }
         }
       },
-      "_episodes": [
+      "episodes": [
         {
           "_$": "div[itemprop='episodes']",
-          "_slice": "0,3",
+          "_slice": "0,2",
           "title": "a[itemprop='name'] < text",
           "airdate": ".airdate | trim",
           "_follow": {
