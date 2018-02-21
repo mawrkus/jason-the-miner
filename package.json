@@ -57,6 +57,7 @@
     "csv-stringify": "^1.0.4",
     "debug": "^2.2.0",
     "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
     "mime": "^1.3.4",
     "mustache": "^2.2.1",
     "nodemailer": "^2.6.4",

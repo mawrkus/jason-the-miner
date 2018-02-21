@@ -19,16 +19,26 @@
       "show": {
         "_$": ".list",
         "name": "h3[itemprop='name'] > a < text",
-        "year": "h3[itemprop='name'] > .nobr < text | trim"
+        "year": "h3[itemprop='name'] > .nobr < text | trim",
+        "summary & cast": {
+          "_follow": {
+            "_link": ".list h3[itemprop='name'] > a",
+            "summary": ".plot_summary .summary_text | trim",
+            "_follow": {
+              "_link": "#titleCast > div > a",
+              "cast": [".cast_list td[itemprop='actor'] *[itemprop='name']"]
+            }
+          }
+        }
       },
-      "episodes": [
+      "_episodes": [
         {
           "_$": "div[itemprop='episodes']",
           "_slice": "0,3",
           "title": "a[itemprop='name'] < text",
           "airdate": ".airdate | trim",
           "_follow": {
-            "_$": "a[itemprop='name']",
+            "_link": "a[itemprop='name']",
             "_concurrency": 4,
             "images": [".mediastrip img < attr:src"]
           }
