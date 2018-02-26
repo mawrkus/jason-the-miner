@@ -1,7 +1,11 @@
 {
   "load": {
     "http": {
-      "url": "https://www.amnesty.org/en/latest/research/2016/02/annual-report-201516/"
+      "url": "https://www.amnesty.org/en/latest/research/2016/02/annual-report-201516/",
+      "headers": {
+        "Accept-Language": "en",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+      }
     }
   },
   "parse": {

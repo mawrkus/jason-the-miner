@@ -1,0 +1,35 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+    }
+  },
+  "parse": {
+    "html": {
+      "repos": [{
+        "_$": ".repo-list .repo-list-item",
+        "name": "h3 > a",
+        "description": "div:first-child > p | trim",
+        "stars": ".col-2.text-right > a | trim",
+        "last-update": "relative-time < attr:datetime"
+      }]
+    }
+  },
+  "transform": {
+    "email": {
+      "smtp": {
+        "host": "host",
+        "port": 1337,
+        "secure": true,
+        "auth": {
+          "user": "user",
+          "pass": "pass"
+        }
+      },
+      "from": "\"⛏ Jason the Miner\" <jason@mine.org>",
+      "to": "jack@ripper.biz",
+      "subject": "GitHub repos"
+    }
+  }
+}
