@@ -5,13 +5,8 @@
       "url": "/title/tt2861424/episodes/?season=1",
       "headers": {
         "Accept-Language": "en"
-      }
-    },
-    "_paginate": {
-      "param": "season",
-      "inc": 1,
-      "max": 3,
-      "concurrency": 4
+      },
+      "_concurrency": 4
     }
   },
   "parse": {
@@ -44,11 +39,15 @@
           "airdate": ".airdate | trim",
           "_follow": {
             "_link": "a[itemprop='name']",
-            "_concurrency": 4,
-            "images": [".mediastrip img < attr:src"]
+            "images": [".mediastrip a < attr:href"]
           }
         }
       ]
+    }
+  },
+  "_transform": {
+    "json-file": {
+      "path": "demos/data/out/rick-morty.json"
     }
   }
 }
