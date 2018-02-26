@@ -1,0 +1,25 @@
+{
+  "load": {
+    "http": {
+      "url": "https://www.amnesty.org/en/latest/research/2016/02/annual-report-201516/"
+    }
+  },
+  "parse": {
+    "html": {
+      "reports": [{
+        "_$": ".annual-report__download-dropdown .custom-select option[disabled!='disabled']",
+        "_slice": "0,3",
+        "lang": "< text | lowercase",
+        "url": "< attr:value"
+      }]
+    }
+  },
+  "transform": {
+    "download-file": {
+      "key": "url",
+      "folder": "./demos/data/out/downloads",
+      "concurrency": 2,
+      "maxMbSize": 5
+    }
+  }
+}
