@@ -2,7 +2,10 @@
   "load": {
     "http": {
       "baseURL": "https://github.com",
-      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
+      "headers": {
+        "Accept-Language": "en"
+      }
     }
   },
   "parse": {
@@ -12,8 +15,8 @@
         "name": "h3 > a",
         "description": "div:first-child > p | trim",
         "stats": {
-          "last-update": "relative-time < attr:datetime",
-          "⭐": ".col-2.text-right > a | trim"
+          "⭐": ".col-2.text-right > a | trim",
+          "last-update": "relative-time < attr:datetime"
         }
       }]
     }
