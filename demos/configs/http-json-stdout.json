@@ -1,0 +1,18 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "http://api.tvmaze.com",
+      "url": "/search/shows?q=rick"
+    }
+  },
+  "parse": {
+    "json": {
+      "shows": [{
+        "_$": "",
+        "_slice": "0,5",
+        "name": "name",
+        "description": ""
+      }]
+    }
+  }
+}
