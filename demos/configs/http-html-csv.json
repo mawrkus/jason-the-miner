@@ -21,7 +21,8 @@
   },
   "transform": {
     "csv-file": {
-      "path": "demos/data/out/github-repos.csv"
+      "path": "demos/data/out/github-repos.csv",
+      "delimiter": ","
     }
   }
 }
