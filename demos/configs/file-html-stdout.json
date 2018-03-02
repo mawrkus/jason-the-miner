@@ -8,11 +8,12 @@
     "html": {
       "repos": [{
         "_$": ".repo-list .repo-list-item",
+        "_slice":"0,1",
         "name": "h3 > a",
         "description": "div:first-child > p | trim",
         "stats": {
-          "⭐": ".col-2.text-right > a | trim",
-          "last-update": "relative-time < attr:datetime"
+          "⭐": ".col-2.text-right > a ? text(.+k) | trim",
+          "last-update": "relative-time < attr(datetime)"
         }
       }]
     }

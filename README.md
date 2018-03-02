@@ -179,7 +179,7 @@ Jason the Miner comes with 3 built-in loaders:
           "_slice": "0,5",
           "name": "h3 > a",
           "description": "p | trim",
-          "last-update": "relative-time < attr:datetime",
+          "last-update": "relative-time < attr(datetime)",
           "stats": {
             "_$": "div:last-child",
             "stars": "a[aria-label=Stargazers] | trim",
@@ -214,7 +214,7 @@ Jason also supports multiple schemas:
           "_$": ".repo-list .repo-list-item",
           "name": "h3 > a",
           "description": "p | trim",
-          "last-update": "relative-time < attr:datetime",
+          "last-update": "relative-time < attr(datetime)",
           "stats": {
             "_$": "div:last-child",
             "stars": "a[aria-label=Stargazers] | trim",
@@ -223,7 +223,7 @@ Jason also supports multiple schemas:
         }
       },
       {
-        "metas": "meta[property] < attr:property"
+        "metas": "meta[property] < attr(property)"
       }
     ]
   }
@@ -242,8 +242,8 @@ Jason has 4 built-in **extractors**:
 
 - `text` (by default)
 - `html`
-- `attr:[attribute name]`
-- `regexp:[regexp string]`
+- `attr([attribute name])`
+- `regex([regex string])`
 
 And 4 built-in **filters**:
 
@@ -259,9 +259,9 @@ For example:
   "movies": {
     "_$": ".lister-list > tr",
     "🎥 title": ".titleColumn > a | trim",
-    "📅 year": ".secondaryInfo < regexp:(\\d+)",
+    "📅 year": ".secondaryInfo < regex(.*(\\d+))",
     "⭐ rating": ".ratingColumn > strong",
-    "👥 crew": ".titleColumn > a < attr:title | trim"
+    "👥 crew": ".titleColumn > a < attr(title) | trim"
   }
 ...
 ```

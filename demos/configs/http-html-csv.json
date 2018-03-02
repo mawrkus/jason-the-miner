@@ -15,7 +15,7 @@
         "name": "h3 > a",
         "description": "div:first-child > p | trim",
         "stars": ".col-2.text-right > a | trim",
-        "last-update": "relative-time < attr:datetime"
+        "last-update": "relative-time < attr(datetime)"
       }]
     }
   },

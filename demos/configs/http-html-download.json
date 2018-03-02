@@ -14,7 +14,7 @@
         "_$": ".annual-report__download-dropdown .custom-select option[disabled!='disabled']",
         "_slice": "0,3",
         "lang": "< text | lowercase",
-        "url": "< attr:value"
+        "url": "< attr(value)"
       }]
     }
   },
