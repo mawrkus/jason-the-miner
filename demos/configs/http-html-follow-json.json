@@ -14,7 +14,7 @@
       "repos": [{
         "_$": ".repo-list .repo-list-item",
         "name": "h3 > a",
-        "last-update": "relative-time < attr:datetime",
+        "last-update": "relative-time < attr(datetime)",
         "_follow": {
           "_link": "h3 > a",
           "description": "meta[property='og:description'] < attr(content)",

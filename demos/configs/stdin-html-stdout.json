@@ -6,7 +6,7 @@
         "name": "h3 > a",
         "description": "div:first-child > p | trim",
         "stats": {
-          "⭐": ".col-2.text-right > a | trim",
+          "stars": ".col-2.text-right > a | trim",
           "last-update": "relative-time < attr(datetime)"
         }
       }]

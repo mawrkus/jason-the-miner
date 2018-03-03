@@ -1,6 +1,5 @@
 node_modules
+lib
 demos/data/out/*
 !demos/data/out/.gitkeep
-!demos/data/out/downloads/.gitkeep
-_demos
-ROADMAP.md
+TODO.md
