@@ -241,6 +241,29 @@ describe('HtmlParser', () => {
                 ],
               });
             });
+
+            describe('and a slice parameter is defined', () => {
+              it('should return an aray of objects with the correct parsed values, using the root element', async () => {
+                const parser = createParser();
+
+                const schema = {
+                  items: [{
+                    _$: '.list-item',
+                    _slice: '2,4',
+                    name: 'a',
+                  }],
+                };
+
+                const { result } = await parser.run(html, schema);
+
+                expect(result).toEqual({
+                  items: [
+                    { name: 'John Frusciante' },
+                    { name: 'Island Life' },
+                  ],
+                });
+              });
+            });
           });
         });
 
