@@ -130,18 +130,6 @@ class HtmlParser {
         break;
     }
 
-    if (schema._follow) {
-      debug('%sParsing "follow" definition...', tab);
-
-      this._parseFollowSchema({
-        schema: schema._follow,
-        $context,
-        schemaPath: schemaPath.concat('_follow'),
-        parsedPath,
-        tab: `${tab}  `,
-      });
-    }
-
     return result;
   }
 
@@ -201,6 +189,18 @@ class HtmlParser {
         result[prop] = value;
       });
 
+    if (schema._follow) {
+      debug('%sParsing "follow" definition...', tab);
+
+      this._parseFollowDef({
+        schema: schema._follow,
+        $context,
+        schemaPath: schemaPath.concat('_follow'),
+        parsedPath,
+        tab: `${tab}  `,
+      });
+    }
+
     return result;
   }
 
@@ -232,6 +232,7 @@ class HtmlParser {
       slice = '';
       newSchema = '';
     } else if (typeOf(definition) === 'object') {
+      // TODO: allow if it has a single key, as a short notation?
       if (!definition._$) {
         throw new Error(`No root element selector defined in array schema (path="${schemaPath}")!`);
       }
@@ -276,7 +277,7 @@ class HtmlParser {
    * @param {Array} parsedPath
    * @param {string} tab
    */
-  _parseFollowSchema({
+  _parseFollowDef({
     schema,
     $context,
     schemaPath,

@@ -288,5 +288,9 @@ describe('HtmlParser', () => {
         });
       });
     });
+
+    describe('when the schema contains a "follow" defintion', () => {
+      
+    });
   });
 });
