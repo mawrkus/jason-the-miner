@@ -39,7 +39,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demos/data/out/github-repos-full.json"
+      "path": "demos/data/out/github-repos-follow.json"
     }
   }
 }

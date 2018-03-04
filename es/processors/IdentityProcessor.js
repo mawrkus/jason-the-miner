@@ -8,23 +8,36 @@ class IdentityProcessor {
    * @param  {Object} config
    */
   constructor(config) {
+    this._config = config;
     debug('IdentityProcessor instance created.');
     debug('config', config);
   }
 
   /**
-   * @return {Object}
+   * @return {Promise.<*>}
    */
-  getRunContext() { // eslint-disable-line
-    return {};
+  // eslint-disable-next-line class-methods-use-this
+  async run(input) {
+    debug('Returning input.');
+    return input;
   }
 
   /**
-   * @return {Promise.<*>}
+   * Returns the config . Used for following/paginating.
+   * @return {Object}
    */
-  run(input) { // eslint-disable-line
-    debug('Returning input.');
-    return Promise.resolve(input);
+  getConfig() {
+    return this._config;
+  }
+
+  /**
+   * Builds a new load config. Used for following/paginating.
+   * @param {string} link
+   * @return {Object}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  buildLoadParams() {
+    return {};
   }
 }
 

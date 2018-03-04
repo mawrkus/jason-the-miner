@@ -3,8 +3,8 @@
 const path = require('path');
 const ora = require('ora');
 
-const MixCloudStatsParser = require('./processors/parsers/mixcloud-stats-parser');
-const Templater = require('./processors/transformers/templater');
+const MixCloudStatsParser = require('./processors/parsers/MixCloudStatsParser');
+const Templater = require('./processors/transformers/Templater');
 
 const JasonTheMiner = require('..');
 
@@ -16,48 +16,39 @@ jason.registerProcessor({ category: 'transform', name: 'tpl', processor: Templat
 jason.registerHelper({
   category: 'filter',
   name: 'remove-protocol',
-  helper: text => text.replace(/^https?:/, '')
+  helper: text => text.replace(/^https?:/, ''),
 });
 
 const demoFiles = [
-  'imdb/imdb-serie.json',
-  'imdb/imdb-top250.json',
-  'github-search.json',
-  'goodreads-search.json',
-  'npm-starred.json',
-  'spotify-search.json',
-  // $ npm run demos:debug < demos/data/in/imdb-top250.html
-  // 'imdb/imdb-top250.json',
-  // 'mixcloud-stats.json',
-  // $ curl http://rickandmorty.wikia.com/wiki/Category:Characters | npm run demos:debug
-  // 'wikia-characters.json',
+  // 'file-html-stdout.json',
+  'file-html-json.json',
+  'file-html-csv.json',
+  'http-html-follow-json.json',
+  // 'http-html-download.json',
+  // 'http-html-email.json',
 ];
 
-/* eslint-disable arrow-body-style, no-console */
+/* eslint-disable no-console */
 
-console.log('Jason the Miner demos suite ⛏⛏⛏');
+(async () => {
+  console.log('Jason the Miner demos suite ⛏⛏⛏');
 
-const spinner = ora({ spinner: 'dots4' });
+  const spinner = ora({ spinner: 'dots4' });
 
-const demoSequenceP = demoFiles.reduce((previousP, file) => {
-  return previousP
-    .then(() => {
-      spinner.start().text = `Launching "${file}" demo...`;
-      const demoPath = path.join(process.cwd(), 'demos/config', file);
-      return jason.loadConfig(demoPath);
-    })
-    .then(() => jason.harvest())
-    .then(() => spinner.succeed());
-}, Promise.resolve());
+  // eslint-disable-next-line no-restricted-syntax
+  for (const file of demoFiles) {
+    spinner.start().text = `Launching "${file}" demo...`;
 
-demoSequenceP
-  .then(() => {
-    spinner.succeed();
-    console.log('\nAll done! :D');
-    console.log('Check the "demos/data/out" folder.');
-  })
-  .catch(error => {
-    spinner.fail();
-    console.error('Ooops! Something went wrong. :(');
-    console.error(error);
-  });
+    const demoPath = path.join(process.cwd(), 'demos/configs', file);
+
+    try {
+      await jason.loadConfig(demoPath); // eslint-disable-line no-await-in-loop
+      await jason.harvest(); // eslint-disable-line no-await-in-loop
+      spinner.succeed();
+    } catch (error) {
+      console.error('Ooops! Something went wrong. :(');
+      console.error(error);
+      spinner.fail();
+    }
+  }
+})();

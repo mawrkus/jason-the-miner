@@ -1,11 +1,7 @@
 {
   "load": {
-    "http": {
-      "baseURL": "https://github.com",
-      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
-      "headers": {
-        "Accept-Language": "en"
-      }
+    "file": {
+      "path": "demos/data/in/github-search.html"
     }
   },
   "parse": {

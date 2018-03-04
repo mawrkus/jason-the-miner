@@ -1,7 +1,11 @@
 const path = require('path');
 const fs = require('fs');
+const { promisify } = require('util');
 const csvStringify = require('csv-stringify');
 const debug = require('debug')('jason:transform:csv-file');
+
+const csvStringifyAsync = promisify(csvStringify);
+const writeFileAsync = promisify(fs.writeFile);
 
 /**
  * A processor that writes results to CSV files. Depends on the "csv-stringify" package.
@@ -11,6 +15,7 @@ class CsvFileWriter {
   /**
    * @param {Object} config
    * @param {string} config.path
+   * @param {string} [config.encoding='utf8']
    * @param {string} [config.header=true]
    * @param {string} [config.delimiter=';']
    * @param {*} ... See the "csv-stringify" package for all possible options.
@@ -18,6 +23,7 @@ class CsvFileWriter {
   constructor(config) {
     this._config = {
       outputPath: path.join(process.cwd(), config.path),
+      encoding: config.encoding || 'utf8',
       csv: Object.assign({ header: true, delimiter: ';' }, config),
     };
     delete this._config.csv.path;
@@ -29,35 +35,31 @@ class CsvFileWriter {
    * @param {Object} results
    * @return {Promise}
    */
-  run(results) {
-    return new Promise((resolve, reject) => {
-      if (!results) {
-        debug('No results to write!');
-        return resolve(results);
-      }
+  async run(results) {
+    if (!results) {
+      debug('No results to write!');
+      return results;
+    }
 
-      const rootKey = Object.keys(results)[0];
-      const lines = results[rootKey];
+    const { outputPath, encoding, csv: csvConfig } = this._config;
 
-      debug('Writing %d lines to CSV file "%s"...', lines.length, this._config.outputPath);
+    const rootKey = Object.keys(results)[0];
+    const lines = results[rootKey];
 
-      return csvStringify(lines, this._config.csv, (csvError, csvString) => {
-        if (csvError) {
-          debug('Error stringifying: %s!', csvError.message);
-          return reject(csvError);
-        }
+    debug('Writing %d lines to "%s" CSV file "%s"...', lines.length, encoding, outputPath);
 
-        return fs.writeFile(this._config.outputPath, csvString, (writeError) => {
-          if (writeError) {
-            debug('Error writing file: %s!', writeError.message);
-            return reject(writeError);
-          }
+    try {
+      const csvString = await csvStringifyAsync(lines, csvConfig);
 
-          debug('Wrote %d chars.', csvString.length);
-          return resolve(this._config.outputPath);
-        });
-      });
-    });
+      await writeFileAsync(outputPath, csvString, encoding);
+
+      debug('Wrote %d chars.', csvString.length);
+    } catch (error) {
+      debug('Error writing CSV file: %s!', error.message);
+      throw error;
+    }
+
+    return outputPath;
   }
 }
 

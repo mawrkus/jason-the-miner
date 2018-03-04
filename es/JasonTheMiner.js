@@ -59,8 +59,13 @@ class JasonTheMiner {
       throw new TypeError(`Invalid processor "${name}"! Missing "run" method.`);
     }
 
-    if (category === 'load' && processor.prototype.getRunContext !== 'function') {
-      throw new TypeError(`Invalid processor "${name}"! Missing "getConfig" method.`);
+    if (
+      category === 'load' && (
+        processor.prototype.getConfig !== 'function' ||
+        processor.prototype.buildLoadParams !== 'function'
+      )
+    ) {
+      throw new TypeError(`Invalid processor "${name}"! Missing "getConfig" and/or "buildLoadParams" method.`);
     }
 
     const processors = this._processors[category];

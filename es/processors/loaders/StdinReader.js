@@ -44,12 +44,11 @@ class StdinReader {
   }
 
   /**
-   * Returns the config and the last run context. Used for following/paginating.
-   * @return {Object} { config, context }
+   * Returns the config . Used for following/paginating.
+   * @return {Object}
    */
-  // eslint-disable-next-line class-methods-use-this
-  getRunContext() {
-    throw new Error('Following/paginating is not supported by "stdin" load processors!');
+  getConfig() {
+    return this._config;
   }
 
   /**
@@ -59,7 +58,7 @@ class StdinReader {
    */
   // eslint-disable-next-line class-methods-use-this
   buildLoadParams() {
-    throw new Error('Following/paginating is not supported by "stdin" load processors!');
+    return {};
   }
 }
 

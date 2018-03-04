@@ -11,10 +11,14 @@
         "name": "h3 > a",
         "description": "div:first-child > p | trim",
         "stats": {
-          "stars": ".col-2.text-right > a ? text(.+k) | trim",
+          "stars": ".col-2.text-right > a | trim",
           "last-update": "relative-time < attr(datetime)"
         }
       }]
+    }
+  },
+  "transform": {
+    "stdout": {
     }
   }
 }

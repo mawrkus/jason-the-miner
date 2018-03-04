@@ -1,6 +1,9 @@
 const path = require('path');
 const fs = require('fs');
+const { promisify } = require('util');
 const debug = require('debug')('jason:transform:json-file');
+
+const writeFileAsync = promisify(fs.writeFile);
 
 /**
  * A processor that writes results to JSON files.
@@ -13,6 +16,7 @@ class JsonFileWriter {
   constructor(config) {
     this._config = {
       outputPath: path.join(process.cwd(), config.path),
+      encoding: config.encoding || 'utf8',
     };
     debug('JsonFileWriter instance created.');
     debug('config', this._config);
@@ -22,27 +26,21 @@ class JsonFileWriter {
    * @param {Object} results
    * @return {Promise}
    */
-  run(results) {
-    debug('Writing JSON file "%s"...', this._config.outputPath);
+  async run(results) {
+    const { outputPath, encoding } = this._config;
 
-    return new Promise((resolve, reject) => {
-      if (!results) {
-        debug('No results to write!');
-        return resolve(results);
-      }
+    debug('Writing "%s" JSON file "%s"...', encoding, outputPath);
 
-      const json = JSON.stringify(results);
+    const json = JSON.stringify(results);
 
-      return fs.writeFile(this._config.outputPath, json, (error) => {
-        if (error) {
-          debug(error.message);
-          return reject(error);
-        }
-
-        debug('Wrote %d chars.', json.length);
-        return resolve(this._config.outputPath);
-      });
-    });
+    try {
+      await writeFileAsync(outputPath, json, encoding);
+    } catch (error) {
+      debug('Error writing JSON file: %s!', error.message);
+      throw error;
+    }
+    debug('Wrote %d chars.', json.length);
+    return this._config.outputPath;
   }
 }
 

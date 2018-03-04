@@ -20,10 +20,10 @@ class StdoutWriter {
    */
   run(results) {
     const data = JSON.stringify(results, null, 2) || '';
-    debug('Writing %d chars to stdout...', data.length);
+    debug('Writing %d "%s" chars to stdout...', data.length, this._config.encoding);
 
     return new Promise((resolve) => {
-      if (!process.stdout.write(`${data}\n`, this._encoding)) {
+      if (!process.stdout.write(`${data}\n`, this._config.encoding)) {
         process.stdout.once('drain', () => resolve(results));
       } else {
         resolve(results);

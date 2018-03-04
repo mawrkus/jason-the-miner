@@ -13,20 +13,30 @@ class NoOperationProcessor {
   }
 
   /**
-   * @return {Object}
+   * Returns undefined as a fallback for promise-based processors.
+   * @return {undefined}
    */
-  getRunContext() { // eslint-disable-line
-    return {};
+  // eslint-disable-next-line class-methods-use-this
+  async run() {
+    debug('Doing nothing.');
   }
 
   /**
-   * Returns null as a fallback for promise-based (input, parse, output) AND
-   * non-promise-based processors like paginators.
-   * @return {null}
+   * Returns the config . Used for following/paginating.
+   * @return {Object}
    */
-  run() { // eslint-disable-line
-    debug('Doing nothing.');
-    return null;
+  getConfig() {
+    return this._config;
+  }
+
+  /**
+   * Builds a new load config. Used for following/paginating.
+   * @param {string} link
+   * @return {Object}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  buildLoadParams() {
+    return {};
   }
 }
 

@@ -62,11 +62,11 @@ class FileReader {
   }
 
   /**
-   * Returns the config and the last run context. Used for following/paginating.
-   * @return {Object} { config, context }
+   * Returns the config . Used for following/paginating.
+   * @return {Object}
    */
-  getRunContext() {
-    return { config: this._config, context: this._lastReadParams };
+  getConfig() {
+    return this._config;
   }
 
   /**

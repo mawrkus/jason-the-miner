@@ -1,5 +1,4 @@
 const HtmlParser = require('./HtmlParser');
-const JsonParser = require('./JsonParser');
 const IdentityProcessor = require('../IdentityProcessor');
 const NoOperationProcessor = require('../NoOperationProcessor');
 
@@ -10,7 +9,6 @@ const NoOperationProcessor = require('../NoOperationProcessor');
  */
 module.exports = {
   html: HtmlParser,
-  json: JsonParser,
   identity: IdentityProcessor,
   noop: NoOperationProcessor,
 };
