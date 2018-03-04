@@ -173,6 +173,7 @@ describe('HtmlParser', () => {
 
         describe('and the element is an object', () => {
           describe('and no root element selector is defined', () => {
+            // TODO: allow if it has a single key, as a short notation?
             it('should throw an error', async () => {
               const parser = createParser();
 
@@ -256,17 +257,20 @@ describe('HtmlParser', () => {
       });
     });
 
-    xdescribe('when the schema is a mix of the above', () => {
-      it('should return the expected result', async () => {
+    describe('when the schema is a mix of the above', () => {
+      it('should return the expected parsed result', async () => {
         const parser = createParser();
 
         const schema = {
-          _$: '#container',
+          _$: '.top-artists',
           title: '.title',
           links: [{
             _$: '.list-item',
             artist: 'a',
           }],
+          metas: {
+            updated: '.note',
+          },
         };
 
         const { result } = await parser.run(html, schema);
@@ -278,6 +282,9 @@ describe('HtmlParser', () => {
             { artist: 'Primal Scream' },
             { artist: 'John Frusciante' },
           ],
+          metas: {
+            updated: 'March 2018',
+          },
         });
       });
     });
