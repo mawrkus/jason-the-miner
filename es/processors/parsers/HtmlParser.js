@@ -55,7 +55,7 @@ class HtmlParser {
    * @param {Object} [customSchema]
    * @return {Promise.<Object>}
    */
-  run(html, customSchema) {
+  async run(html, customSchema) {
     if (!html) {
       debug('No HTML received!');
       return Promise.resolve({});
@@ -73,7 +73,7 @@ class HtmlParser {
 
     debug('Done parsing schema.');
 
-    return Promise.resolve({ result, follow: this._follow, schema });
+    return { result, follow: this._follow, schema };
   }
 
   /**
@@ -82,56 +82,53 @@ class HtmlParser {
    * @param {Cheerio} $context
    * @param {string} [schemaPath=[]]
    * @param {string} [parsedPath=[]]
-   * @param {string} [tab='  ']
+   * @param {string} [tab='']
    * @return {Object}
    */
-  _parseSchema({ schema, $context = {}, schemaPath = [], parsedPath = [], tab = '  ' }) {
+  _parseSchema({
+    schema,
+    $context = {},
+    schemaPath = [],
+    parsedPath = [],
+    tab = '',
+  }) {
     const result = {};
 
-    // TODO: this should be in _parseSubSchema
-    Object.keys(schema)
-      .filter(key => key[0] !== '_')
-      .forEach((prop) => {
-        const definition = schema[prop];
+    switch (typeOf(schema)) {
+      case 'string': // eslint-disable-line no-case-declarations
+        debug('%sParsing value(s) from "%s"...', tab, schema);
+        const value = this._extractElementValue({
+          schema,
+          $context,
+          tab: `${tab}  `,
+        });
+        debug('%s* Value="%s"', `${tab}  `, value);
+        return value;
 
-        switch (typeOf(definition)) {
-          // selector?
-          case 'string': // eslint-disable-line no-case-declarations
-            debug('%sExtracting "%s" value(s) from "%s"...', tab, prop, definition);
-            const value = this._extractElementValue(definition, $context, `${tab}  `);
-            debug('%s* Value="%s"', `${tab}  `, value);
-            result[prop] = value;
-            break;
+      case 'object':
+        debug('%sParsing object schema...', tab);
+        return this._parseObjectSchema({
+          schema,
+          $context,
+          schemaPath,
+          parsedPath,
+          tab: `${tab}  `,
+        });
 
-          // sub schema?
-          case 'object':
-            debug('%sParsing object "%s"...', tab, prop);
-            result[prop] = this._parseSubSchema({
-              schema: definition,
-              $context,
-              schemaPath: schemaPath.concat(prop),
-              parsedPath: parsedPath.concat(prop),
-              tab: `${tab}  `,
-            });
-            break;
+      case 'array': // eslint-disable-line no-case-declarations
+        debug('%sParsing array schema...', tab);
+        return this._parseArraySchema({
+          schema,
+          $context,
+          schemaPath,
+          parsedPath,
+          tab: `${tab}  `,
+        });
 
-          // list?
-          case 'array': // eslint-disable-line no-case-declarations
-            debug('%sParsing list "%s"...', tab, prop);
-            result[prop] = this._parseListSchema({
-              schema: definition[0],
-              $context,
-              schemaPath: schemaPath.concat([prop, 0]),
-              parsedPath: parsedPath.concat(prop),
-              tab: `${tab}  `,
-            });
-            break;
-
-          default:
-            debug('Unknow definition type!', definition);
-            break;
-        }
-      });
+      default:
+        debug('Unsupported schema type!', schema);
+        break;
+    }
 
     if (schema._follow) {
       debug('%sParsing "follow" definition...', tab);
@@ -156,41 +153,55 @@ class HtmlParser {
    * @param {string} tab
    * @return {Object}
    */
-  _parseSubSchema({ schema, $context, schemaPath, parsedPath, tab }) {
-    const { _$: selectorAndMatcher } = schema;
-    const parseArgs = {
-      schema,
-      $context,
-      schemaPath,
-      parsedPath,
-      tab,
-    };
+  _parseObjectSchema({
+    schema,
+    $context,
+    schemaPath,
+    parsedPath,
+    tab,
+  }) {
+    const result = {};
+    const { _$: selectorAndMatcher, _slice = '' } = schema;
+    let $newContext = $context;
 
     if (!selectorAndMatcher) {
-      debug('%sWarning: no selector! Inheriting parent element.', tab);
-      return this._parseSchema(parseArgs);
-    }
-
-    const { selector, matcher } = this._parseSelectorDef(selectorAndMatcher, tab);
-    const $element = $context.find(selector);
-    // TODO: match
-    const elementsCount = $element.length;
-
-    if (!elementsCount) {
-      debug('%sWarning: no DOM element found for selector "%s"! Inheriting parent element.', tab, selector);
-      return this._parseSchema(parseArgs);
-    }
-
-    if (elementsCount > 1) {
-      debug('%sWarning: found %d DOM element(s) for selector "%s"!', tab, elementsCount, selector);
+      debug('%sWarning: no root element selector! Inheriting parent element.', tab);
     } else {
-      debug('%sFound DOM element for selector "%s".', tab, selector);
+      const { selector, matcher } = this._parseSelectorDef(selectorAndMatcher, tab);
+
+      const {
+        $elements,
+        elementsCount,
+      } = this._findSlicedElements(selector, _slice, $context, tab);
+      // TODO: match
+
+      $newContext = $elements;
+
+      if (elementsCount > 1) {
+        debug('%sWarning: keeping only the first element!', tab);
+        $newContext = $newContext.first();
+      }
     }
 
-    return this._parseSchema({
-      ...parseArgs,
-      $context: $element,
-    });
+    Object.keys(schema)
+      .filter(key => key[0] !== '_')
+      .forEach((prop) => {
+        debug('%sParsing "%s"...', tab, prop);
+
+        const definition = schema[prop];
+
+        const value = this._parseSchema({
+          schema: definition,
+          $context: $newContext,
+          schemaPath: schemaPath.concat(prop),
+          parsedPath: parsedPath.concat(prop),
+          tab,
+        });
+
+        result[prop] = value;
+      });
+
+    return result;
   }
 
   /**
@@ -201,46 +212,77 @@ class HtmlParser {
    * @param {string} tab
    * @return {Array}
    */
-  _parseListSchema({ schema, $context, schemaPath, parsedPath, tab }) {
-    if (typeOf(schema) === 'string') {
-      const valuesList = this._extractElementValue(schema, $context, `${tab}  `);
-      debug('%s* Values="%s"', `${tab}  `, valuesList);
-      return [].concat(valuesList); // just in case
+  _parseArraySchema({
+    schema,
+    $context,
+    schemaPath,
+    parsedPath,
+    tab,
+  }) {
+    const result = [];
+    const definition = schema[0];
+    let selectorAndMatcher = definition;
+    let slice;
+    let newSchema;
+
+    schemaPath.push(0);
+
+    if (typeOf(definition) === 'string') {
+      selectorAndMatcher = definition;
+      slice = '';
+      newSchema = '';
+    } else if (typeOf(definition) === 'object') {
+      if (!definition._$) {
+        throw new Error(`No root element selector defined in array schema (path="${schemaPath}")!`);
+      }
+
+      selectorAndMatcher = definition._$;
+      slice = definition._slice;
+
+      newSchema = { ...definition };
+
+      delete newSchema._$;
+      delete newSchema._slice;
+    } else {
+      throw new Error(`Array schemas can only contain a string or an object (path="${schemaPath}")!`);
     }
 
-    const { _$: selectorAndMatcher, _slice = '' } = schema;
     const { selector, matcher } = this._parseSelectorDef(selectorAndMatcher, tab);
-    const { $elements, elementsCount } = this._findSlicedElements(selector, _slice, $context, tab);
+    const { $elements, elementsCount } = this._findSlicedElements(selector, slice, $context, tab);
     // TODO: match
-
-    const list = [];
 
     $elements.each((index, domElement) => {
       debug('%s--> %d/%d', tab, index + 1, elementsCount);
       const $element = this._$(domElement);
 
-      const result = this._parseSchema({
-        schema,
+      const value = this._parseSchema({
+        schema: newSchema,
         $context: $element,
         schemaPath,
         parsedPath: parsedPath.concat(index),
-        tab
+        tab,
       });
 
-      list.push(result);
+      result.push(value);
     });
 
-    return list;
+    return result;
   }
 
-    /**
+  /**
    * @param {Object} schema
    * @param {Cheerio} $context
    * @param {Array} schemaPath
    * @param {Array} parsedPath
    * @param {string} tab
    */
-  _parseFollowSchema({ schema, $context, schemaPath, parsedPath, tab }) {
+  _parseFollowSchema({
+    schema,
+    $context,
+    schemaPath,
+    parsedPath,
+    tab,
+  }) {
     const { _link: selectorAndMatcher } = schema;
 
     if (!selectorAndMatcher) {
@@ -360,34 +402,35 @@ class HtmlParser {
   }
 
   /**
-   * @param {string} selectorDef
+   * @param {string} schema
    * @param {Cheerio} $context
    * @param {string} [tab='']
-   * @return {null|string|Array}
+   * @return {null|string}
    */
-  _extractElementValue(selectorDef, $context, tab) {
-    const { selector, matcher, extractor, filter } = this._parseSelectorDef(selectorDef, tab);
+  _extractElementValue({ schema, $context, tab }) {
+    const {
+      selector,
+      matcher,
+      extractor,
+      filter,
+    } = this._parseSelectorDef(schema, tab);
 
-    const $elements = selector ? $context.find(selector) : $context;
+    // allow empty selector to get the value from the root/current element
+    const { $elements, elementsCount } = selector ?
+      this._findSlicedElements(selector, '', $context, tab) :
+      { $elements: $context, elementsCount: $context.length };
     // TODO: match
-    debug('%sFound %d DOM element(s) for selector "%s".', tab, $elements.length, selector);
 
-    if (!$elements.length) {
+    if (!elementsCount) {
+      debug('%sWarning: no element found!', tab);
       return null;
     }
 
-    if ($elements.length === 1) {
-      return filter(extractor($elements.first()));
+    if (elementsCount > 1) {
+      debug('%sWarning: keeping only the first element!', tab);
     }
 
-    const values = [];
-
-    $elements.each((index, domElement) => {
-      const $element = this._$(domElement);
-      values.push(filter(extractor($element)));
-    });
-
-    return values;
+    return filter(extractor($elements.first()));
   }
 }
 
