@@ -147,7 +147,8 @@ class FileDownloader {
   /**
    * @param {Object} headers
    */
-  _getFileExtensionFromHeaders(headers) { // eslint-disable-line
+  // eslint-disable-next-line class-methods-use-this
+  _getFileExtensionFromHeaders(headers) {
     const contentDisposition = headers['content-disposition'];
 
     if (contentDisposition) {

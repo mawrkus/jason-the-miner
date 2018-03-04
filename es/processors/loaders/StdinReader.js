@@ -28,7 +28,7 @@ class StdinReader {
       process.stdin
         .on('readable', () => {
           let chunk;
-          while (chunk = process.stdin.read()) { // eslint-disable-line
+          while (chunk = process.stdin.read()) { // eslint-disable-line no-cond-assign
             data += chunk;
           }
         })

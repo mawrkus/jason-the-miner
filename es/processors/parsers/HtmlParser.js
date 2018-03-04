@@ -113,7 +113,7 @@ class HtmlParser {
           tab: `${tab}  `,
         });
 
-      case 'array': // eslint-disable-line no-case-declarations
+      case 'array':
         debug('%sParsing array schema...', tab);
         return this._parseArraySchema({
           schema,
