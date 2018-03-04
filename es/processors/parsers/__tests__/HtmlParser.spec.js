@@ -42,9 +42,9 @@ describe('HtmlParser', () => {
             <h1 class="title">Other tops</h1>
             <h2 class="title songs-title">Best songs</h2>
             <ul id="list">
-              <li><span><a href="#" data-url="http://rose-life.com/"> La vie en rose (radio edit)   </a></span></li>
+              <li><span><a href="#1" data-url="http://rose-life.com/"> La vie en rose (radio edit)   </a></span></li>
               <li><span><a href="#" data-url="http://dreamland.com/">       Dream (radio edit)</a></span></li>
-              <li><span><a href="#" data-url="http://luavega.com/">Lua       </a></span></li>
+              <li><span><a href="#3" data-url="http://luavega.com/">Lua       </a></span></li>
             </ul>
           </div>
         </body>
@@ -418,12 +418,13 @@ describe('HtmlParser', () => {
 
         const schema = {
           _$: '.top ? attr(class,songs)',
-          title: '.title ? html(Best) | uppercase',
+          title: '.title ? html(^Best) | uppercase',
           songs: [{
-            _$: 'li',
-            title: 'span ? text(radio edit) < text | trim',
+            _$: 'li ? text(radio edit)',
+            title: 'span < text | trim',
             url: 'a < attr(data-url)',
           }],
+          anchors: ['a ? attr(href,^#\\d) < attr(href)'],
         };
 
         const { result } = await parser.run(html, schema);
@@ -439,11 +440,8 @@ describe('HtmlParser', () => {
               title: 'Dream (radio edit)',
               url: 'http://dreamland.com/',
             },
-            {
-              title: null,
-              url: 'http://luavega.com/',
-            },
           ],
+          anchors: ['#1', '#3'],
         });
       });
     });

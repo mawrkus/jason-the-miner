@@ -94,9 +94,9 @@ class HtmlParser {
   }) {
     switch (typeOf(schema)) {
       case 'string': // eslint-disable-line no-case-declarations
-        debug('%sParsing value(s) from "%s"...', tab, schema);
+        debug('%sParsing value from "%s"...', tab, schema);
         const value = this._extractElementValue({
-          schema,
+          selectorDef: schema,
           $context,
           tab: `${tab}  `,
         });
@@ -145,13 +145,13 @@ class HtmlParser {
     tab,
   }) {
     const result = {};
-    const { _$: selectorAndMatcher, _slice: slice = '' } = schema;
+    const { _$: selectorDef, _slice: slice = '' } = schema;
     let $newContext = $context;
 
-    if (!selectorAndMatcher) {
+    if (!selectorDef) {
       debug('%sWarning: no root element selector! Inheriting parent element.', tab);
     } else {
-      const { selector, matcher } = this._parseSelectorDef({ def: selectorAndMatcher, tab });
+      const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
 
       const { $elements, elementsCount } = this._findSlicedElements({
         selector,
@@ -217,37 +217,38 @@ class HtmlParser {
     parsedPath,
     tab,
   }) {
-    const result = [];
     const definition = schema[0];
     const definitionType = typeOf(definition);
-    let selectorAndMatcher = definition;
-    let slice;
-    let newSchema;
 
     schemaPath.push(0);
 
-    if (definitionType === 'string') {
-      selectorAndMatcher = definition;
-      slice = '';
-      newSchema = '';
-    } else if (definitionType === 'object') {
+    if (definitionType !== 'string' && definitionType !== 'object') {
+      throw new Error(`Array schemas can only contain a string or an object (path="${schemaPath}")!`);
+    }
+
+    const result = [];
+    let selectorDef = definition;
+    let slice = '';
+    let newSchema;
+
+    if (definitionType === 'object') {
       // TODO: allow if it has a single key, as a short notation?
       if (!definition._$) {
         throw new Error(`No root element selector defined in array schema (path="${schemaPath}")!`);
       }
-
-      selectorAndMatcher = definition._$;
+      selectorDef = definition._$;
       slice = definition._slice;
-
-      newSchema = { ...definition };
-
-      delete newSchema._$;
-      delete newSchema._slice;
-    } else {
-      throw new Error(`Array schemas can only contain a string or an object (path="${schemaPath}")!`);
     }
 
-    const { selector, matcher } = this._parseSelectorDef({ def: selectorAndMatcher, tab });
+    const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
+
+    if (definitionType === 'string') {
+      newSchema = selectorDef.replace(selector, '');
+    } else {
+      newSchema = { ...definition };
+      delete newSchema._$;
+      delete newSchema._slice;
+    }
 
     const { $elements, elementsCount } = this._findSlicedElements({
       selector,
@@ -289,14 +290,14 @@ class HtmlParser {
     parsedPath,
     tab,
   }) {
-    const { _link: selectorAndMatcher } = schema;
+    const { _link: selectorDef } = schema;
 
-    if (!selectorAndMatcher) {
+    if (!selectorDef) {
       debug('%sWarning: no link selector! Skipping.', tab);
       return;
     }
 
-    const { selector, matcher } = this._parseSelectorDef({ def: selectorAndMatcher, tab });
+    const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
 
     const { $elements, elementsCount } = this._findSlicedElements({
       selector,
@@ -363,22 +364,23 @@ class HtmlParser {
   }
 
   /**
-   * @param  {string} E.g: a.item ? attr(href,https?://) < attr(title) | trim
+   * @param {string} selectorDef E.g: a.item ? attr(href,https?://) < attr(title) | trim
+   * @param {string} tab
    * @return {Object} parsed
    * @return {string} parsed.selector E.g: a.item
    * @return {Function} parsed.matcher E.g: Function('href', 'https?://')
    * @return {Function} parsed.extractor E.g: Function('title')
    * @return {Function} parsed.filter E.g: Function()
    */
-  _parseSelectorDef({ def, tab }) {
-    // debug('%sParsing selector definition="%s".', tab, def);
+  _parseSelectorDef({ selectorDef, tab }) {
+    debug('%sParsing selector definition="%s".', tab, selectorDef);
     const [
       ,
       rawSelector = '',
       rawMatcher = '',
       rawExtractor = '',
       rawFilter = '',
-    ] = def.match(REGEX_SELECTOR_DEFINITION);
+    ] = selectorDef.match(REGEX_SELECTOR_DEFINITION);
 
     const selector = rawSelector.trim();
     const helpersDefs = [
@@ -433,18 +435,18 @@ class HtmlParser {
   }
 
   /**
-   * @param {string} schema
+   * @param {string} selectorDef
    * @param {Cheerio} $context
    * @param {string} [tab='']
    * @return {null|string}
    */
-  _extractElementValue({ schema, $context, tab }) {
+  _extractElementValue({ selectorDef, $context, tab }) {
     const {
       selector,
       matcher,
       extractor,
       filter,
-    } = this._parseSelectorDef({ def: schema, tab });
+    } = this._parseSelectorDef({ selectorDef, tab });
 
     // allow empty selector to get the value from the root/current element
     const { $elements, elementsCount } = selector ?
