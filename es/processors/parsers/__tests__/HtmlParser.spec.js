@@ -25,6 +25,9 @@ describe('HtmlParser', () => {
               <li class="list-item"><a href="http://john-frusciante.com/">John Frusciante</a></li>
             </ul>
             <p class="note">March 2018</p>
+            <p>
+              Suggested by <a class="editor" href="/mawrkus">mawrkus</a>
+            </p>
           </div>
           <div class="top-records">
             <h1 class="title">Best records</h1>
@@ -66,13 +69,29 @@ describe('HtmlParser', () => {
           const parser = createParser();
 
           const schema = {
-            links: '.list-item',
+            artist: '.list-item',
           };
 
           const { result } = await parser.run(html, schema);
 
           expect(result).toEqual({
-            links: 'The Stooges',
+            artist: 'The Stooges',
+          });
+        });
+      });
+
+      describe('and does not identify an element', () => {
+        it('should return null as parsed value', async () => {
+          const parser = createParser();
+
+          const schema = {
+            copyright: '.copyright',
+          };
+
+          const { result } = await parser.run(html, schema);
+
+          expect(result).toEqual({
+            copyright: null,
           });
         });
       });
@@ -123,7 +142,7 @@ describe('HtmlParser', () => {
           });
         });
 
-        describe('when a schema property is made of an empty string', () => {
+        describe('and a property of this object is made of an empty string', () => {
           it('should return an object with the correct parsed values, using the root element', async () => {
             const parser = createParser();
 
@@ -153,13 +172,13 @@ describe('HtmlParser', () => {
             const parser = createParser();
 
             const schema = {
-              links: ['.list-item a'],
+              items: ['.list-item a'],
             };
 
             const { result } = await parser.run(html, schema);
 
             expect(result).toEqual({
-              links: [
+              items: [
                 'The Stooges',
                 'Primal Scream',
                 'John Frusciante',
@@ -178,12 +197,12 @@ describe('HtmlParser', () => {
               const parser = createParser();
 
               const schema = {
-                links: [{
+                items: [{
                   name: '.list-item a',
                 }],
               };
 
-              const expectedError = new Error('No root element selector defined in array schema (path="links,0")!');
+              const expectedError = new Error('No root element selector defined in array schema (path="items,0")!');
 
               await expect(parser.run(html, schema)).rejects.toEqual(expectedError);
             });
@@ -194,7 +213,7 @@ describe('HtmlParser', () => {
               const parser = createParser();
 
               const schema = {
-                links: [{
+                items: [{
                   _$: '.list-item',
                   name: 'a',
                 }],
@@ -203,7 +222,7 @@ describe('HtmlParser', () => {
               const { result } = await parser.run(html, schema);
 
               expect(result).toEqual({
-                links: [
+                items: [
                   { name: 'The Stooges' },
                   { name: 'Primal Scream' },
                   { name: 'John Frusciante' },
@@ -221,12 +240,12 @@ describe('HtmlParser', () => {
             const parser = createParser();
 
             const schema = {
-              links: [
+              items: [
                 ['.list-item a'],
               ],
             };
 
-            const expectedError = new Error('Array schemas can only contain a string or an object (path="links,0")!');
+            const expectedError = new Error('Array schemas can only contain a string or an object (path="items,0")!');
 
             await expect(parser.run(html, schema)).rejects.toEqual(expectedError);
           });
@@ -238,7 +257,7 @@ describe('HtmlParser', () => {
           const parser = createParser();
 
           const schema = {
-            links: [
+            records: [
               '.top-records .list-item a',
               '.top-artists .list-item a',
             ],
@@ -247,7 +266,7 @@ describe('HtmlParser', () => {
           const { result } = await parser.run(html, schema);
 
           expect(result).toEqual({
-            links: [
+            records: [
               'Island Life',
               'Homeland',
               'Navega',
@@ -264,12 +283,15 @@ describe('HtmlParser', () => {
         const schema = {
           _$: '.top-artists',
           title: '.title',
-          links: [{
+          items: [{
             _$: '.list-item',
-            artist: 'a',
+            artist: {
+              name: 'a',
+            },
           }],
           metas: {
-            updated: '.note',
+            _$: '.note',
+            updated: '',
           },
         };
 
@@ -277,10 +299,10 @@ describe('HtmlParser', () => {
 
         expect(result).toEqual({
           title: 'Best artists',
-          links: [
-            { artist: 'The Stooges' },
-            { artist: 'Primal Scream' },
-            { artist: 'John Frusciante' },
+          items: [
+            { artist: { name: 'The Stooges' } },
+            { artist: { name: 'Primal Scream' } },
+            { artist: { name: 'John Frusciante' } },
           ],
           metas: {
             updated: 'March 2018',
@@ -290,7 +312,72 @@ describe('HtmlParser', () => {
     });
 
     describe('when the schema contains a "follow" defintion', () => {
-      
+      it('should return the partial parsed values and the correct "follow" configuration', async () => {
+        const parser = createParser();
+
+        const schema = {
+          _$: '.top-artists',
+          title: '.title',
+          items: [{
+            _$: '.list-item',
+            artist: {
+              _follow: {
+                _link: 'a',
+                biography: 'p.biography',
+              },
+              name: 'a',
+            },
+          }],
+          metas: {
+            _$: '.note',
+            updated: '',
+          },
+          _follow: {
+            _link: '.editor',
+            editor: {
+              name: 'h3.editor-name',
+              posts: '.posts',
+            },
+          },
+        };
+
+        const { result, follow } = await parser.run(html, schema);
+
+        expect(result).toEqual({
+          title: 'Best artists',
+          items: [
+            { artist: { name: 'The Stooges' } },
+            { artist: { name: 'Primal Scream' } },
+            { artist: { name: 'John Frusciante' } },
+          ],
+          metas: {
+            updated: 'March 2018',
+          },
+        });
+
+        expect(follow).toEqual([
+          {
+            link: 'http://the-stooges.com/',
+            parsedPath: ['items', 0, 'artist'],
+            schemaPath: ['items', 0, 'artist', '_follow'],
+          },
+          {
+            link: 'http://primal-scream.com/',
+            parsedPath: ['items', 1, 'artist'],
+            schemaPath: ['items', 0, 'artist', '_follow'],
+          },
+          {
+            link: 'http://john-frusciante.com/',
+            parsedPath: ['items', 2, 'artist'],
+            schemaPath: ['items', 0, 'artist', '_follow'],
+          },
+          {
+            link: '/mawrkus',
+            parsedPath: [],
+            schemaPath: ['_follow'],
+          },
+        ]);
+      });
     });
   });
 });

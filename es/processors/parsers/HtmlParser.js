@@ -83,7 +83,7 @@ class HtmlParser {
    * @param {string} [schemaPath=[]]
    * @param {string} [parsedPath=[]]
    * @param {string} [tab='']
-   * @return {Object}
+   * @return {Object|Null}
    */
   _parseSchema({
     schema,
@@ -92,8 +92,6 @@ class HtmlParser {
     parsedPath = [],
     tab = '',
   }) {
-    const result = {};
-
     switch (typeOf(schema)) {
       case 'string': // eslint-disable-line no-case-declarations
         debug('%sParsing value(s) from "%s"...', tab, schema);
@@ -127,10 +125,8 @@ class HtmlParser {
 
       default:
         debug('Unsupported schema type!', schema);
-        break;
+        return null;
     }
-
-    return result;
   }
 
   /**
@@ -190,9 +186,9 @@ class HtmlParser {
       });
 
     if (schema._follow) {
-      debug('%sParsing "follow" definition...', tab);
+      debug('%sParsing "follow" schema...', tab);
 
-      this._parseFollowDef({
+      this._parseFollowSchema({
         schema: schema._follow,
         $context,
         schemaPath: schemaPath.concat('_follow'),
@@ -221,17 +217,18 @@ class HtmlParser {
   }) {
     const result = [];
     const definition = schema[0];
+    const definitionType = typeOf(definition);
     let selectorAndMatcher = definition;
     let slice;
     let newSchema;
 
     schemaPath.push(0);
 
-    if (typeOf(definition) === 'string') {
+    if (definitionType === 'string') {
       selectorAndMatcher = definition;
       slice = '';
       newSchema = '';
-    } else if (typeOf(definition) === 'object') {
+    } else if (definitionType === 'object') {
       // TODO: allow if it has a single key, as a short notation?
       if (!definition._$) {
         throw new Error(`No root element selector defined in array schema (path="${schemaPath}")!`);
@@ -277,7 +274,7 @@ class HtmlParser {
    * @param {Array} parsedPath
    * @param {string} tab
    */
-  _parseFollowDef({
+  _parseFollowSchema({
     schema,
     $context,
     schemaPath,
@@ -292,26 +289,29 @@ class HtmlParser {
     }
 
     const { selector, matcher } = this._parseSelectorDef(selectorAndMatcher, tab);
+
     const { $elements, elementsCount } = this._findSlicedElements(selector, '', $context, tab);
     // TODO: match
 
     if (!elementsCount) {
-      debug('%sWarning: no DOM element found for selector "%s"! Nothing to follow.', tab, selector);
+      debug('%sWarning: no link found for selector "%s"! Nothing to follow.', tab, selector);
       return;
     }
 
-    const linksAndPaths = [];
+    if (elementsCount > 1) {
+      debug('%sWarning: keeping only the first link!', tab);
+    }
 
-    $elements.each((index, domElement) => {
-      const rawLink = this._$(domElement).attr('href') || '';
-      const link = rawLink.trim();
+    // TODO: allow custom extractor and filter?
+    const rawLink = $elements.first().attr('href') || '';
+    const link = rawLink.trim();
 
-      debug('%s-> %d/%d = "%s"', tab, index + 1, elementsCount, link);
+    if (!link) {
+      debug('%sWarning: empty link found for selector "%s"! Nothing to follow.', tab, selector);
+      return;
+    }
 
-      linksAndPaths.push({ link, schemaPath, parsedPath });
-    });
-
-    this._follow = this._follow.concat(linksAndPaths);
+    this._follow = this._follow.concat({ link, schemaPath, parsedPath });
   }
 
   /**
@@ -385,7 +385,12 @@ class HtmlParser {
     debug('%sselector="%s"', tab, selector);
     debug('%s%s', tab, helperDebug.join(' / '));
 
-    return { selector, matcher, extractor, filter };
+    return {
+      selector,
+      matcher,
+      extractor,
+      filter,
+    };
   }
 
   /**
