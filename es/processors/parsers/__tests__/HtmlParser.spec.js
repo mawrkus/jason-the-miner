@@ -17,8 +17,8 @@ describe('HtmlParser', () => {
     const html = `
       <html>
         <body>
-          <div class="top-artists">
-            <h1 class="title">Best artists</h1>
+          <div class="top top-artists">
+            <h1 class="title artists-title">Best artists</h1>
             <ul id="list">
               <li class="list-item"><a href="http://the-stooges.com/">The Stooges</a></li>
               <li class="list-item"><a href="http://primal-scream.com/">Primal Scream</a></li>
@@ -29,8 +29,8 @@ describe('HtmlParser', () => {
               Suggested by <a class="editor" href="/mawrkus">mawrkus</a>
             </p>
           </div>
-          <div class="top-records">
-            <h1 class="title">Best records</h1>
+          <div class="top top-records">
+            <h1 class="title records-title">Best records</h1>
             <ul id="list">
               <li class="list-item"><a href="http://island-life.com/">Island Life</a></li>
               <li class="list-item"><a href="http://homeland.com/">Homeland</a></li>
@@ -38,14 +38,14 @@ describe('HtmlParser', () => {
             </ul>
             <p class="note">February 2018</p>
           </div>
-          <div class="top-songs">
-            <h1 class="title">Best songs</h1>
+          <div class="top top-songs">
+            <h1 class="title">Other tops</h1>
+            <h2 class="title songs-title">Best songs</h2>
             <ul id="list">
-              <li><span><a href="#" data-url="http://rose-life.com/"> La vie en rose   </a></span></li>
-              <li><span><a href="#" data-url="http://dreamland.com/">           Dream</a></span></li>
-              <li><span><a href="#" data-url="http://luavega.com/">Lua          </a></span></li>
+              <li><span><a href="#" data-url="http://rose-life.com/"> La vie en rose (radio edit)   </a></span></li>
+              <li><span><a href="#" data-url="http://dreamland.com/">       Dream (radio edit)</a></span></li>
+              <li><span><a href="#" data-url="http://luavega.com/">Lua       </a></span></li>
             </ul>
-            <p class="note">January 2018</p>
           </div>
         </body>
       </html>
@@ -417,11 +417,11 @@ describe('HtmlParser', () => {
         const parser = createParser();
 
         const schema = {
-          _$: '.top-songs',
-          title: '.title | uppercase',
+          _$: '.top ? attr(class,songs)',
+          title: '.title ? html(Best) | uppercase',
           songs: [{
             _$: 'li',
-            title: 'span < text | trim',
+            title: 'span ? text(radio edit) < text | trim',
             url: 'a < attr(data-url)',
           }],
         };
@@ -432,15 +432,15 @@ describe('HtmlParser', () => {
           title: 'BEST SONGS',
           songs: [
             {
-              title: 'La vie en rose',
+              title: 'La vie en rose (radio edit)',
               url: 'http://rose-life.com/',
             },
             {
-              title: 'Dream',
+              title: 'Dream (radio edit)',
               url: 'http://dreamland.com/',
             },
             {
-              title: 'Lua',
+              title: null,
               url: 'http://luavega.com/',
             },
           ],

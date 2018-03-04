@@ -145,19 +145,21 @@ class HtmlParser {
     tab,
   }) {
     const result = {};
-    const { _$: selectorAndMatcher, _slice = '' } = schema;
+    const { _$: selectorAndMatcher, _slice: slice = '' } = schema;
     let $newContext = $context;
 
     if (!selectorAndMatcher) {
       debug('%sWarning: no root element selector! Inheriting parent element.', tab);
     } else {
-      const { selector, matcher } = this._parseSelectorDef(selectorAndMatcher, tab);
+      const { selector, matcher } = this._parseSelectorDef({ def: selectorAndMatcher, tab });
 
-      const {
-        $elements,
-        elementsCount,
-      } = this._findSlicedElements(selector, _slice, $context, tab);
-      // TODO: match
+      const { $elements, elementsCount } = this._findSlicedElements({
+        selector,
+        matcher,
+        slice,
+        $context,
+        tab,
+      });
 
       $newContext = $elements;
 
@@ -245,9 +247,15 @@ class HtmlParser {
       throw new Error(`Array schemas can only contain a string or an object (path="${schemaPath}")!`);
     }
 
-    const { selector, matcher } = this._parseSelectorDef(selectorAndMatcher, tab);
-    const { $elements, elementsCount } = this._findSlicedElements(selector, slice, $context, tab);
-    // TODO: match
+    const { selector, matcher } = this._parseSelectorDef({ def: selectorAndMatcher, tab });
+
+    const { $elements, elementsCount } = this._findSlicedElements({
+      selector,
+      matcher,
+      slice,
+      $context,
+      tab,
+    });
 
     $elements.each((index, domElement) => {
       debug('%s--> %d/%d', tab, index + 1, elementsCount);
@@ -288,10 +296,15 @@ class HtmlParser {
       return;
     }
 
-    const { selector, matcher } = this._parseSelectorDef(selectorAndMatcher, tab);
+    const { selector, matcher } = this._parseSelectorDef({ def: selectorAndMatcher, tab });
 
-    const { $elements, elementsCount } = this._findSlicedElements(selector, '', $context, tab);
-    // TODO: match
+    const { $elements, elementsCount } = this._findSlicedElements({
+      selector,
+      matcher,
+      slice: '',
+      $context,
+      tab,
+    });
 
     if (!elementsCount) {
       debug('%sWarning: no link found for selector "%s"! Nothing to follow.', tab, selector);
@@ -316,16 +329,28 @@ class HtmlParser {
 
   /**
    * @param {string} selector
+   * @param {Function} matcher
    * @param {string} slice
    * @param {Cheerio} $context
    * @param {string} tab
    * @return {Object}
    */
   // eslint-disable-next-line class-methods-use-this
-  _findSlicedElements(selector, slice = '', $context, tab) {
+  _findSlicedElements({
+    selector,
+    matcher,
+    slice = '',
+    $context,
+    tab,
+  }) {
     let $elements = $context.find(selector);
     let elementsCount = $elements.length;
     debug('%sFound %d DOM element(s) for selector "%s".', tab, elementsCount, selector);
+
+    $elements = $elements.filter((index, domElement) => matcher(this._$(domElement)));
+    elementsCount = $elements.length;
+
+    debug('%sAfter matching: %d element(s)', tab, elementsCount);
 
     const sliceMatch = slice.match(REGEXP_SLICE_PARAMS);
     if (sliceMatch) {
@@ -345,15 +370,15 @@ class HtmlParser {
    * @return {Function} parsed.extractor E.g: Function('title')
    * @return {Function} parsed.filter E.g: Function()
    */
-  _parseSelectorDef(selectorDef, tab) {
-    // debug('%sParsing selector definition="%s".', tab, selectorDef);
+  _parseSelectorDef({ def, tab }) {
+    // debug('%sParsing selector definition="%s".', tab, def);
     const [
       ,
       rawSelector = '',
       rawMatcher = '',
       rawExtractor = '',
       rawFilter = '',
-    ] = selectorDef.match(REGEX_SELECTOR_DEFINITION);
+    ] = def.match(REGEX_SELECTOR_DEFINITION);
 
     const selector = rawSelector.trim();
     const helpersDefs = [
@@ -372,7 +397,7 @@ class HtmlParser {
         return categoryHelpers.default.bind(categoryHelpers);
       }
 
-      const { name, params } = this._parseHelperDef(helperDef);
+      const { name, params } = this._parseHelperDef({ helperDef });
 
       if (!categoryHelpers[name]) {
         throw new Error(`Unknown ${category} helper "${name}"!`);
@@ -400,8 +425,8 @@ class HtmlParser {
    * @return {string[]} parsed.params E.g: ['href', 'https?://']
    */
   // eslint-disable-next-line class-methods-use-this
-  _parseHelperDef(helperDefinition) {
-    const [, rawName = '', rawParams = ''] = helperDefinition.match(REGEX_HELPER);
+  _parseHelperDef({ helperDef }) {
+    const [, rawName = '', rawParams = ''] = helperDef.match(REGEX_HELPER);
     const name = rawName.trim();
     const params = !rawParams ? [] : rawParams.split(',').map(p => p.trim());
     return { name, params };
@@ -419,16 +444,24 @@ class HtmlParser {
       matcher,
       extractor,
       filter,
-    } = this._parseSelectorDef(schema, tab);
+    } = this._parseSelectorDef({ def: schema, tab });
 
     // allow empty selector to get the value from the root/current element
     const { $elements, elementsCount } = selector ?
-      this._findSlicedElements(selector, '', $context, tab) :
-      { $elements: $context, elementsCount: $context.length };
-    // TODO: match
+      this._findSlicedElements({
+        selector,
+        matcher,
+        slice: '',
+        $context,
+        tab,
+      }) :
+      {
+        $elements: $context,
+        elementsCount: $context.length,
+      };
 
     if (!elementsCount) {
-      debug('%sWarning: no element found!', tab);
+      debug('%sWarning: no element!', tab);
       return null;
     }
 
