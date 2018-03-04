@@ -38,6 +38,15 @@ describe('HtmlParser', () => {
             </ul>
             <p class="note">February 2018</p>
           </div>
+          <div class="top-songs">
+            <h1 class="title">Best songs</h1>
+            <ul id="list">
+              <li><span><a href="#" data-url="http://rose-life.com/"> La vie en rose   </a></span></li>
+              <li><span><a href="#" data-url="http://dreamland.com/">           Dream</a></span></li>
+              <li><span><a href="#" data-url="http://luavega.com/">Lua          </a></span></li>
+            </ul>
+            <p class="note">January 2018</p>
+          </div>
         </body>
       </html>
     `;
@@ -377,6 +386,42 @@ describe('HtmlParser', () => {
             schemaPath: ['_follow'],
           },
         ]);
+      });
+    });
+
+    describe('when the schema contains references to matchers, extractors and filters', () => {
+      it('should return the expected parsed results', async () => {
+        const parser = createParser();
+
+        const schema = {
+          _$: '.top-songs',
+          title: '.title | uppercase',
+          songs: [{
+            _$: 'li',
+            title: 'span < text | trim',
+            url: 'a < attr(data-url)',
+          }],
+        };
+
+        const { result } = await parser.run(html, schema);
+
+        expect(result).toEqual({
+          title: 'BEST SONGS',
+          songs: [
+            {
+              title: 'La vie en rose',
+              url: 'http://rose-life.com/',
+            },
+            {
+              title: 'Dream',
+              url: 'http://dreamland.com/',
+            },
+            {
+              title: 'Lua',
+              url: 'http://luavega.com/',
+            },
+          ],
+        });
       });
     });
   });
