@@ -7,7 +7,8 @@ const regexCache = require('./regex-cache');
  */
 module.exports = {
   default: () => true,
-  text: (regexString, $el) => regexCache.get(regexString).test($el.text()),
-  html: (regexString, $el) => regexCache.get(regexString).test($el.html()),
-  attr: (attr, regexString, $el) => regexCache.get(regexString).test($el.attr(attr)),
+  // fallback to an empty string to prevent false positive in case of undefined
+  text: (regexString, $el) => regexCache.get(regexString).test($el.text() || ''),
+  html: (regexString, $el) => regexCache.get(regexString).test($el.html() || ''),
+  attr: (attr, regexString, $el) => regexCache.get(regexString).test($el.attr(attr) || ''),
 };
