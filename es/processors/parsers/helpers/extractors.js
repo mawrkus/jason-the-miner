@@ -6,9 +6,10 @@ const regexCache = require('./regex-cache');
  * @type {Object}
  */
 module.exports = {
-  default: $el => $el.text(),
-  text: $el => $el.text(),
-  html: $el => $el.html(),
+  // must always return a string for the filters to work properly
+  default: $el => $el.text() || '',
+  text: $el => $el.text() || '',
+  html: $el => $el.html() || '',
   attr: (attr, $el) => $el.attr(attr) || '',
   regex: (regexString, $el) => {
     const matches = regexCache.get(regexString).exec($el.text());
