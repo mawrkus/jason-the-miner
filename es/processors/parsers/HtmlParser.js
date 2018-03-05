@@ -432,16 +432,18 @@ class HtmlParser {
   // eslint-disable-next-line class-methods-use-this
   _parseHelperDef({ helperDef }) {
     let matches;
-    // TOD: improve this, unleash the power of regex
+
+    // TODO: improve this, unleash the power of regex
     if (helperDef.indexOf('(') > -1) {
       matches = helperDef.match(REGEX_HELPER_WITH_PARENS);
     } else {
       matches = helperDef.match(REGEX_HELPER_WITHOUT_PARENS);
     }
-    debug(matches);
+
     const [, rawName = '', rawParams = ''] = matches;
     const name = rawName.trim();
     const params = !rawParams ? [] : rawParams.split(',').map(p => p.trim());
+
     return { name, params };
   }
 
