@@ -3,7 +3,8 @@ const debug = require('debug')('jason:parse:html');
 
 // eslint-disable-next-line max-len
 const REGEX_SELECTOR_DEFINITION = /([^?<|]+)?(\?[^<|]+|\?[^(]+\(.+\))?(<[^|]+|<[^(]+\(.+\))?(\|.+)?/;
-const REGEX_HELPER = /([^(]+)\(?([^)]*)\)?/;
+const REGEX_HELPER_WITHOUT_PARENS = /([^()]+)/;
+const REGEX_HELPER_WITH_PARENS = /([^()]+)\((.+)\)/;
 const REGEXP_SLICE_PARAMS = /\D*(\d+)\D*,\D*(\d+)/;
 
 /**
@@ -243,6 +244,8 @@ class HtmlParser {
     const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
 
     if (definitionType === 'string') {
+      // Ideally the matcher part of the selector definition should be removed as well
+      // but it works because _extractElementValue() makes a special case for empty selectors
       newSchema = selectorDef.replace(selector, '');
     } else {
       newSchema = { ...definition };
@@ -428,7 +431,15 @@ class HtmlParser {
    */
   // eslint-disable-next-line class-methods-use-this
   _parseHelperDef({ helperDef }) {
-    const [, rawName = '', rawParams = ''] = helperDef.match(REGEX_HELPER);
+    let matches;
+    // TOD: improve this, unleash the power of regex
+    if (helperDef.indexOf('(') > -1) {
+      matches = helperDef.match(REGEX_HELPER_WITH_PARENS);
+    } else {
+      matches = helperDef.match(REGEX_HELPER_WITHOUT_PARENS);
+    }
+    debug(matches);
+    const [, rawName = '', rawParams = ''] = matches;
     const name = rawName.trim();
     const params = !rawParams ? [] : rawParams.split(',').map(p => p.trim());
     return { name, params };

@@ -1,5 +1,4 @@
 // process.env.DEBUG = 'jason:parse:html';
-
 const HtmlParser = require('../HtmlParser');
 const defaultParserHelpers = require('../helpers');
 

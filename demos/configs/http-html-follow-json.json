@@ -3,9 +3,6 @@
     "http": {
       "baseURL": "https://github.com",
       "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
-      "headers": {
-        "Accept-Language": "en"
-      },
       "_concurrency": 4
     }
   },
