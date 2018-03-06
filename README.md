@@ -159,7 +159,7 @@ Jason the Miner comes with 3 built-in loaders:
 
 ### Parsers
 
-- `html`: uses [Cheerio](https://github.com/cheeriojs/cheerio) as HTML parser. Options: `schemas`.
+- `html`: uses [Cheerio](https://github.com/cheeriojs/cheerio) as HTML parser. 
 
 #### Schemas definition
 
