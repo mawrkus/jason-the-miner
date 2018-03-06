@@ -193,10 +193,14 @@ Jason the Miner comes with 3 built-in loaders:
             "_$": ".js-navigation-container li > div > div:nth-child(3)",
             "desc": "a:first-child | trim",
             "opened": "relative-time < attr(datetime)"
-          }]
+          }],
+          "_paginate": {
+            "link": "a[rel='next']",
+            "depth": 2
+          }
         }
       }
-    }]
+    }],
   }
 ...
 ```
@@ -208,6 +212,7 @@ A schema is a plain object that recursively defines:
 - `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector,
 - `_slice` limits the number of elements to parse
 - `_follow` tells Jason to follow a link (fetch new data) & to continue scraping when the new data is received
+- `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context
 
 ##### Parse helpers
 
