@@ -10,7 +10,6 @@
     "html": {
       "repos": [{
         "_$": ".repo-list .repo-list-item",
-        "_slice": "0,2",
         "name": "h3 > a",
         "last-update": "relative-time < attr(datetime)",
         "_follow": {
@@ -36,7 +35,11 @@
             }
           }
         }
-      }]
+      }],
+      "_paginate": {
+        "link": "a[rel='next']",
+        "depth": 1
+      }
     }
   },
   "transform": {

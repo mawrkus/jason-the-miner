@@ -24,7 +24,7 @@ const demoFiles = [
   'file-html-json.json',
   'file-html-csv.json',
   'http-html-paginate-csv.json',
-  'http-html-follow-follow-paginate-json.json',
+  'http-html-follow-x2-paginate-x2-json.json',
   'http-html-follow-paginate-json.json',
   // 'http-html-download.json',
   // 'http-html-email.json',
