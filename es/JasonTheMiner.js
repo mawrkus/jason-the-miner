@@ -36,8 +36,6 @@ class JasonTheMiner {
       transform: {},
     };
 
-    this._pagination = {};
-
     debug('A new miner is born, and his name is Jason!');
     debug('processors', this._processors);
     debug('processors fallbacks', this._fallbacks);
@@ -46,8 +44,8 @@ class JasonTheMiner {
 
   /**
    * Registers a new processor, i.e. a class that must implement the "run()" method.
-   * In order to support pagination, the loaders and parsers must also implement a
-   * "getRunContext()" method. See the "processors" subfolders for examples.
+   * The loaders and parsers must also implement the "getConfig()" and "buildLoadParams()" methods.
+   * See the "processors" subfolders for examples.
    * @param  {Object} options
    * @param  {string} options.category "load", "parse" or "transform"
    * @param  {string} options.name
@@ -135,8 +133,6 @@ class JasonTheMiner {
     const parser = this._buildProcessor('parse', parse);
     const transformer = this._buildProcessor('transform', transform);
 
-    this._pagination = {};
-
     try {
       const parsed = await this._loadAndParse({ loader, parser });
       return transformer.run(parsed);
@@ -151,6 +147,7 @@ class JasonTheMiner {
    * @param  {Object} parser
    * @param  {Object} [loadParams]
    * @param  {Object} [parseSchema]
+   * @param  {number} [level=0]
    * @return {Promise.<Object}
    */
   async _loadAndParse({
@@ -158,6 +155,7 @@ class JasonTheMiner {
     parser,
     loadParams,
     parseSchema,
+    level = 0,
   }) {
     const data = await loader.run(loadParams);
     const {
@@ -172,19 +170,13 @@ class JasonTheMiner {
       return result;
     }
 
-    const continuePaginate = paginate.filter(({ parsedPath, depth }) => {
-      this._pagination[parsedPath] = get(this._pagination, String(parsedPath), depth);
-      this._pagination[parsedPath] -= 1;
-      return this._pagination[parsedPath] >= 0;
-    });
-
-    // debug('Pagination', this._pagination);
-
     const { concurrency = 1 } = loader.getConfig();
 
     if (follow.length) {
       debug('Following %d link(s) with concurrency=%d...', follow.length, concurrency);
     }
+
+    const continuePaginate = paginate.filter(({ depth }) => level < depth);
 
     if (continuePaginate.length) {
       debug('Paginating %d link(s) with concurrency=%d...', continuePaginate.length, concurrency);
@@ -196,11 +188,13 @@ class JasonTheMiner {
         link,
         schemaPath,
         parsedPath,
+        depth,
       }) => {
         /* debug('Next link', link);
         debug('Next schema', schema);
         debug('Next schemaPath', schemaPath);
-        debug('Next parsedPath', parsedPath); */
+        debug('Next parsedPath', parsedPath);
+        debug('Next depth', depth); */
 
         // TODO: deal with errors
         const nextResult = await this._loadAndParse({
@@ -208,6 +202,7 @@ class JasonTheMiner {
           parser,
           loadParams: loader.buildLoadParams({ link }),
           parseSchema: !schemaPath.length ? schema : get(schema, schemaPath),
+          level: depth !== undefined ? level + 1 : level,
         });
 
         // debug('Next result', nextResult);

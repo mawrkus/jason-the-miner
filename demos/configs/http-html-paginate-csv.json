@@ -19,13 +19,13 @@
       }],
       "_paginate": {
         "link": ".pagination a[rel='next']",
-        "depth": 1
+        "depth": 4
       }
     }
   },
   "transform": {
     "csv-file": {
-      "path": "demos/data/out/github-repos-paginate-root.csv"
+      "path": "demos/data/out/github-repos-list.csv"
     }
   }
 }

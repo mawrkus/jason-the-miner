@@ -31,7 +31,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demos/data/out/imdb-follow-paginate.json"
+      "path": "demos/data/out/imdb-show-images.json"
     }
   }
 }

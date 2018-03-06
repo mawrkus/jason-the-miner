@@ -10,6 +10,7 @@
     "html": {
       "repos": [{
         "_$": ".repo-list .repo-list-item",
+        "_slice": "0,2",
         "name": "h3 > a",
         "last-update": "relative-time < attr(datetime)",
         "_follow": {
@@ -28,7 +29,11 @@
               "_$": ".js-navigation-container li > div > div:nth-child(3)",
               "desc": "a:first-child | trim",
               "opened": "relative-time < attr(datetime)"
-            }]
+            }],
+            "_paginate": {
+              "link": "a[rel='next']",
+              "depth": 1
+            }
           }
         }
       }]
@@ -36,7 +41,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demos/data/out/github-repos-follow.json"
+      "path": "demos/data/out/github-repos-with-issues.json"
     }
   }
 }
