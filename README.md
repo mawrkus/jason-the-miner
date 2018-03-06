@@ -159,7 +159,7 @@ Jason the Miner comes with 3 built-in loaders:
 
 ### Parsers
 
-- `html`: uses [Cheerio](https://github.com/cheeriojs/cheerio) as HTML parser. 
+- `html`: uses [Cheerio](https://github.com/cheeriojs/cheerio) as HTML parser.
 
 #### Schemas definition
 
@@ -209,7 +209,7 @@ A schema is a plain object that recursively defines:
  - the name of the values/collection of values that you want to extract: `title` (single value), `metas` (object), `stylesheets` (collection), `repos` (collection)
  - how to extract them: `[selector] ? [matcher] < [extractor] | [filter]` (see "Parse helpers" below)
 
-- `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector,
+- `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector
 - `_slice` limits the number of elements to parse
 - `_follow` tells Jason to follow a link (fetch new data) & to continue scraping when the new data is received
 - `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context
