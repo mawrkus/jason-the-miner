@@ -1,5 +1,6 @@
 const Bluebird = require('bluebird');
 const get = require('lodash.get');
+const mergeWith = require('lodash.mergewith');
 const debug = require('debug')('jason:core');
 
 const defaultProcessors = require('./processors');
@@ -34,6 +35,8 @@ class JasonTheMiner {
       parse: {},
       transform: {},
     };
+
+    this._pagination = {};
 
     debug('A new miner is born, and his name is Jason!');
     debug('processors', this._processors);
@@ -132,6 +135,8 @@ class JasonTheMiner {
     const parser = this._buildProcessor('parse', parse);
     const transformer = this._buildProcessor('transform', transform);
 
+    this._pagination = {};
+
     try {
       const parsed = await this._loadAndParse({ loader, parser });
       return transformer.run(parsed);
@@ -155,40 +160,78 @@ class JasonTheMiner {
     parseSchema,
   }) {
     const data = await loader.run(loadParams);
-    const { result, follow, schema } = await parser.run(data, parseSchema);
+    const {
+      result,
+      follow,
+      schema,
+      paginate,
+    } = await parser.run(data, parseSchema);
 
-    if (!follow || !follow.length) {
-      debug('No links follow, done harvesting.');
+    if (!follow.length && !paginate.length) {
+      debug('No links follow, no pagination, done harvesting.');
       return result;
     }
 
+    const continuePaginate = paginate.filter(({ parsedPath, depth }) => {
+      this._pagination[parsedPath] = get(this._pagination, String(parsedPath), depth);
+      this._pagination[parsedPath] -= 1;
+      return this._pagination[parsedPath] >= 0;
+    });
+
+    // debug('Pagination', this._pagination);
+
     const { concurrency = 1 } = loader.getConfig();
 
-    debug('Following %d link(s) with concurrency=%d...', follow.length, concurrency);
+    if (follow.length) {
+      debug('Following %d link(s) with concurrency=%d...', follow.length, concurrency);
+    }
+
+    if (continuePaginate.length) {
+      debug('Paginating %d link(s) with concurrency=%d...', continuePaginate.length, concurrency);
+    }
 
     await Bluebird.map(
-      follow,
-      async ({ link, schemaPath, parsedPath }) => {
+      follow.concat(continuePaginate),
+      async ({
+        link,
+        schemaPath,
+        parsedPath,
+      }) => {
+        /* debug('Next link', link);
+        debug('Next schema', schema);
+        debug('Next schemaPath', schemaPath);
+        debug('Next parsedPath', parsedPath); */
+
         // TODO: deal with errors
-        const followResult = await this._loadAndParse({
+        const nextResult = await this._loadAndParse({
           loader,
           parser,
           loadParams: loader.buildLoadParams({ link }),
-          parseSchema: get(schema, schemaPath),
+          parseSchema: !schemaPath.length ? schema : get(schema, schemaPath),
         });
 
-        // debug('schemaPath', schemaPath);
-        // debug('schema', schema);
-        // debug('parsedPath', parsedPath);
-        // debug('followResult', followResult);
+        // debug('Next result', nextResult);
 
         const partialResult = !parsedPath.length ? result : get(result, parsedPath);
-        Object.assign(partialResult, followResult);
+
+        mergeWith(partialResult, nextResult, this._resultsMerger);
       },
       { concurrency },
     );
 
     return result;
+  }
+
+  /**
+   * @param {Object} obj
+   * @param {Object} src
+   * @return {Object}
+   */
+  // eslint-disable-next-line class-methods-use-this, consistent-return
+  _resultsMerger(obj, src) {
+    if (Array.isArray(obj)) {
+      return obj.concat(src);
+    }
   }
 
   /**

@@ -44,6 +44,7 @@ class HtmlParser {
     this._helpers = helpers;
     this._$ = cheerio;
     this._follow = [];
+    this._paginate = [];
 
     debug('HtmlParser instance created.');
     debug('schema', this._schema);
@@ -57,16 +58,12 @@ class HtmlParser {
    * @return {Promise.<Object>}
    */
   async run(html, customSchema) {
-    if (!html) {
-      debug('No HTML received!');
-      return Promise.resolve({});
-    }
-
     this._$ = cheerio.load(html);
     const $root = this._$.root();
 
     const schema = customSchema || this._schema;
     this._follow = [];
+    this._paginate = [];
 
     debug('Parsing schema...', schema);
 
@@ -74,7 +71,12 @@ class HtmlParser {
 
     debug('Done parsing schema.');
 
-    return { result, follow: this._follow, schema };
+    return {
+      result,
+      follow: this._follow,
+      schema,
+      paginate: this._paginate,
+    };
   }
 
   /**
@@ -150,7 +152,7 @@ class HtmlParser {
     let $newContext = $context;
 
     if (!selectorDef) {
-      debug('%sWarning: no root element selector! Inheriting parent element.', tab);
+      // debug('%sNo root element selector, inheriting parent element.', tab);
     } else {
       const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
 
@@ -195,6 +197,18 @@ class HtmlParser {
         schema: schema._follow,
         $context,
         schemaPath: schemaPath.concat('_follow'),
+        parsedPath,
+        tab: `${tab}  `,
+      });
+    }
+
+    if (schema._paginate) {
+      debug('%sParsing "paginate" schema...', tab);
+
+      this._parsePaginateSchema({
+        schema: schema._paginate,
+        $context,
+        schemaPath,
         parsedPath,
         tab: `${tab}  `,
       });
@@ -296,7 +310,7 @@ class HtmlParser {
     const { _link: selectorDef } = schema;
 
     if (!selectorDef) {
-      debug('%sWarning: no link selector! Skipping.', tab);
+      debug('%sWarning: no link selector! Nothing to follow.', tab);
       return;
     }
 
@@ -329,6 +343,68 @@ class HtmlParser {
     }
 
     this._follow = this._follow.concat({ link, schemaPath, parsedPath });
+  }
+
+  /**
+   * @param {Object} schema
+   * @param {Cheerio} $context
+   * @param {Array} schemaPath
+   * @param {Array} parsedPath
+   * @param {string} tab
+   */
+  _parsePaginateSchema({
+    schema,
+    $context,
+    schemaPath,
+    parsedPath,
+    tab,
+  }) {
+    const { link: selectorDef, depth = 1 } = schema;
+
+    if (!selectorDef) {
+      debug('%sWarning: no link selector! Skipping pagination.', tab);
+      return;
+    }
+
+    const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
+
+    const { $elements, elementsCount } = this._findSlicedElements({
+      selector,
+      matcher,
+      slice: '',
+      $context,
+      tab,
+    });
+
+    if (!elementsCount) {
+      debug('%sWarning: no link found for selector "%s"! No pagination.', tab, selector);
+      return;
+    }
+
+    if (elementsCount > 1) {
+      debug('%sWarning: keeping only the first link!', tab);
+    }
+
+    // TODO: allow custom extractor and filter?
+    const rawLink = $elements.first().attr('href') || '';
+    const link = rawLink.trim();
+
+    if (!link) {
+      debug('%sWarning: empty link found for selector "%s"! No pagination.', tab, selector);
+      return;
+    }
+
+    if (Number.isInteger(parsedPath[parsedPath.length - 1])) {
+      // we will concat the result of the pagination, so we don't need the last index
+      parsedPath.pop();
+    }
+
+    this._paginate = this._paginate.concat({
+      link,
+      depth,
+      schemaPath,
+      parsedPath,
+    });
   }
 
   /**

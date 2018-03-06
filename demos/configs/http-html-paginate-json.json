@@ -1,0 +1,31 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
+      "_concurrency": 4
+    }
+  },
+  "parse": {
+    "html": {
+      "repos": [{
+        "_$": ".repo-list .repo-list-item",
+        "name": "h3 > a",
+        "description": "div:first-child > p | trim",
+        "stats": {
+          "stars": ".col-2.text-right > a | trim",
+          "last-update": "relative-time < attr(datetime)"
+        }
+      }],
+      "_paginate": {
+        "link": ".pagination a[rel='next']",
+        "depth": 1
+      }
+    }
+  },
+  "transform": {
+    "csv-file": {
+      "path": "demos/data/out/github-repos-paginate-root.csv"
+    }
+  }
+}

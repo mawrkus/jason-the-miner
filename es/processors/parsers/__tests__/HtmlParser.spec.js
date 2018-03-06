@@ -41,10 +41,29 @@ describe('HtmlParser', () => {
             <h1 class="title">Other tops</h1>
             <h2 class="title songs-title">Best songs</h2>
             <ul id="list">
-              <li><span><a href="#1" data-url="http://rose-life.com/"> La vie en rose (radio edit)   </a></span></li>
-              <li><span><a href="#" data-url="http://dreamland.com/">       Dream (radio edit)</a></span></li>
-              <li><span><a href="#3" data-url="http://luavega.com/">Lua       </a></span></li>
+              <li>
+                <span><a href="#1" data-url="http://rose-life.com/"> La vie en rose (radio edit)   </a></span>
+                <span>
+                  <img class="img" src="http://rose-life.com/cover.png" alt="Rose cover" />
+                  <a class="more" href="http://rose-life.com/pics">See more</a>
+                </span>
+              </li>
+              <li>
+                <span><a href="#" data-url="http://dreamland.com/">       Dream (radio edit)</a></span>
+                <span>
+                  <img class="img" src="http://dreamland.com/cover.png" alt="Dream cover" />
+                  <a class="more" href="http://dreamland.com/pics">See more</a>
+                </span>
+              </li>
+              <li>
+                <span><a href="#3" data-url="http://luavega.com/">Lua       </a></span>
+                <span>
+                  <img class="img" src="http://luavega.com/cover.png" alt="Lua cover" />
+                  <a class="more" href="http://luavega.com/pics">See more</a>
+                </span>
+              </li>
             </ul>
+            <p><a class="next-songs" href="/next-songs">Next songs</a></p>
           </div>
         </body>
       </html>
@@ -342,7 +361,7 @@ describe('HtmlParser', () => {
       });
     });
 
-    describe('when the schema contains a "follow" defintion', () => {
+    describe('when the schema contains "follow" definitions', () => {
       it('should return the partial parsed values and the correct "follow" configuration', async () => {
         const parser = createParser();
 
@@ -442,6 +461,81 @@ describe('HtmlParser', () => {
           ],
           anchors: ['#1', '#3'],
         });
+      });
+    });
+
+    describe('when the schema contains a "paginate" definitions', () => {
+      it('should return the partial parsed values and the correct "paginate" configuration', async () => {
+        const parser = createParser();
+
+        const schema = {
+          _$: '.top-songs',
+          title: '.songs-title',
+          songs: [{
+            _$: 'li',
+            title: 'a[data-url] < regex(([^(]+)) | trim',
+            images: [{
+              _$: 'span:last-child',
+              name: 'img < attr(alt)',
+              src: 'img < attr(src)',
+              _paginate: {
+                link: '.more',
+                depth: 1,
+              },
+            }],
+          }],
+          _paginate: {
+            link: '.next-songs',
+            depth: 2,
+          },
+        };
+
+        const { result, paginate } = await parser.run(html, schema);
+
+        expect(result).toEqual({
+          title: 'Best songs',
+          songs: [
+            {
+              title: 'La vie en rose',
+              images: [{ name: 'Rose cover', src: 'http://rose-life.com/cover.png' }],
+            },
+            {
+              title: 'Dream',
+              images: [{ name: 'Dream cover', src: 'http://dreamland.com/cover.png' }],
+            },
+            {
+              title: 'Lua',
+              images: [{ name: 'Lua cover', src: 'http://luavega.com/cover.png' }],
+            },
+          ],
+        });
+
+        expect(paginate).toEqual([
+          {
+            link: 'http://rose-life.com/pics',
+            depth: 1,
+            parsedPath: ['songs', 0, 'images'],
+            schemaPath: ['songs', 0, 'images', 0],
+          },
+          {
+            link: 'http://dreamland.com/pics',
+            depth: 1,
+            parsedPath: ['songs', 1, 'images'],
+            schemaPath: ['songs', 0, 'images', 0],
+          },
+          {
+            link: 'http://luavega.com/pics',
+            depth: 1,
+            parsedPath: ['songs', 2, 'images'],
+            schemaPath: ['songs', 0, 'images', 0],
+          },
+          {
+            link: '/next-songs',
+            depth: 2,
+            parsedPath: [],
+            schemaPath: [],
+          },
+        ]);
       });
     });
   });
