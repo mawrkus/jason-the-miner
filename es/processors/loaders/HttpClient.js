@@ -32,6 +32,7 @@ class HttpClient {
 
     this._httpClient = axios.create(httpConfig);
     this._config = { concurrency: 1, ...loaderConfig };
+    this._config.concurrency = Number(this._config.concurrency); // just in case
 
     debug('HttpClient instance created.');
     debug('HTTP defaults', JSON.stringify(this._httpClient.defaults));

@@ -60,17 +60,20 @@ class JasonTheMiner {
       throw new TypeError(`Invalid processor "${name}"! Missing "run" method.`);
     }
 
+    if (!['load', 'parse', 'transform'].includes(category)) {
+      throw new Error(`Unknown processor category "${category}"!`);
+    }
+
     if (
       category === 'load' && (
         processor.prototype.getConfig !== 'function' ||
         processor.prototype.buildLoadParams !== 'function'
       )
     ) {
-      throw new TypeError(`Invalid processor "${name}"! Missing "getConfig" and/or "buildLoadParams" method.`);
+      throw new TypeError(`Invalid load processor "${name}"! Missing "getConfig" and/or "buildLoadParams" method.`);
     }
 
-    const processors = this._processors[category];
-    processors[name] = processor;
+    this._processors[category][name] = processor;
     debug('New "%s" processor registered: "%s"', category, name);
   }
 
@@ -87,6 +90,11 @@ class JasonTheMiner {
     if (typeof helper !== 'function') {
       throw new TypeError(`Invalid helper "${name}"! Function expected.`);
     }
+
+    if (!['match', 'extract', 'filter'].includes(category)) {
+      throw new Error(`Unknown helper category "${category}"!`);
+    }
+
     this._parseHelpers[category][name] = helper;
     debug('New "%s" helper registered: "%s"', category, name);
   }
@@ -173,13 +181,13 @@ class JasonTheMiner {
     const { concurrency = 1 } = loader.getConfig();
 
     if (follow.length) {
-      debug('Following %d link(s) with concurrency=%d...', follow.length, concurrency);
+      debug('Following %d link(s) at max concurrency=%d...', follow.length, concurrency, follow);
     }
 
     const continuePaginate = paginate.filter(({ depth }) => level < depth);
 
     if (continuePaginate.length) {
-      debug('Paginating %d link(s) with concurrency=%d...', continuePaginate.length, concurrency);
+      debug('Paginating %d link(s) at max concurrency=%d...', continuePaginate.length, concurrency, paginate);
     }
 
     await Bluebird.map(
