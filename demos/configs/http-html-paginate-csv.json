@@ -18,8 +18,9 @@
         }
       }],
       "_paginate": {
-        "link": ".pagination a[rel='next']",
-        "depth": 4
+        "link": ".pagination a",
+        "slice": "0,2",
+        "depth": 1
       }
     }
   },

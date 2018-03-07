@@ -18,13 +18,14 @@
         "_link": ".slate .caption a:last-child",
         "images": [{
           "_$": ".media_index_thumb_list img",
-          "_slice": "0,3",
+          "_slice": "0,1",
           "title": "< attr(alt) | trim",
           "src": "< attr(src)"
         }],
         "_paginate": {
-          "link": ".page_list a:first-child",
-          "depth": 2
+          "link": ".page_list:first-child > a",
+          "slice": "0,9",
+          "depth": 1
         }
       }
     }

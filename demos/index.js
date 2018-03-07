@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const path = require('path');
+const url = require('url');
 const ora = require('ora');
 
 const MixCloudStatsParser = require('./processors/parsers/MixCloudStatsParser');
@@ -13,24 +14,59 @@ const jason = new JasonTheMiner();
 jason.registerProcessor({ category: 'parse', name: 'mixcloud-stats', processor: MixCloudStatsParser });
 jason.registerProcessor({ category: 'transform', name: 'tpl', processor: Templater });
 
+const appStores = {
+  'play.google.com': {
+    appPathRegex: /\/store\/apps\/details/,
+  },
+  'itunes.apple.com': {
+    appPathRegex: /.+\/app(\/.+)?\/id([0-9]+)/,
+  },
+};
+
 jason.registerHelper({
-  category: 'filter',
-  name: 'remove-protocol',
-  helper: text => text.replace(/^https?:/, ''),
+  category: 'match',
+  name: 'isAppStoreLink',
+  helper: ($el) => {
+    const href = ($el.attr('href') || '').trim();
+
+    if (!href || href === '#') {
+      return false;
+    }
+
+    const { host, pathname } = url.parse(href);
+    if (!host || !pathname) {
+      return false;
+    }
+
+    const supportedHost = appStores[host];
+    if (!supportedHost) {
+      return false;
+    }
+
+    return !!pathname.match(supportedHost.appPathRegex);
+  },
 });
 
+
+/* eslint-disable no-console */
+
 const demoFiles = [
-  // 'file-html-stdout.json',
+  /* GitHub searches */
   'file-html-json.json',
   'file-html-csv.json',
   'http-html-paginate-csv.json',
   'http-html-follow-x2-paginate-x2-json.json',
+  /* Imdb images */
   'http-html-follow-paginate-json.json',
-  // 'http-html-download.json',
-  // 'http-html-email.json',
+  /* Google search for apps */
+  'http-html-follow-json.json',
 ];
 
-/* eslint-disable no-console */
+/* const miscDemoFiles = [
+  'file-html-stdout.json',
+  'http-html-download.json',
+  'http-html-email.json',
+]; */
 
 (async () => {
   console.log('Jason the Miner demos suite ⛏⛏⛏');

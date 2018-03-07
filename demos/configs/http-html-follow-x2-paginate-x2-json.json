@@ -30,14 +30,16 @@
               "opened": "relative-time < attr(datetime)"
             }],
             "_paginate": {
-              "link": "a[rel='next']",
+              "link": ".pagination > a",
+              "slice": "0,3",
               "depth": 1
             }
           }
         }
       }],
       "_paginate": {
-        "link": "a[rel='next']",
+        "link": ".pagination > a[rel='next']",
+        "slice": "0,1",
         "depth": 1
       }
     }
