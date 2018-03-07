@@ -4,7 +4,7 @@ const debug = require('debug')('jason:parse:html');
 // eslint-disable-next-line max-len
 const REGEX_SELECTOR_DEFINITION = /([^?<|]+)?(\?[^<|]+|\?[^(]+\(.+\))?(<[^|]+|<[^(]+\(.+\))?(\|.+)?/;
 const REGEX_HELPER_WITHOUT_PARENS = /([^()]+)/;
-const REGEX_HELPER_WITH_PARENS = /([^()]+)\((.+)\)/;
+const REGEX_HELPER_WITH_PARENS = /([^()]+)\((.*)\)/;
 const REGEXP_SLICE_PARAMS = /\D*(\d+)\D*,\D*(\d+)/;
 
 /**
