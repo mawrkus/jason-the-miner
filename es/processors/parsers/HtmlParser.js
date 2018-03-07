@@ -334,9 +334,7 @@ class HtmlParser {
     }
 
     // TODO: allow custom extractor and filter?
-    const rawLink = $elements.first().attr('href') || '';
-    const link = rawLink.trim();
-
+    const link = ($elements.first().attr('href') || '').trim();
     if (!link) {
       debug('%sWarning: empty link found for selector "%s"! Nothing to follow.', tab, selector);
       return;
@@ -359,7 +357,7 @@ class HtmlParser {
     parsedPath,
     tab,
   }) {
-    const { link: selectorDef, depth = 1 } = schema;
+    const { link: selectorDef, slice = '', depth = 1 } = schema;
 
     if (!selectorDef) {
       debug('%sWarning: no link selector! Skipping pagination.', tab);
@@ -371,7 +369,7 @@ class HtmlParser {
     const { $elements, elementsCount } = this._findSlicedElements({
       selector,
       matcher,
-      slice: '',
+      slice,
       $context,
       tab,
     });
@@ -381,29 +379,25 @@ class HtmlParser {
       return;
     }
 
-    if (elementsCount > 1) {
-      debug('%sWarning: keeping only the first link!', tab);
-    }
-
-    // TODO: allow custom extractor and filter?
-    const rawLink = $elements.first().attr('href') || '';
-    const link = rawLink.trim();
-
-    if (!link) {
-      debug('%sWarning: empty link found for selector "%s"! No pagination.', tab, selector);
-      return;
-    }
-
     if (Number.isInteger(parsedPath[parsedPath.length - 1])) {
       // we will concat the result of the pagination, so we don't need the last index
       parsedPath.pop();
     }
 
-    this._paginate = this._paginate.concat({
-      link,
-      depth,
-      schemaPath,
-      parsedPath,
+    $elements.each((index, domElement) => {
+      // TODO: allow custom extractor and filter?
+      const link = (this._$(domElement).attr('href') || '').trim();
+      if (!link) {
+        debug('%sWarning: empty link found for one of the elements of selector "%s"! Skipping pagination for this element.', tab, selector);
+        return;
+      }
+
+      this._paginate = this._paginate.concat({
+        link,
+        depth: Number(depth), // just in case
+        schemaPath,
+        parsedPath,
+      });
     });
   }
 
@@ -471,6 +465,7 @@ class HtmlParser {
     const helperDebug = [];
 
     const [matcher, extractor, filter] = helpersDefs.map(({ category, helperDef }) => {
+      // debug('%sParsing "%s" helper definition="%s".', tab, category, helperDef);
       const categoryHelpers = this._helpers[category];
 
       if (!helperDef) {
@@ -516,9 +511,9 @@ class HtmlParser {
       matches = helperDef.match(REGEX_HELPER_WITHOUT_PARENS);
     }
 
-    const [, rawName = '', rawParams = ''] = matches;
-    const name = rawName.trim();
-    const params = !rawParams ? [] : rawParams.split(',').map(p => p.trim());
+    let [, name = '', params = ''] = matches;
+    name = name.trim();
+    params = !params ? [] : params.split(',').map(p => p.trim());
 
     return { name, params };
   }

@@ -63,7 +63,12 @@ describe('HtmlParser', () => {
                 </span>
               </li>
             </ul>
-            <p><a class="next-songs" href="/next-songs">Next songs</a></p>
+            <div>
+              <a class="next-page" href="/best-songs/2">Page 2</a>
+              <a class="next-page" href="/best-songs/3">Page 3</a>
+              <a class="next-page" href="   ">Broken link</a>
+              <a class="next-page" href="/best-songs/4">Page 4</a>
+            </div>
           </div>
         </body>
       </html>
@@ -480,13 +485,14 @@ describe('HtmlParser', () => {
               src: 'img < attr(src)',
               _paginate: {
                 link: '.more',
-                depth: 1,
+                depth: 2,
               },
             }],
           }],
           _paginate: {
-            link: '.next-songs',
-            depth: 2,
+            link: '.next-page',
+            slice: '0,3',
+            depth: 1,
           },
         };
 
@@ -513,25 +519,31 @@ describe('HtmlParser', () => {
         expect(paginate).toEqual([
           {
             link: 'http://rose-life.com/pics',
-            depth: 1,
+            depth: 2,
             parsedPath: ['songs', 0, 'images'],
             schemaPath: ['songs', 0, 'images', 0],
           },
           {
             link: 'http://dreamland.com/pics',
-            depth: 1,
+            depth: 2,
             parsedPath: ['songs', 1, 'images'],
             schemaPath: ['songs', 0, 'images', 0],
           },
           {
             link: 'http://luavega.com/pics',
-            depth: 1,
+            depth: 2,
             parsedPath: ['songs', 2, 'images'],
             schemaPath: ['songs', 0, 'images', 0],
           },
           {
-            link: '/next-songs',
-            depth: 2,
+            link: '/best-songs/2',
+            depth: 1,
+            parsedPath: [],
+            schemaPath: [],
+          },
+          {
+            link: '/best-songs/3',
+            depth: 1,
             parsedPath: [],
             schemaPath: [],
           },
