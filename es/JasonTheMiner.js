@@ -174,7 +174,7 @@ class JasonTheMiner {
     } = await parser.run(data, parseSchema);
 
     if (!follow.length && !paginate.length) {
-      debug('No links follow, no pagination, done harvesting.');
+      debug('No links to follow, no pagination, done harvesting.');
       return result;
     }
 
