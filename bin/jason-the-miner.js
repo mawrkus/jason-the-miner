@@ -36,7 +36,7 @@ const jason = new JasonTheMiner({
 
 const configPath = path.join(process.cwd(), config);
 
-const spinner = ora({ text: 'Harvesting...', spinner: 'dots4' }).start();
+const spinner = ora({ spinner: 'dots4' }).start();
 
 jason
   .loadConfig(configPath)
