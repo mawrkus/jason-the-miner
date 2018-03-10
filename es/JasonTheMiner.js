@@ -66,8 +66,8 @@ class JasonTheMiner {
 
     if (
       category === 'load' && (
-        processor.prototype.getConfig !== 'function' ||
-        processor.prototype.buildLoadParams !== 'function'
+        typeof processor.prototype.getConfig !== 'function' ||
+        typeof processor.prototype.buildLoadParams !== 'function'
       )
     ) {
       throw new TypeError(`Invalid load processor "${name}"! Missing "getConfig" and/or "buildLoadParams" method.`);
