@@ -202,6 +202,10 @@ class JasonTheMiner {
         const nextParseSchema = !schemaPath.length ? schema : get(schema, schemaPath);
         const nextLevel = depth !== undefined ? level + 1 : level;
 
+        // debug('nextLoadParams', nextLoadParams);
+        // debug('nextParseSchema', nextParseSchema);
+        // debug('nextLevel', nextLevel);
+
         let nextResult;
 
         try {
