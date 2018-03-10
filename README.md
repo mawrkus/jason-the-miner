@@ -217,10 +217,22 @@ A schema is a plain object that recursively defines:
 
 ##### Parse helpers
 
-You can specify how to extract a value with this syntax:
+You can specify how to extract a value with the following syntax:
 
 ```
 [property name]: [selector] ? [matcher] < [extractor] | [filter]
+```
+
+For instance:
+
+```js
+...
+  "movies": {
+    "_$": ".lister-list > tr ? text(house)",
+    "🎥 title": ".titleColumn > a < attr(title) | trim",
+    "📅 year": ".secondaryInfo < regex(.*(\\d+))"
+  }
+...
 ```
 
 Jason has 4 built-in element **matchers**:
@@ -246,18 +258,6 @@ and 4 built-in text **filters**:
 - `lowercase`
 - `uppercase`
 
-For example:
-
-```js
-...
-  "movies": {
-    "_$": ".lister-list > tr ? text(house)",
-    "🎥 title": ".titleColumn > a < attr(title) | trim",
-    "📅 year": ".secondaryInfo < regex(.*(\\d+))"
-  }
-...
-```
-
 ### Transformers
 
 - `stdout`: writes the results to stdout. Options: `[encoding="utf8"]`.
@@ -281,7 +281,7 @@ The fallbacks change when using the CLI (see `bin/jason-the-miner.js`):
 
 ### loadConfig(configFile)
 
-Loads a config from a JSON file.
+Loads a config from a JSON or JS file.
 
 ```js
 jason.loadConfig('./harvest-me.json');
@@ -292,7 +292,8 @@ jason.loadConfig('./harvest-me.json');
 Launches the whole harvesting process:
 
 ```js
-jason.loadConfig('./config.json')
+jason
+  .loadConfig('./config.json')
   .then(() => jason.harvest())
   .catch(error => console.error(error));
 ```
@@ -300,7 +301,8 @@ jason.loadConfig('./config.json')
 You can also pass custom options to temporarily override the current config:
 
 ```js
-jason.loadConfig('./config.json')
+jason
+  .loadConfig('./config.json')
   .then(() => jason.harvest({
     load: {
       http: {
@@ -316,7 +318,8 @@ To permanently override the current config, you can directly modify Jason's `con
 ```js
 const allResults = [];
 
-jason.loadConfig('./harvest-me.json')
+jason
+  .loadConfig('./harvest-me.json')
   .then(() => jason.harvest())
   .then((results) => {
     allResults.push(results);
