@@ -68,8 +68,14 @@ class HttpClient {
    * @param  {Object} request
    */
   // eslint-disable-next-line class-methods-use-this
-  _logRequest({ method = 'get', url, params = '' }) {
-    debug('%s %s...', method.toUpperCase(), url, params);
+  _logRequest(request) {
+    const {
+      method = 'get',
+      baseURL = '',
+      url = '',
+      params = '',
+    } = request;
+    debug('%s %s%s...', method.toUpperCase(), baseURL, url, params);
   }
 
   /**
