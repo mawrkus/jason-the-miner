@@ -33,7 +33,7 @@ class Templater {
 
     try {
       const template = await readFileAsync(templatePath, encoding);
-      const rendered = Mustache.render(template, { results });
+      const rendered = Mustache.render(template, results);
 
       if (outputPath) {
         debug('Saving results to "%s" file "%s"...', encoding, outputPath);

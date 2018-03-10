@@ -54,6 +54,7 @@ const demoFiles = [
   /* GitHub searches */
   'file-html-json.json',
   'file-html-csv.json',
+  'file-html-tpl.json',
   'http-html-paginate-csv.json',
   'http-html-follow-x2-paginate-x2-json.json',
   /* Imdb images */
