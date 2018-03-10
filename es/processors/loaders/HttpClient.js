@@ -53,29 +53,40 @@ class HttpClient {
     try {
       const response = await this._httpClient.request();
 
-      const {
-        config,
-        status,
-        statusText,
-        headers,
-        data,
-      } = response;
+      this._logResponse(response);
 
-      // eslint-disable-next-line no-shadow
-      const { method = 'get', url, params = '' } = config;
-
-      const contentLength = headers['content-length'] !== undefined ?
-        headers['content-length'] :
-        '?';
-
-      debug('%s %s: %s (%d)', method.toUpperCase(), url, statusText, status, params);
-      debug('%s "%s" chars received.', contentLength, headers['content-type']);
-
-      return data;
+      return response.data;
     } catch (requestError) {
-      debug(requestError.message);
+      if (requestError.response) {
+        this._logResponse(requestError.response);
+      } else {
+        debug(requestError.message);
+      }
+
       throw requestError;
     }
+  }
+
+  /**
+   * @param  {Object} response
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _logResponse(response) {
+    const {
+      config,
+      status,
+      statusText,
+      headers,
+    } = response;
+
+    const { method = 'get', url, params = '' } = config;
+
+    const contentLength = headers['content-length'] !== undefined ?
+      headers['content-length'] :
+      '?';
+
+    debug('%s %s: %s (%d)', method.toUpperCase(), url, statusText, status, params);
+    debug('%s "%s" chars received.', contentLength, headers['content-type']);
   }
 
   /**
