@@ -24,7 +24,7 @@
         }],
         "_paginate": {
           "link": ".page_list:first-child > a",
-          "slice": "0,9",
+          "slice": "0,3",
           "depth": 1
         }
       }
