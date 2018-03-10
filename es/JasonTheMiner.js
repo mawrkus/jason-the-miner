@@ -198,43 +198,41 @@ class JasonTheMiner {
         parsedPath,
         depth,
       }) => {
-        /* debug('Next link', link);
-        debug('Next schema', schema);
-        debug('Next schemaPath', schemaPath);
-        debug('Next parsedPath', parsedPath);
-        debug('Next depth', depth); */
+        const nextLoadParams = loader.buildLoadParams({ link });
+        const nextParseSchema = !schemaPath.length ? schema : get(schema, schemaPath);
+        const nextLevel = depth !== undefined ? level + 1 : level;
 
-        // TODO: deal with errors
-        const nextResult = await this._loadAndParse({
-          loader,
-          parser,
-          loadParams: loader.buildLoadParams({ link }),
-          parseSchema: !schemaPath.length ? schema : get(schema, schemaPath),
-          level: depth !== undefined ? level + 1 : level,
-        });
+        let nextResult;
+
+        try {
+          nextResult = await this._loadAndParse({
+            loader,
+            parser,
+            loadParams: nextLoadParams,
+            parseSchema: nextParseSchema,
+            level: nextLevel,
+          });
+        } catch (error) {
+          nextResult = { _errors: [this._formatError(error)] };
+          debug(nextResult);
+        }
 
         // debug('Next result', nextResult);
+        // debug('Next parsedPath', parsedPath);
 
         const partialResult = !parsedPath.length ? result : get(result, parsedPath);
 
-        mergeWith(partialResult, nextResult, this._resultsMerger);
+        // eslint-disable-next-line consistent-return
+        mergeWith(partialResult, nextResult, (obj, src) => {
+          if (Array.isArray(obj)) {
+            return obj.concat(src);
+          }
+        });
       },
       { concurrency },
     );
 
     return result;
-  }
-
-  /**
-   * @param {Object} obj
-   * @param {Object} src
-   * @return {Object}
-   */
-  // eslint-disable-next-line class-methods-use-this, consistent-return
-  _resultsMerger(obj, src) {
-    if (Array.isArray(obj)) {
-      return obj.concat(src);
-    }
   }
 
   /**
