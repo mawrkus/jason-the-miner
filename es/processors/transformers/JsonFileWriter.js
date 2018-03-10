@@ -32,7 +32,7 @@ class JsonFileWriter {
 
     debug('Writing "%s" JSON file "%s"...', encoding, outputPath);
 
-    const json = JSON.stringify(results);
+    const json = JSON.stringify(results, null, 2);
 
     try {
       await writeFileAsync(outputPath, json, encoding);
