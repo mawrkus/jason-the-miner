@@ -227,11 +227,11 @@ For instance:
 
 ```js
 ...
-  "movies": {
+  "movies": [{
     "_$": ".lister-list > tr ? text(house)",
     "🎥 title": ".titleColumn > a < attr(title) | trim",
     "📅 year": ".secondaryInfo < regex(.*(\\d+))"
-  }
+  }]
 ...
 ```
 
