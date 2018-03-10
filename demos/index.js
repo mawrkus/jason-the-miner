@@ -57,16 +57,17 @@ const demoFiles = [
   'file-html-tpl.json',
   'http-html-paginate-csv.json',
   'http-html-follow-x2-paginate-x2-json.json',
-  /* Imdb images */
-  'http-html-follow-paginate-json.json',
   /* Google search for apps */
   'http-html-follow-json.json',
+  /* Imdb images */
+  'http-html-follow-paginate-json.json',
 ];
 
 /* const miscDemoFiles = [
   'file-html-stdout.json',
   'http-html-download.json',
   'http-html-email.json',
+  'http-html-json.json',
 ]; */
 
 (async () => {

@@ -46,7 +46,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demos/data/out/github-repos-with-issues.json"
+      "path": "demos/data/out/github-search-with-issues.json"
     }
   }
 }

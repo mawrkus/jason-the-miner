@@ -19,7 +19,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demos/data/out/github-repos.json"
+      "path": "demos/data/out/github-search.json"
     }
   }
 }
