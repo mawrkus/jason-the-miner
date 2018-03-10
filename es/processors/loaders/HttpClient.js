@@ -1,5 +1,3 @@
-const nodeUrl = require('url');
-const path = require('path');
 const axios = require('axios');
 const debug = require('debug')('jason:load:http');
 
@@ -112,14 +110,11 @@ class HttpClient {
   buildLoadParams({ link }) {
     const loadParams = { ...this._lastHttpConfig };
 
-    if (link[0] === '/') {
-      loadParams.url = link;
-    } else if (link.match(REGEX_ABSOLUTE_LINK)) {
+    if (link.match(REGEX_ABSOLUTE_LINK)) {
       loadParams.baseURL = link;
       loadParams.url = '';
     } else {
-      const { pathname } = nodeUrl.parse(loadParams.url);
-      loadParams.url = path.join(pathname, link);
+      loadParams.url = link;
     }
 
     return loadParams;
