@@ -19,24 +19,25 @@ class HttpClient {
    * paginating.
    */
   constructor(config) {
-    const httpConfig = {};
-    const loaderConfig = {};
+    this._httpConfig = {};
+    this._config = {};
 
     Object.keys(config).forEach((key) => {
       if (key[0] !== '_') {
-        httpConfig[key] = config[key];
+        this._httpConfig[key] = config[key];
       } else {
-        loaderConfig[key.slice(1)] = config[key];
+        this._config[key.slice(1)] = config[key];
       }
     });
 
-    this._httpClient = axios.create(httpConfig);
-    this._config = { concurrency: 1, ...loaderConfig };
+    this._httpClient = axios.create(this._httpConfig);
+    this._config = { concurrency: 1, ...this._config };
     this._config.concurrency = Number(this._config.concurrency); // just in case
+    this._lastHttpConfig = this._httpConfig;
 
     debug('HttpClient instance created.');
-    debug('HTTP defaults', JSON.stringify(this._httpClient.defaults));
-    debug('loader config', this._config);
+    debug('HTTP config', this._httpConfig);
+    debug('config', this._config);
   }
 
   /**
@@ -44,14 +45,12 @@ class HttpClient {
    * @return {Promise.<string>|Promise.<Error>}
    */
   async run(httpConfig) {
-    Object.assign(this._httpClient.defaults, httpConfig);
-
-    const { method = 'get', url, params = '' } = this._httpClient.defaults;
-
-    debug('%s %s...', method.toUpperCase(), url, params);
-
     try {
-      const response = await this._httpClient.request();
+      this._lastHttpConfig = { ...this._lastHttpConfig, ...httpConfig };
+
+      this._logRequest(this._lastHttpConfig);
+
+      const response = await this._httpClient.request(this._lastHttpConfig);
 
       this._logResponse(response);
 
@@ -65,6 +64,14 @@ class HttpClient {
 
       throw requestError;
     }
+  }
+
+  /**
+   * @param  {Object} request
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _logRequest({ method = 'get', url, params = '' }) {
+    debug('%s %s...', method.toUpperCase(), url, params);
   }
 
   /**
@@ -103,7 +110,7 @@ class HttpClient {
    * @return {Object}
    */
   buildLoadParams({ link }) {
-    const loadParams = { ...this._httpClient.defaults };
+    const loadParams = { ...this._lastHttpConfig };
 
     if (link[0] === '/') {
       loadParams.url = link;
