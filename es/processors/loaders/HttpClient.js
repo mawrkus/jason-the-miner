@@ -69,7 +69,7 @@ class HttpClient {
         '?';
 
       debug('%s %s: %s (%d)', method.toUpperCase(), url, statusText, status, params);
-      debug('%s chars received.', contentLength);
+      debug('%s "%s" chars received.', contentLength, headers['content-type']);
 
       return data;
     } catch (requestError) {

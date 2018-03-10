@@ -12,6 +12,7 @@ class JsonFileWriter {
   /**
    * @param {Object} config
    * @param {string} config.path
+   * @param {string} [config.encoding='utf8']
    */
   constructor(config) {
     this._config = {
