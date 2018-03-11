@@ -143,7 +143,7 @@ class JasonTheMiner {
 
     try {
       const parsed = await this._loadAndParse({ loader, parser });
-      return transformer.run(parsed);
+      return transformer.run(parsed); // TODO: support array of transformers ?
     } catch (error) {
       this._formatError(error);
       throw error;

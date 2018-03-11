@@ -227,11 +227,7 @@ For instance:
 
 ```js
 ...
-  "movies": [{
-    "_$": ".lister-list > tr ? text(house)",
-    "🎥 title": ".titleColumn > a < attr(title) | trim",
-    "📅 year": ".secondaryInfo < regex(.*(\\d+))"
-  }]
+"repos": [".repo-list-item h3 > a ? text(crawler) < attr(title) | trim"]
 ...
 ```
 
