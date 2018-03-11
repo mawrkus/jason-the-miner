@@ -401,6 +401,7 @@ $ npm run test
 - Node.js Scraping Libraries: http://blog.webkid.io/nodejs-scraping-libraries/
 - https://www.scrapesentry.com/scraping-wiki/web-scraping-legal-or-illegal/
 - http://blog.icreon.us/web-scraping-and-you-a-legal-primer-for-one-of-its-most-useful-tools/
+- Web scraping o rastreo de webs y legalidad: https://www.youtube.com/watch?v=EJzugD0l0Bw
 
 ## ⛏ A final note...
 
