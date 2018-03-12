@@ -53,15 +53,15 @@ class HtmlParser {
 
   /**
    * Runs the processor: parses the HTML passed as parameter using the given schema.
-   * @param {string} html
+   * @param {string} data
    * @param {Object} [customSchema]
    * @return {Promise.<Object>}
    */
-  async run(html, customSchema) {
+  async run({ data: html, schema }) {
     this._$ = cheerio.load(html);
     const $root = this._$.root();
 
-    const schema = customSchema || this._schema;
+    schema = schema || this._schema; // eslint-disable-line no-param-reassign
     this._follow = [];
     this._paginate = [];
 

@@ -39,12 +39,12 @@ class HttpClient {
   }
 
   /**
-   * @param {Object} [httpConfig] An optional HTTP config, used when following/paginating.
+   * @param {Object} [options] Optional HTTP options, used when following/paginating.
    * @return {Promise.<string>|Promise.<Error>}
    */
-  async run(httpConfig) {
+  async run({ options }) {
     try {
-      this._lastHttpConfig = { ...this._lastHttpConfig, ...httpConfig };
+      this._lastHttpConfig = { ...this._lastHttpConfig, ...options };
 
       this._logRequest(this._lastHttpConfig);
 

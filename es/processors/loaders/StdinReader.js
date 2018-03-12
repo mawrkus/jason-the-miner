@@ -15,6 +15,7 @@ class StdinReader {
   }
 
   /**
+   * @param {Object} [options] Optional read options.
    * @return {Promise.<string>|Promise.<Error>}
    */
   run() {

@@ -18,7 +18,7 @@ class StdoutWriter {
    * @param {Object} results
    * @return {Promise}
    */
-  run(results) {
+  run({ results }) {
     const data = JSON.stringify(results, null, 2) || '';
     debug('Writing %d "%s" chars to stdout...', data.length, this._config.encoding);
 

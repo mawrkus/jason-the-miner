@@ -25,7 +25,7 @@ class Emailer {
    * @param {string} [results.body]
    * @return {Promise}
    */
-  run(results) {
+  run({ results }) {
     debug('E-mailing results to "%s"...', this._config.to);
 
     return new Promise((resolve, reject) => {

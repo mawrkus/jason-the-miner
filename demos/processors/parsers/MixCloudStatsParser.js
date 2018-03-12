@@ -14,11 +14,11 @@ class MixCloudStatsParser {
 
   /**
    * @param {string} html
-   * @param {Object} [customSchema]
+   * @param {Object} [schema]
    * @return {Promise.<Object>}
    */
-  async run(html, customSchema) {
-    const { result } = await this._htmlParser.run(html, customSchema);
+  async run({ html, schema }) {
+    const { result } = await this._htmlParser.run({ html, schema });
     const { mixes } = result;
     const plays = mixes.map(curr => curr.plays).join('/');
 

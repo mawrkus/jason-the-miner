@@ -29,11 +29,11 @@ class FileReader {
   }
 
   /**
-   * @param {Object} [readConfig] An optional read config, used when following/paginating.
+   * @param {Object} [options] Optional read options, used when following/paginating.
    * @return {Promise.<string|ReadStream> | Promise.<Error>}
    */
-  async run(readConfig) {
-    Object.assign(this._lastReadParams, readConfig);
+  async run({ options }) {
+    Object.assign(this._lastReadParams, options);
 
     const {
       basePath,

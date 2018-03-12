@@ -35,7 +35,7 @@ class CsvFileWriter {
    * @param {Object} results
    * @return {Promise}
    */
-  async run(results) {
+  async run({ results }) {
     if (!results) {
       debug('No results to write!');
       return results;

@@ -361,10 +361,10 @@ class Templater {
   }
 
   /**
-   * @param {*}
+   * @param {*} results
    * @return {Promise.<*>}
    */
-  run(results) {
+  run({ results }) {
     // must be implemented & must return a promise.
   }
 }

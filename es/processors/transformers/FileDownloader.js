@@ -57,7 +57,7 @@ class FileDownloader {
    * @param {Object} results
    * @return {Promise}
    */
-  run(results) {
+  run({ results }) {
     if (!results) {
       debug('No results to download!');
       return Promise.resolve();

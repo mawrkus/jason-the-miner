@@ -142,8 +142,8 @@ class JasonTheMiner {
     const transformer = this._buildProcessor('transform', transform);
 
     try {
-      const parsed = await this._loadAndParse({ loader, parser });
-      return transformer.run(parsed); // TODO: support array of transformers ?
+      const results = await this._loadAndParse({ loader, parser });
+      return transformer.run({ results }); // TODO: support array of transformers ?
     } catch (error) {
       this._formatError(error);
       throw error;
@@ -153,7 +153,7 @@ class JasonTheMiner {
   /**
    * @param  {Object} loader
    * @param  {Object} parser
-   * @param  {Object} [loadParams]
+   * @param  {Object} [loadOptions]
    * @param  {Object} [parseSchema]
    * @param  {number} [level=0]
    * @return {Promise.<Object}
@@ -161,17 +161,17 @@ class JasonTheMiner {
   async _loadAndParse({
     loader,
     parser,
-    loadParams,
+    loadOptions,
     parseSchema,
     level = 0,
   }) {
-    const data = await loader.run(loadParams);
+    const data = await loader.run({ options: loadOptions });
     const {
       result,
       follow,
       schema,
       paginate,
-    } = await parser.run(data, parseSchema);
+    } = await parser.run({ data, schema: parseSchema });
 
     if (!follow.length && !paginate.length) {
       debug('No links to follow, no pagination, done harvesting.');
@@ -212,7 +212,7 @@ class JasonTheMiner {
           nextResult = await this._loadAndParse({
             loader,
             parser,
-            loadParams: nextLoadParams,
+            loadOptions: nextLoadParams,
             parseSchema: nextParseSchema,
             level: nextLevel,
           });

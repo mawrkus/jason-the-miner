@@ -27,7 +27,7 @@ class Templater {
    * @param {Object} results
    * @return {Promise}
    */
-  async run(results) {
+  async run({ results }) {
     const { templatePath, outputPath, encoding } = this._config;
     debug('Rendering results using template "%s"...', templatePath);
 

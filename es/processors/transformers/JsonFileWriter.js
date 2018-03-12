@@ -27,7 +27,7 @@ class JsonFileWriter {
    * @param {Object} results
    * @return {Promise}
    */
-  async run(results) {
+  async run({ results }) {
     const { outputPath, encoding } = this._config;
 
     debug('Writing "%s" JSON file "%s"...', encoding, outputPath);
