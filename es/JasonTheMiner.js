@@ -67,7 +67,7 @@ class JasonTheMiner {
     if (
       category === 'load' && (
         typeof processor.prototype.getConfig !== 'function' ||
-        typeof processor.prototype.buildLoadParams !== 'function'
+        typeof processor.prototype.buildLoadOptions !== 'function'
       )
     ) {
       throw new TypeError(`Invalid load processor "${name}"! Missing "getConfig" and/or "buildLoadParams" method.`);
@@ -153,12 +153,37 @@ class JasonTheMiner {
   /**
    * @param  {Object} loader
    * @param  {Object} parser
+   * @return {Promise.<Object}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  async _loadAndParse({ loader, parser }) {
+    const results = {};
+
+    const loadResults = await loader.run({ enablePagination: true });
+    const parseResultsP = loadResults.map(data => parser.run({ data }));
+    const parseResults = await Promise.all(parseResultsP);
+
+    parseResults.forEach(({ result }) => {
+      // eslint-disable-next-line consistent-return
+      mergeWith(results, result, (obj, src) => {
+        if (Array.isArray(obj)) {
+          return obj.concat(src);
+        }
+      });
+    });
+
+    return results;
+  }
+
+  /**
+   * @param  {Object} loader
+   * @param  {Object} parser
    * @param  {Object} [loadOptions]
    * @param  {Object} [parseSchema]
    * @param  {number} [level=0]
    * @return {Promise.<Object}
    */
-  async _loadAndParse({
+  async _harvest({
     loader,
     parser,
     loadOptions,
@@ -209,7 +234,7 @@ class JasonTheMiner {
         let nextResult;
 
         try {
-          nextResult = await this._loadAndParse({
+          nextResult = await this._harvest({
             loader,
             parser,
             loadOptions: nextLoadParams,

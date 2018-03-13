@@ -2,8 +2,8 @@
   "load": {
     "http": {
       "baseURL": "https://github.com",
-      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
-      "_concurrency": 4
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories&p={1,3}",
+      "_concurrency": 2
     }
   },
   "parse": {
@@ -14,17 +14,12 @@
         "description": "div:first-child > p | trim",
         "stars": ".col-2.text-right > a | trim",
         "last-update": "relative-time < attr(datetime)"
-      }],
-      "_paginate": {
-        "link": ".pagination a",
-        "slice": "0,2",
-        "depth": 1
-      }
+      }]
     }
   },
   "transform": {
     "csv-file": {
-      "path": "demos/data/out/github-search-extended.csv"
+      "path": "demos/data/out/github-search-html-extended.csv"
     }
   }
 }

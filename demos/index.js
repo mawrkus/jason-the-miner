@@ -55,7 +55,8 @@ const demoFiles = [
   'file-html-json.json',
   'file-html-csv.json',
   'file-html-tpl.json',
-  'http-html-paginate-csv.json',
+  'file-paginate-html-csv.json',
+  'http-paginate-html-csv.json',
   'http-html-follow-x2-paginate-x2-json.json',
   /* Google search for apps */
   'http-html-follow-json.json',

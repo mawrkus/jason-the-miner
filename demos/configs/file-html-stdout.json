@@ -1,7 +1,7 @@
 {
   "load": {
     "file": {
-      "path": "demos/data/in/github-search.html"
+      "path": "demos/data/in/github-search-p1.html"
     }
   },
   "parse": {

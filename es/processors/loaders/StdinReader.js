@@ -53,12 +53,12 @@ class StdinReader {
   }
 
   /**
-   * Builds a new load config. Used for following/paginating.
+   * Builds new load options. Used for following/paginating.
    * @param {string} link
    * @return {Object}
    */
   // eslint-disable-next-line class-methods-use-this
-  buildLoadParams() {
+  buildLoadOptions() {
     return {};
   }
 }

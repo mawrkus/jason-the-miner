@@ -1,7 +1,8 @@
 {
   "load": {
     "file": {
-      "path": "demos/data/in/github-search-p1.html"
+      "path": "demos/data/in/github-search-p{1,4}.html",
+      "_concurrency": 3
     }
   },
   "parse": {
@@ -17,7 +18,7 @@
   },
   "transform": {
     "csv-file": {
-      "path": "demos/data/out/github-search.csv",
+      "path": "demos/data/out/github-search-file-extended.csv",
       "delimiter": ","
     }
   }
