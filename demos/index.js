@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const url = require('url');
 const ora = require('ora');
 
 const MixCloudStatsParser = require('./processors/parsers/MixCloudStatsParser');
 const Templater = require('./processors/transformers/Templater');
+const isAppStoreLink = require('./processors/parsers/helpers/matchers/isAppStoreLink');
 
 const JasonTheMiner = require('..');
 
@@ -13,40 +13,11 @@ const jason = new JasonTheMiner();
 
 jason.registerProcessor({ category: 'parse', name: 'mixcloud-stats', processor: MixCloudStatsParser });
 jason.registerProcessor({ category: 'transform', name: 'tpl', processor: Templater });
-
-const appStores = {
-  'play.google.com': {
-    appPathRegex: /\/store\/apps\/details/,
-  },
-  'itunes.apple.com': {
-    appPathRegex: /.+\/app(\/.+)?\/id([0-9]+)/,
-  },
-};
-
 jason.registerHelper({
   category: 'match',
   name: 'isAppStoreLink',
-  helper: ($el) => {
-    const href = ($el.attr('href') || '').trim();
-
-    if (!href || href === '#') {
-      return false;
-    }
-
-    const { host, pathname } = url.parse(href);
-    if (!host || !pathname) {
-      return false;
-    }
-
-    const supportedHost = appStores[host];
-    if (!supportedHost) {
-      return false;
-    }
-
-    return !!pathname.match(supportedHost.appPathRegex);
-  },
+  helper: isAppStoreLink,
 });
-
 
 /* eslint-disable no-console */
 

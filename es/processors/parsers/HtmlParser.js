@@ -73,8 +73,8 @@ class HtmlParser {
 
     return {
       result,
-      follow: this._follow,
       schema,
+      follow: this._follow,
       paginate: this._paginate,
     };
   }

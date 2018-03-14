@@ -74,7 +74,6 @@ class HttpClient {
    */
   async run({ options, enablePagination }) {
     if (!enablePagination) {
-      debug('Pagination is not enabled');
       this._lastHttpConfig = { ...this._lastHttpConfig, ...options };
       return this._run({ options: this._lastHttpConfig });
     }
@@ -152,7 +151,7 @@ class HttpClient {
       '?';
 
     debug('%s %s: %s (%d)', method.toUpperCase(), url, statusText, status, params);
-    debug('%s "%s" chars received.', contentLength, headers['content-type']);
+    debug('%s chars of "%s" received.', contentLength, headers['content-type']);
   }
 
   /**

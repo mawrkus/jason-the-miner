@@ -79,7 +79,6 @@ class FileReader {
    */
   async run({ options, enablePagination }) {
     if (!enablePagination) {
-      debug('Pagination is not enabled');
       this._lastReadConfig = { ...this._lastReadConfig, ...options };
       return this._run({ options: this._lastReadConfig });
     }
