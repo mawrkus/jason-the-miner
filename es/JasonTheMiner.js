@@ -142,7 +142,7 @@ class JasonTheMiner {
     const transformer = this._buildProcessor('transform', transform);
 
     try {
-      const results = await this._loadAndParse({ loader, parser });
+      const results = await this._harvest({ loader, parser });
       return transformer.run({ results }); // TODO: support array of transformers ?
     } catch (error) {
       this._formatError(error);
@@ -155,113 +155,110 @@ class JasonTheMiner {
    * @param  {Object} parser
    * @return {Promise.<Object}
    */
-  // eslint-disable-next-line class-methods-use-this
-  async _loadAndParse({ loader, parser }) {
-    const results = {};
-
-    const loadResults = await loader.run({ enablePagination: true });
-    const parseResultsP = loadResults.map(data => parser.run({ data }));
-    const parseResults = await Promise.all(parseResultsP);
-
-    parseResults.forEach(({ result }) => {
-      // eslint-disable-next-line consistent-return
-      mergeWith(results, result, (obj, src) => {
-        if (Array.isArray(obj)) {
-          return obj.concat(src);
-        }
-      });
-    });
-
-    return results;
+  async _harvest({ loader, parser }) {
+    const follows = loader.buildPaginationLinks().map(link => ({ link }));
+    return this._loadAndParse({ loader, follows, parser });
   }
 
   /**
    * @param  {Object} loader
+   * @param  {Array} follows
    * @param  {Object} parser
-   * @param  {Object} [loadOptions]
-   * @param  {Object} [parseSchema]
-   * @param  {number} [level=0]
+   * @param  {number} level
    * @return {Promise.<Object}
    */
-  async _harvest({
+  async _loadAndParse({
     loader,
+    follows,
     parser,
-    loadOptions,
-    parseSchema,
     level = 0,
   }) {
-    const data = await loader.run({ options: loadOptions });
-    const {
-      result,
-      follow,
-      schema,
-      paginate,
-    } = await parser.run({ data, schema: parseSchema });
+    const results = {};
+    const followResults = await this._followLinks({ loader, follows, parser });
+    let nextFollows = [];
 
-    if (!follow.length && !paginate.length) {
-      debug('No links to follow, no pagination, done harvesting.');
-      return result;
+    followResults.forEach(({
+      result,
+      schema,
+      follow,
+      paginate,
+    }) => {
+      this._mergeResults({ results, newResults: result });
+
+      nextFollows = follow.concat(paginate)
+        // follow has no depth defined, pagination has
+        .filter(({ depth }) => depth === undefined || level < depth)
+        .map((f) => {
+          const { schemaPath, parsedPath } = f;
+          return {
+            ...f,
+            followSchema: !schemaPath.length ? schema : get(schema, schemaPath),
+            partialResult: !parsedPath.length ? result : get(result, parsedPath),
+          };
+        });
+    });
+
+    if (!nextFollows.length) {
+      debug('No (more) links to follow, done harvesting.');
+      return results;
     }
 
+    const nextResults = await this._loadAndParse({
+      loader,
+      follows: nextFollows,
+      parser,
+      level: level + 1,
+    });
+
+    return this._mergeResults({ results, newResults: nextResults });
+  }
+
+  /**
+   * @param  {Loader} loader
+   * @param  {Array} follows
+   * @param  {Parser} parser
+   * @return {Promise}
+   */
+  async _followLinks({ loader, follows, parser }) {
     const { concurrency = 1 } = loader.getConfig();
 
-    if (follow.length) {
-      debug('Following %d link(s) at max concurrency=%d...', follow.length, concurrency, follow);
-    }
+    debug('Following %d link(s) at max concurrency=%d...', follows.length, concurrency, follows);
 
-    const continuePaginate = paginate.filter(({ depth }) => level < depth);
-
-    if (continuePaginate.length) {
-      debug('Paginating %d link(s) at max concurrency=%d...', continuePaginate.length, concurrency, paginate);
-    }
-
-    await Bluebird.map(
-      follow.concat(continuePaginate),
+    return Bluebird.map(
+      follows,
       async ({
         link,
-        schemaPath,
-        parsedPath,
-        depth,
+        followSchema,
       }) => {
-        const nextLoadParams = loader.buildLoadParams({ link });
-        const nextParseSchema = !schemaPath.length ? schema : get(schema, schemaPath);
-        const nextLevel = depth !== undefined ? level + 1 : level;
-
-        // debug('nextLoadParams', nextLoadParams);
-        // debug('nextParseSchema', nextParseSchema);
-        // debug('nextLevel', nextLevel);
-
-        let nextResult;
-
         try {
-          nextResult = await this._harvest({
-            loader,
-            parser,
-            loadOptions: nextLoadParams,
-            parseSchema: nextParseSchema,
-            level: nextLevel,
-          });
+          const options = loader.buildLoadOptions({ link });
+
+          const loadResult = await loader.run({ options });
+          const parserResult = await parser.run({ data: loadResult, schema: followSchema });
+
+          return parserResult;
         } catch (error) {
-          nextResult = { _errors: [this._formatError(error)] };
-          debug(nextResult);
+          debug(error);
+          return { _errors: [this._formatError(error)] };
         }
-
-        // debug('Next result', nextResult);
-        // debug('Next parsedPath', parsedPath);
-
-        const partialResult = !parsedPath.length ? result : get(result, parsedPath);
-
-        // eslint-disable-next-line consistent-return
-        mergeWith(partialResult, nextResult, (obj, src) => {
-          if (Array.isArray(obj)) {
-            return obj.concat(src);
-          }
-        });
       },
       { concurrency },
     );
+  }
 
-    return result;
+  /**
+   * @param {Object} results
+   * @param {Object} newResults
+   * @return {Object}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _mergeResults({ results, newResults }) {
+    // eslint-disable-next-line consistent-return
+    return mergeWith(results, newResults, (obj, src) => {
+      if (Array.isArray(obj)) {
+        return obj.concat(src);
+      }
+    });
   }
 
   /**
