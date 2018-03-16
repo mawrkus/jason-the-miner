@@ -156,6 +156,7 @@ class JasonTheMiner {
    * @return {Promise.<Object}
    */
   async _harvest({ loader, parser }) {
+    // TODO: adapt FileReader API + registerProc() + doc
     const follows = loader.buildPaginationLinks().map(link => ({ link }));
     return this._loadAndParse({ loader, follows, parser });
   }
