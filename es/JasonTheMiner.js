@@ -156,15 +156,17 @@ class JasonTheMiner {
    * @return {Promise.<Object}
    */
   async _harvest({ loader, parser }) {
+    const results = {};
     // TODO: adapt FileReader API + registerProc() + doc
-    const follows = loader.buildPaginationLinks().map(link => ({ link }));
-    return this._loadAndParse({ loader, follows, parser });
+    const follows = loader.buildPaginationLinks().map(link => ({ link, partialResults: results }));
+    await this._loadAndParse({ loader, follows, parser });
+    return results;
   }
 
   /**
-   * @param  {Object} loader
+   * @param  {Loader} loader
    * @param  {Array} follows
-   * @param  {Object} parser
+   * @param  {Parser} parser
    * @param  {number} level
    * @return {Promise.<Object}
    */
@@ -174,7 +176,6 @@ class JasonTheMiner {
     parser,
     level = 0,
   }) {
-    const results = {};
     const followResults = await this._followLinks({ loader, follows, parser });
     let nextFollows = [];
 
@@ -183,8 +184,9 @@ class JasonTheMiner {
       schema,
       follow,
       paginate,
+      partialResults,
     }) => {
-      this._mergeResults({ results, newResults: result });
+      this._mergeResults({ results: partialResults, newResults: result });
 
       nextFollows = follow.concat(paginate)
         // follow has no depth defined, pagination has
@@ -194,24 +196,22 @@ class JasonTheMiner {
           return {
             ...f,
             followSchema: !schemaPath.length ? schema : get(schema, schemaPath),
-            partialResult: !parsedPath.length ? result : get(result, parsedPath),
+            partialResults: !parsedPath.length ? result : get(result, parsedPath),
           };
         });
     });
 
     if (!nextFollows.length) {
       debug('No (more) links to follow, done harvesting.');
-      return results;
+      return;
     }
 
-    const nextResults = await this._loadAndParse({
+    await this._loadAndParse({
       loader,
       follows: nextFollows,
       parser,
       level: level + 1,
     });
-
-    return this._mergeResults({ results, newResults: nextResults });
   }
 
   /**
@@ -230,6 +230,7 @@ class JasonTheMiner {
       async ({
         link,
         followSchema,
+        partialResults,
       }) => {
         try {
           const options = loader.buildLoadOptions({ link });
@@ -237,7 +238,7 @@ class JasonTheMiner {
           const loadResult = await loader.run({ options });
           const parserResult = await parser.run({ data: loadResult, schema: followSchema });
 
-          return parserResult;
+          return { ...parserResult, partialResults };
         } catch (error) {
           debug(error);
           return { _errors: [this._formatError(error)] };
@@ -254,6 +255,11 @@ class JasonTheMiner {
    */
   // eslint-disable-next-line class-methods-use-this
   _mergeResults({ results, newResults }) {
+    debug('Merging...');
+    debug(newResults);
+    debug('------>');
+    debug(results);
+    debug('-------');
     // eslint-disable-next-line consistent-return
     return mergeWith(results, newResults, (obj, src) => {
       if (Array.isArray(obj)) {
