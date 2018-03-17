@@ -142,7 +142,7 @@ class JasonTheMiner {
     const transformer = this._buildProcessor('transform', transform);
 
     try {
-      const results = await this._harvest({ loader, parser });
+      const results = await this._loadAndParse({ loader, parser });
       return transformer.run({ results }); // TODO: support array of transformers ?
     } catch (error) {
       this._formatError(error);
@@ -151,15 +151,15 @@ class JasonTheMiner {
   }
 
   /**
-   * @param  {Object} loader
-   * @param  {Object} parser
+   * @param  {Loader} loader
+   * @param  {Parser} parser
    * @return {Promise.<Object}
    */
-  async _harvest({ loader, parser }) {
+  async _loadAndParse({ loader, parser }) {
     const results = {};
     // TODO: adapt FileReader API + registerProc() + doc
     const follows = loader.buildPaginationLinks().map(link => ({ link, partialResults: results }));
-    await this._loadAndParse({ loader, follows, parser });
+    await this._loadAndParseDeep({ loader, follows, parser });
     return results;
   }
 
@@ -170,7 +170,7 @@ class JasonTheMiner {
    * @param  {number} level
    * @return {Promise.<Object}
    */
-  async _loadAndParse({
+  async _loadAndParseDeep({
     loader,
     follows,
     parser,
@@ -188,7 +188,7 @@ class JasonTheMiner {
     }) => {
       this._mergeResults({ results: partialResults, newResults: result });
 
-      nextFollows = follow.concat(paginate)
+      nextFollows = nextFollows.concat(follow.concat(paginate))
         // follow has no depth defined, pagination has
         .filter(({ depth }) => depth === undefined || level < depth)
         .map((f) => {
@@ -206,7 +206,7 @@ class JasonTheMiner {
       return;
     }
 
-    await this._loadAndParse({
+    await this._loadAndParseDeep({
       loader,
       follows: nextFollows,
       parser,
