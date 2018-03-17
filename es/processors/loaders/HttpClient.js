@@ -1,5 +1,4 @@
 const axios = require('axios');
-const Bluebird = require('bluebird');
 const debug = require('debug')('jason:load:http');
 
 const REGEX_PAGINATION_PARAMS = /[^{]*{\D*(\d+)\D*,\D*(\d+).*/;
