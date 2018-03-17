@@ -1,0 +1,34 @@
+{
+  "load": {
+    "file": {
+      "path": "es/__tests__/fixtures/github-search-p1.html",
+      "_concurrency": 1
+    }
+  },
+  "parse": {
+    "html": {
+      "repos": [{
+        "_$": ".repo-list .repo-list-item",
+        "_slice": "0,1",
+        "name": "h3 > a",
+        "last-update": "relative-time < attr(datetime)",
+        "__follow": {
+          "_link": "h3 > a",
+          "description": "meta[property='og:description'] < attr(content)",
+          "url": "link[rel='canonical'] < attr(href)",
+          "stats": {
+            "_$": ".pagehead-actions",
+            "watchers": "li:nth-child(1) a.social-count | trim",
+            "stars": "li:nth-child(2) a.social-count | trim",
+            "forks": "li:nth-child(3) a.social-count | trim"
+          }
+        }
+      }],
+      "_paginate": {
+        "link": ".pagination > a[rel='next']",
+        "slice": "0,1",
+        "depth": 1
+      }
+    }
+  }
+}

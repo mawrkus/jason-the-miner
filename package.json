@@ -58,6 +58,7 @@
     "content-disposition": "^0.5.1",
     "csv-stringify": "^1.0.4",
     "debug": "^2.2.0",
+    "lodash.flatten": "^4.4.0",
     "lodash.get": "^4.4.2",
     "lodash.mergewith": "^4.6.1",
     "mime": "^1.3.4",
