@@ -1,7 +1,6 @@
 const nodePath = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
-const Bluebird = require('bluebird');
 const debug = require('debug')('jason:load:file');
 
 const readFileAsync = promisify(fs.readFile);
@@ -37,17 +36,14 @@ class FileReader {
       encoding: 'utf8',
       ...this._readConfig,
     };
+    this._lastReadConfig = this._readConfig;
 
     this._config = { concurrency: 1, ...this._config };
     this._config.concurrency = Number(this._config.concurrency); // just in case
 
-    this._lastReadConfig = this._readConfig;
-    this._paginationOptions = this._buildPaginationOptions();
-
     debug('FileReader instance created.');
     debug('read config', this._readConfig);
     debug('config', this._config);
-    debug('pagination options', this._paginationOptions);
   }
 
   /**
@@ -96,43 +92,17 @@ class FileReader {
 
   /**
    * @param {Object} [options] Optional read options, used when following/paginating.
-   * @param {boolean} [enablePagination] Whether or not to load all the pages defined by the config.
    * @return {Promise}
    */
-  async run({ options, enablePagination }) {
-    if (!enablePagination) {
-      this._lastReadConfig = { ...this._lastReadConfig, ...options };
-      return this._run({ options: this._lastReadConfig });
-    }
+  async run({ options }) {
+    this._lastReadConfig = { ...this._lastReadConfig, ...options };
 
-    if (!this._paginationOptions.length) {
-      this._paginationOptions = [this._lastReadConfig];
-    }
-
-    debug('Pagination is enabled: %d page(s) at max concurrency=%d', this._paginationOptions.length, this._config.concurrency);
-
-    return Bluebird.map(
-      this._paginationOptions,
-      (paginationOptions) => {
-        this._lastReadConfig = { ...this._lastReadConfig, paginationOptions, ...options };
-        return this._run({ options: paginationOptions });
-      },
-      { concurrency: this._config.concurrency },
-    );
-  }
-
-  /**
-   * @param {Object} [options] Optional read options.
-   * @return {Promise.<string|ReadStream> | Promise.<Error>}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  async _run({ options }) {
     const {
       basePath,
       path,
       stream,
       encoding,
-    } = options;
+    } = this._lastReadConfig;
 
     const currentPath = nodePath.join(basePath, path);
 
