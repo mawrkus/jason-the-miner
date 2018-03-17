@@ -51,24 +51,46 @@ class FileReader {
   }
 
   /**
+   * Returns the config. Used for limiting the concurrency when following/paginating.
+   * @return {Object}
+   */
+  getConfig() {
+    return this._config;
+  }
+
+  /**
+   * Builds all the links defined by the pagination config.
    * @return {Array}
    */
-  _buildPaginationOptions() {
-    const options = [];
-
+  buildPaginationLinks() {
     const paginationParams = this._readConfig.path.match(REGEX_PAGINATION_PARAMS);
 
-    if (paginationParams) {
-      const [startPage, endPage] = paginationParams.slice(1, 3).map(Number);
-      let n = startPage;
-
-      while (n <= endPage) {
-        const path = this._readConfig.path.replace(REGEX_PAGINATION_EXP, n);
-        options.push({ ...this._readConfig, path });
-        n += 1;
-      }
+    if (!paginationParams) {
+      return [this._readConfig.path];
     }
 
+    const links = [];
+
+    const [startPage, endPage] = paginationParams.slice(1, 3).map(Number);
+    let n = startPage;
+
+    while (n <= endPage) {
+      const path = this._readConfig.path.replace(REGEX_PAGINATION_EXP, n);
+      links.push(path);
+      n += 1;
+    }
+
+    return links;
+  }
+
+  /**
+   * Builds new load options. Used for following/paginating.
+   * @param {string} link
+   * @return {Object}
+   */
+  buildLoadOptions({ link }) {
+    const options = { ...this._lastReadoptions };
+    options.path = link; // TODO: handle this better?
     return options;
   }
 
@@ -129,25 +151,6 @@ class FileReader {
       debug(readError.message);
       throw readError;
     }
-  }
-
-  /**
-   * Returns the config . Used for following/paginating.
-   * @return {Object}
-   */
-  getConfig() {
-    return this._config;
-  }
-
-  /**
-   * Builds new load options. Used for following/paginating.
-   * @param {string} link
-   * @return {Object}
-   */
-  buildLoadOptions({ link }) {
-    const options = { ...this._lastReadoptions };
-    options.path = link; // TODO: handle this better?
-    return options;
   }
 }
 

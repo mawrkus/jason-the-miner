@@ -391,7 +391,7 @@ jason.config.transform = {
 };
 ```
 
-Note that loaders **must also implement** the `getConfig()` and `buildLoadOptions({ link })` methods.
+Note that loaders **must also implement** the `getConfig()`, `buildPaginationLinks()` and `buildLoadOptions({ link })` methods.
 Have a look at the source code for more info.
 
 ## ⛏ Tests

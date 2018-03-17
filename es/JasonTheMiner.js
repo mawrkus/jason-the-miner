@@ -52,6 +52,10 @@ class JasonTheMiner {
    * @param  {Processor} options.processor A processor class
    */
   registerProcessor({ category, name, processor }) {
+    if (!['load', 'parse', 'transform'].includes(category)) {
+      throw new Error(`Unknown processor category "${category}"!`);
+    }
+
     if (!processor || !processor.prototype) {
       throw new TypeError(`Invalid processor "${name}"! Class expected.`);
     }
@@ -60,13 +64,10 @@ class JasonTheMiner {
       throw new TypeError(`Invalid processor "${name}"! Missing "run" method.`);
     }
 
-    if (!['load', 'parse', 'transform'].includes(category)) {
-      throw new Error(`Unknown processor category "${category}"!`);
-    }
-
     if (
       category === 'load' && (
         typeof processor.prototype.getConfig !== 'function' ||
+        typeof processor.prototype.buildPaginationLinks !== 'function' ||
         typeof processor.prototype.buildLoadOptions !== 'function'
       )
     ) {
@@ -153,13 +154,11 @@ class JasonTheMiner {
   /**
    * @param  {Loader} loader
    * @param  {Parser} parser
-   * @return {Promise.<Object}
+   * @return {Promise.<Object>}
    */
   async _loadAndParse({ loader, parser }) {
-    const results = {};
-    // TODO: adapt FileReader API + registerProc() + doc
     const follows = loader.buildPaginationLinks().map(link => ({ link, partialResults: results }));
-    await this._loadAndParseDeep({ loader, follows, parser });
+    const results = await this._loadAndParseDeep({ loader, follows, parser });
     return results;
   }
 

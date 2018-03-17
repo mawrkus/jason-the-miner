@@ -43,6 +43,15 @@ class HttpClient {
   }
 
   /**
+   * Returns the config. Used for limiting the concurrency when following/paginating.
+   * @return {Object}
+   */
+  getConfig() {
+    return this._config;
+  }
+
+  /**
+   * Builds all the links defined by the pagination config.
    * @return {Array}
    */
   buildPaginationLinks() {
@@ -64,6 +73,24 @@ class HttpClient {
     }
 
     return links;
+  }
+
+  /**
+   * Builds new load options. Used for following/paginating.
+   * @param {string} link
+   * @return {Object}
+   */
+  buildLoadOptions({ link }) {
+    const loadParams = { ...this._lastHttpConfig };
+
+    if (link.match(REGEX_ABSOLUTE_LINK)) {
+      loadParams.baseURL = link;
+      loadParams.url = '';
+    } else {
+      loadParams.url = link;
+    }
+
+    return loadParams;
   }
 
   /**
@@ -126,32 +153,6 @@ class HttpClient {
 
     debug('%s %s: %s (%d)', method.toUpperCase(), url, statusText, status, params);
     debug('%s chars of "%s" received.', contentLength, headers['content-type']);
-  }
-
-  /**
-   * Returns the config . Used for following/paginating.
-   * @return {Object}
-   */
-  getConfig() {
-    return this._config;
-  }
-
-  /**
-   * Builds new load options. Used for following/paginating.
-   * @param {string} link
-   * @return {Object}
-   */
-  buildLoadOptions({ link }) {
-    const loadParams = { ...this._lastHttpConfig };
-
-    if (link.match(REGEX_ABSOLUTE_LINK)) {
-      loadParams.baseURL = link;
-      loadParams.url = '';
-    } else {
-      loadParams.url = link;
-    }
-
-    return loadParams;
   }
 }
 
