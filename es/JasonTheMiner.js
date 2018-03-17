@@ -1,3 +1,4 @@
+const path = require('path');
 const Bluebird = require('bluebird');
 const get = require('lodash.get');
 const mergeWith = require('lodash.mergewith');
@@ -110,7 +111,7 @@ class JasonTheMiner {
 
     try {
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      const config = require(configPath);
+      const config = require(path.join(process.cwd(), configPath));
 
       ['load', 'parse', 'transform']
         .filter(category => !!config[category])
