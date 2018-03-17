@@ -7,18 +7,23 @@ function createParser() {
 }
 
 describe('HtmlParser', () => {
-  it('should be a class with the following API: run()', () => {
+  it('should be a class with the following API: run({ data: )', () => {
     expect(HtmlParser).toBeInstanceOf(Function);
     expect(HtmlParser.prototype.run).toBeInstanceOf(Function);
   });
 
-  describe('#run(html, schema)', () => {
+  describe('#run({ data, schema })', () => {
     const html = `
+      <!DOCTYPE html>
       <html>
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+          <title>Tops</title>
+        </head>
         <body>
           <div class="top top-artists">
             <h1 class="title artists-title">Best artists</h1>
-            <ul id="list">
+            <ul class="list">
               <li class="list-item"><a href="http://the-stooges.com/">The Stooges</a></li>
               <li class="list-item"><a href="http://primal-scream.com/">Primal Scream</a></li>
               <li class="list-item"><a href="http://john-frusciante.com/">John Frusciante</a></li>
@@ -30,7 +35,7 @@ describe('HtmlParser', () => {
           </div>
           <div class="top top-records">
             <h1 class="title records-title">Best records</h1>
-            <ul id="list">
+            <ul class="list">
               <li class="list-item"><a href="http://island-life.com/">Island Life</a></li>
               <li class="list-item"><a href="http://homeland.com/">Homeland</a></li>
               <li class="list-item"><a href="http://navega.com/">Navega</a></li>
@@ -40,7 +45,7 @@ describe('HtmlParser', () => {
           <div class="top top-songs">
             <h1 class="title">Other tops</h1>
             <h2 class="title songs-title">Best songs</h2>
-            <ul id="list">
+            <ul class="list">
               <li>
                 <span><a href="#1" data-url="http://rose-life.com/"> La vie en rose (radio edit)   </a></span>
                 <span>
@@ -76,7 +81,7 @@ describe('HtmlParser', () => {
 
     it('should return a promise', () => {
       const parser = createParser();
-      expect(parser.run('', {})).toBeInstanceOf(Promise);
+      expect(parser.run({ data: '', schema: {} })).toBeInstanceOf(Promise);
     });
 
     describe('when the schema has a property made of a string', () => {
@@ -88,7 +93,7 @@ describe('HtmlParser', () => {
             title: '.title',
           };
 
-          const { result } = await parser.run(html, schema);
+          const { result } = await parser.run({ data: html, schema });
 
           expect(result).toEqual({
             title: 'Best artists',
@@ -104,7 +109,7 @@ describe('HtmlParser', () => {
             artist: '.list-item',
           };
 
-          const { result } = await parser.run(html, schema);
+          const { result } = await parser.run({ data: html, schema });
 
           expect(result).toEqual({
             artist: 'The Stooges',
@@ -120,7 +125,7 @@ describe('HtmlParser', () => {
             copyright: '.copyright',
           };
 
-          const { result } = await parser.run(html, schema);
+          const { result } = await parser.run({ data: html, schema });
 
           expect(result).toEqual({
             copyright: null,
@@ -141,7 +146,7 @@ describe('HtmlParser', () => {
             },
           };
 
-          const { result } = await parser.run(html, schema);
+          const { result } = await parser.run({ data: html, schema });
 
           expect(result).toEqual({
             top: {
@@ -164,7 +169,7 @@ describe('HtmlParser', () => {
             },
           };
 
-          const { result } = await parser.run(html, schema);
+          const { result } = await parser.run({ data: html, schema });
 
           expect(result).toEqual({
             top: {
@@ -185,7 +190,7 @@ describe('HtmlParser', () => {
               },
             };
 
-            const { result } = await parser.run(html, schema);
+            const { result } = await parser.run({ data: html, schema });
 
             expect(result).toEqual({
               top: {
@@ -207,7 +212,7 @@ describe('HtmlParser', () => {
               items: ['.list-item a'],
             };
 
-            const { result } = await parser.run(html, schema);
+            const { result } = await parser.run({ data: html, schema });
 
             expect(result).toEqual({
               items: [
@@ -236,7 +241,7 @@ describe('HtmlParser', () => {
 
               const expectedError = new Error('No root element selector defined in array schema (path="items,0")!');
 
-              await expect(parser.run(html, schema)).rejects.toEqual(expectedError);
+              await expect(parser.run({ data: html, schema })).rejects.toEqual(expectedError);
             });
           });
 
@@ -251,7 +256,7 @@ describe('HtmlParser', () => {
                 }],
               };
 
-              const { result } = await parser.run(html, schema);
+              const { result } = await parser.run({ data: html, schema });
 
               expect(result).toEqual({
                 items: [
@@ -277,7 +282,7 @@ describe('HtmlParser', () => {
                   }],
                 };
 
-                const { result } = await parser.run(html, schema);
+                const { result } = await parser.run({ data: html, schema });
 
                 expect(result).toEqual({
                   items: [
@@ -302,7 +307,7 @@ describe('HtmlParser', () => {
 
             const expectedError = new Error('Array schemas can only contain a string or an object (path="items,0")!');
 
-            await expect(parser.run(html, schema)).rejects.toEqual(expectedError);
+            await expect(parser.run({ data: html, schema })).rejects.toEqual(expectedError);
           });
         });
       });
@@ -318,7 +323,7 @@ describe('HtmlParser', () => {
             ],
           };
 
-          const { result } = await parser.run(html, schema);
+          const { result } = await parser.run({ data: html, schema });
 
           expect(result).toEqual({
             records: [
@@ -350,7 +355,7 @@ describe('HtmlParser', () => {
           },
         };
 
-        const { result } = await parser.run(html, schema);
+        const { result } = await parser.run({ data: html, schema });
 
         expect(result).toEqual({
           title: 'Best artists',
@@ -396,7 +401,7 @@ describe('HtmlParser', () => {
           },
         };
 
-        const { result, follow } = await parser.run(html, schema);
+        const { result, follow } = await parser.run({ data: html, schema });
 
         expect(result).toEqual({
           title: 'Best artists',
@@ -450,7 +455,7 @@ describe('HtmlParser', () => {
           anchors: ['a ? attr(href,^#\\d) < attr(href)'],
         };
 
-        const { result } = await parser.run(html, schema);
+        const { result } = await parser.run({ data: html, schema });
 
         expect(result).toEqual({
           title: 'BEST SONGS',
@@ -496,7 +501,7 @@ describe('HtmlParser', () => {
           },
         };
 
-        const { result, paginate } = await parser.run(html, schema);
+        const { result, paginate } = await parser.run({ data: html, schema });
 
         expect(result).toEqual({
           title: 'Best songs',
