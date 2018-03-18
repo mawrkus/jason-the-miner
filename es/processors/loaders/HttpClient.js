@@ -1,9 +1,17 @@
+const path = require('path');
+const fs = require('fs');
+const { promisify } = require('util');
+const crypto = require('crypto');
+
 const axios = require('axios');
 const debug = require('debug')('jason:load:http');
 
 const REGEX_PAGINATION_PARAMS = /[^{]*{\D*(\d+)\D*,\D*(\d+).*/;
 const REGEX_PAGINATION_EXP = /{.+}/;
 const REGEX_ABSOLUTE_LINK = /^https?:\/\//;
+
+const readFileAsync = promisify(fs.readFile);
+const writeFileAsync = promisify(fs.writeFile);
 
 /**
  * Requests data via HTTP. Depends on the "axios" package.
@@ -39,6 +47,59 @@ class HttpClient {
     debug('HttpClient instance created.');
     debug('HTTP config', this._httpConfig);
     debug('config', this._config);
+
+    if (this._config.cache) {
+      this._setupCache();
+    }
+  }
+
+  _setupCache() {
+    const folderPath = path.join(process.cwd(), this._config.cache.folder);
+    if (!fs.existsSync(folderPath)) {
+      debug('Warning: folder "%s" does not exist. Cache is disabled.', folderPath);
+      return;
+    }
+
+    const originalRequest = this._httpClient.request.bind(this._httpClient);
+
+    this._httpClient.request = async (args) => {
+      const hash = crypto.createHash('sha256');
+      const cacheKey = hash.update(JSON.stringify(args)).digest('hex');
+      const cacheFile = path.join(folderPath, cacheKey);
+
+      try {
+        if (this._config.cache.refresh) {
+          throw new Error('Force cache refresh!');
+        }
+
+        const response = await readFileAsync(cacheFile);
+        debug('Response from cache file "%s".', cacheKey, args);
+
+        return JSON.parse(response);
+      } catch (readError) {
+        debug('Response not from cache file "%s".', cacheKey, args, readError.toString());
+        const response = await originalRequest(args);
+
+        try {
+          const cachedResponse = {
+            config: response.config,
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+            data: response.data,
+          };
+
+          await writeFileAsync(cacheFile, JSON.stringify(cachedResponse));
+          debug('Cache file "%s" written.', cacheKey, args);
+        } catch (writeError) {
+          debug('Error writing cache file "%s"!', cacheKey, args, writeError.toString());
+        }
+
+        return response;
+      }
+    };
+
+    debug('Cache set up at folder "%s".', folderPath);
   }
 
   /**

@@ -153,11 +153,11 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 
 Jason the Miner comes with 3 built-in loaders:
 
-- `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client & supports the same options (including "headers", "proxy", etc.). It adds a `[_concurrency=1]` option to limit the number concurrent requests when following/paginating.
+- `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client & supports the same options (including "headers", "proxy", etc.). It adds a `[_concurrency=1]` option to limit the number concurrent requests when following/paginating. It also supports a `_cache` option to cache responses on the filesystem.
 - `file`: reads the content of a file. Options: `path`, `[stream=false]` & `[encoding="utf8"]`. It also adds a `[_concurrency=1]` option to limit the number concurrent requests when paginating.
 - `stdin`: reads the content from the standard input. Options: `[encoding="utf8"]`.
 
-For example, an HTTP load config with pagination (pages 1 -> 3):
+For example, an HTTP load config with pagination (pages 1 -> 3) where responses will be cached in the "tests/http-cache" folder:
 
 ```js
 ...
@@ -165,7 +165,10 @@ For example, an HTTP load config with pagination (pages 1 -> 3):
   "http": {
     "baseURL": "https://github.com",
     "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories&p={1,3}",
-    "_concurrency": 2
+    "_concurrency": 2,
+    "_cache": {
+      "folder": "tests/http-cache"
+    }
   }
 }
 ...

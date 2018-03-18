@@ -1,8 +1,12 @@
 {
   "load": {
-    "file": {
-      "path": "es/__tests__/fixtures/github-search-p1.html",
-      "_concurrency": 1
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
+      "_concurrency": 2,
+      "_cache": {
+        "folder": "es/__tests__/fixtures"
+      }
     }
   },
   "parse": {

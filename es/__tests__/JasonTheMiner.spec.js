@@ -1,35 +1,19 @@
-// process.env.DEBUG = 'jason:core,jason:load:*';
-const { when } = require('jest-when');
+// process.env.DEBUG = 'jason:core,jason:load:*,jason:parse:*';
 const JasonTheMiner = require('../JasonTheMiner');
-const FileReader = require('../processors/loaders/FileReader');
+const HttpClient = require('../processors/loaders/HttpClient');
 
 /* eslint-enable class-methods-use-this */
 
 function createJason() {
   const jason = new JasonTheMiner();
 
-  const runSpy = jest.spyOn(FileReader.prototype, 'buildLoadOptions');
-
-  // TODO: jest-when -> call through even when no match?
-  when(runSpy)
-    .calledWith({ link: 'https://github.com/search?l=JavaScript&o=desc&p=2&q=scraper&s=stars&type=Repositories' })
-    .mockReturnValue({ path: 'es/__tests__/fixtures/github-search-p2.html' });
-
-  when(runSpy)
-    .calledWith({ link: 'https://github.com/matthewmueller/x-ray' })
-    .mockReturnValue({ path: 'es/__tests__/fixtures/github-search-xray.html' });
-
-  when(runSpy)
-    .calledWith({ link: 'https://github.com/ecprice/newsdiffs' })
-    .mockReturnValue({ path: 'es/__tests__/fixtures/github-search-newsdiff.html' });
-
   jason.registerProcessor({
     category: 'load',
     name: 'file',
-    processor: FileReader,
+    processor: HttpClient,
   });
 
-  jason.loadConfig('./es/__tests__/fixtures/test-config');
+  jason.loadConfig('./es/__tests__/fixtures/test-config'); // with cache ;)
 
   return {
     jason,
@@ -56,7 +40,7 @@ describe('JasonTheMiner', () => {
           repos: [
             {
               description: 'x-ray - The next web scraper. See through the <html> noise.',
-              'last-update': '2018-03-01T14:44:53Z',
+              'last-update': '2018-03-14T23:16:21Z',
               name: 'matthewmueller/x-ray',
               stats: {
                 forks: '278',
