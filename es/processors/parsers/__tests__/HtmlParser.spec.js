@@ -379,13 +379,13 @@ describe('HtmlParser', () => {
           _$: '.top-artists',
           title: '.title',
           items: [{
-            _$: '.list-item',
+            _$: '.list-item a',
             artist: {
               _follow: {
-                _link: 'a',
+                _link: '',
                 biography: 'p.biography',
               },
-              name: 'a',
+              name: '',
             },
           }],
           metas: {

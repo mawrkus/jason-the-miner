@@ -308,21 +308,21 @@ class HtmlParser {
     tab,
   }) {
     const { _link: selectorDef } = schema;
-
-    if (!selectorDef) {
-      debug('%sWarning: no link selector! Nothing to follow.', tab);
-      return;
-    }
-
     const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
 
-    const { $elements, elementsCount } = this._findSlicedElements({
-      selector,
-      matcher,
-      slice: '',
-      $context,
-      tab,
-    });
+    // allow empty selector to get the value from the root/current element
+    const { $elements, elementsCount } = selector ?
+      this._findSlicedElements({
+        selector,
+        matcher,
+        slice: '',
+        $context,
+        tab,
+      }) :
+      {
+        $elements: $context,
+        elementsCount: $context.length,
+      };
 
     if (!elementsCount) {
       debug('%sWarning: no link found for selector "%s"! Nothing to follow.', tab, selector);

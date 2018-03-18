@@ -202,7 +202,7 @@ class JasonTheMiner {
     schema,
     level = 0,
   }) {
-    debug('%s "%s"...', !level ? 'Loading' : 'Following', link);
+    debug('Following "%s"...', link);
     try {
       const options = loader.buildLoadOptions({ link });
       const loadResult = await loader.run({ options });
