@@ -1,7 +1,6 @@
 const path = require('path');
 const Bluebird = require('bluebird');
 const get = require('lodash.get');
-const flatten = require('lodash.flatten');
 const mergeWith = require('lodash.mergewith');
 const debug = require('debug')('jason:core');
 
@@ -159,64 +158,94 @@ class JasonTheMiner {
    * @return {Promise.<Object>}
    */
   async _loadAndParse({ loader, parser }) {
-    const results = {};
-    const follows = loader.buildPaginationLinks().map(link => ({ link, partialResults: results }));
-    await this._followLinks({ loader, follows, parser });
+    const follows = loader.buildPaginationLinks().map(link => ({ link }));
+    const { concurrency = 1 } = loader.getConfig();
+
+    debug('Paginating %d link(s) at max concurrency=%d...', follows.length, concurrency);
+
+    const followResults = await Bluebird.map(
+      follows,
+      ({ link }) => this._followLink({
+        link,
+        loader,
+        concurrency,
+        parser,
+      }),
+      { concurrency },
+    );
+
+    debug('Finished pagination.');
+    debug(followResults);
+
+    const results = followResults.reduce((acc, newResult) => {
+      this._mergeResults({ to: acc, newResult });
+      return acc;
+    }, {});
+
     return results;
   }
 
   /**
+   * @param  {string} link
    * @param  {Loader} loader
-   * @param  {Array} follows
+   * @param  {number} concurrency
    * @param  {Parser} parser
+   * @param  {Object} [schema]
    * @param  {number} [level=0]
    * @return {Promise}
    */
-  async _followLinks({
+  async _followLink({
+    link,
     loader,
-    follows,
+    concurrency,
     parser,
+    schema,
     level = 0,
   }) {
-    const { concurrency = 1 } = loader.getConfig();
+    debug('%s "%s"...', !level ? 'Loading' : 'Following', link);
+    try {
+      const options = loader.buildLoadOptions({ link });
+      const loadResult = await loader.run({ options });
+      const parserResult = await parser.run({ data: loadResult, schema });
+      const { result } = parserResult;
 
-    debug('Following %d link(s) at max concurrency=%d...', follows.length, concurrency, follows);
+      const follows = this._getNextFollows({ parserResult, level });
+      if (!follows.length) {
+        debug('No (more) links to follow.');
+        return result;
+      }
 
-    const followResults = await Bluebird.map(
-      follows,
-      async ({ link, followSchema, partialResults }) => {
-        try {
-          const options = loader.buildLoadOptions({ link });
-          const loadResult = await loader.run({ options });
+      await Bluebird.map(
+        follows,
+        (async ({
+          followLink,
+          followSchema,
+          followParsedPath,
+          isPaginate,
+        }) => {
+          const newResult = await this._followLink({
+            link: followLink,
+            loader,
+            concurrency,
+            parser,
+            schema: followSchema,
+            level: isPaginate ? level + 1 : level,
+          });
 
-          const parserResult = await parser.run({ data: loadResult, schema: followSchema });
-          const nextFollows = this._getNextFollows({ parserResult, level });
+          const partialResult = !followParsedPath.length ?
+            result :
+            get(result, followParsedPath);
 
-          return { parserResult, nextFollows, partialResults };
-        } catch (error) {
-          debug(error);
-          return { _errors: [this._formatError(error)] };
-        }
-      },
-      { concurrency },
-    );
+          this._mergeResults({ to: partialResult, newResult });
+        }),
+        { concurrency },
+      );
 
-    followResults.forEach(({ parserResult, partialResults }) => {
-      this._mergeResults({ results: partialResults, newResult: parserResult.result });
-    });
-
-    const allNextFollows = flatten(followResults.map(({ nextFollows }) => nextFollows));
-    if (!allNextFollows.length) {
-      debug('No (more) links to follow, done harvesting.');
-      return;
+      return result;
+    } catch (error) {
+      debug(error);
+      return { _errors: [this._formatError(error)] };
     }
-
-    await this._followLinks({
-      loader,
-      follows: allNextFollows,
-      parser,
-      level: level + 1,
-    });
   }
 
   /**
@@ -226,50 +255,53 @@ class JasonTheMiner {
    */
   // eslint-disable-next-line class-methods-use-this
   _getNextFollows({ parserResult, level }) {
-    const {
-      result,
-      schema,
-      follow,
-      paginate,
-    } = parserResult;
+    const { schema, follow, paginate } = parserResult;
 
-    const allowedPaginates = paginate.filter(({ depth }) => level < depth);
+    const allowedPaginates = paginate
+      .filter(({ depth }) => level < depth)
+      .map(p => ({ ...p, isPaginate: true }));
 
     debug('Found %d link(s) and %d page(s) to follow.', follow.length, allowedPaginates.length);
 
     const nextFollows = follow.concat(allowedPaginates)
-      .map((f) => {
-        const { schemaPath, parsedPath } = f;
-        return {
-          ...f,
-          followSchema: !schemaPath.length ? schema : get(schema, schemaPath),
-          partialResults: !parsedPath.length ? result : get(result, parsedPath),
-        };
-      });
+      .map(({
+        link: followLink,
+        schemaPath,
+        parsedPath: followParsedPath,
+        isPaginate,
+      }) => ({
+        followLink,
+        followSchema: !schemaPath.length ? schema : get(schema, schemaPath),
+        followParsedPath,
+        isPaginate,
+      }));
+
+    debug(nextFollows);
 
     return nextFollows;
   }
 
   /**
-   * @param {Object} results
+   * @param {Object} to
    * @param {Array} nextResults
    */
   // eslint-disable-next-line class-methods-use-this
-  _mergeResults({ results, newResult }) {
+  _mergeResults({ to, newResult }) {
     debug('Merging...');
     debug(newResult);
-    debug('------>');
-    debug(results);
-    debug('-------');
+    debug('to ------>');
+    debug(to);
+    debug('=======');
 
     // eslint-disable-next-line consistent-return
-    mergeWith(results, newResult, (obj, src) => {
+    const mergedResult = mergeWith(to, newResult, (obj, src) => {
       if (Array.isArray(obj)) {
         return obj.concat(src);
       }
     });
 
-    debug('merged results', results);
+    debug('merged result');
+    debug(mergedResult);
   }
 
   /**

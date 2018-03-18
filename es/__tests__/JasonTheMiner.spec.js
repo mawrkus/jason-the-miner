@@ -1,4 +1,4 @@
-process.env.DEBUG = 'jason:core,jason:load:*';
+// process.env.DEBUG = 'jason:core,jason:load:*';
 const { when } = require('jest-when');
 const JasonTheMiner = require('../JasonTheMiner');
 const FileReader = require('../processors/loaders/FileReader');
@@ -21,7 +21,7 @@ function createJason() {
 
   when(runSpy)
     .calledWith({ link: 'https://github.com/ecprice/newsdiffs' })
-    .mockReturnValue({ path: 'es/__tests__/fixtures/github-search-newsdiffs.html' });
+    .mockReturnValue({ path: 'es/__tests__/fixtures/github-search-newsdiff.html' });
 
   jason.registerProcessor({
     category: 'load',
@@ -55,12 +55,26 @@ describe('JasonTheMiner', () => {
         results: {
           repos: [
             {
-              name: 'matthewmueller/x-ray',
+              description: 'x-ray - The next web scraper. See through the <html> noise.',
               'last-update': '2018-03-01T14:44:53Z',
+              name: 'matthewmueller/x-ray',
+              stats: {
+                forks: '278',
+                stars: '4,239',
+                watchers: '104',
+              },
+              url: 'https://github.com/matthewmueller/x-ray',
             },
             {
-              name: 'ecprice/newsdiffs',
+              description: 'newsdiffs - Automatic scraper that tracks changes in news articles over time.',
               'last-update': '2017-11-06T19:38:52Z',
+              name: 'ecprice/newsdiffs',
+              stats: {
+                forks: '96',
+                stars: '348',
+                watchers: '38',
+              },
+              url: 'https://github.com/ecprice/newsdiffs',
             },
           ],
         },

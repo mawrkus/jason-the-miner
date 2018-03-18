@@ -51,7 +51,7 @@ const demoFiles = [
   for (const file of demoFiles) {
     spinner.start().text = `Launching "${file}" demo...`;
 
-    const demoPath = path.join(process.cwd(), 'demos/configs', file);
+    const demoPath = path.join('demos/configs', file);
 
     try {
       await jason.loadConfig(demoPath); // eslint-disable-line no-await-in-loop

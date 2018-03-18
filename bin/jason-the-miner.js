@@ -34,7 +34,7 @@ const jason = new JasonTheMiner({
   },
 });
 
-const configPath = path.join(process.cwd(), config);
+const configPath = path.join(config);
 
 const spinner = ora({ spinner: 'dots4' }).start();
 
