@@ -1161,7 +1161,7 @@ expand-range@^1.8.1:
   dependencies:
     fill-range "^2.1.0"
 
-expect@^22.1.0, expect@^22.4.0:
+expect@^22.4.0:
   version "22.4.0"
   resolved "https://registry.yarnpkg.com/expect/-/expect-22.4.0.tgz#371edf1ae15b83b5bf5ec34b42f1584660a36c16"
   dependencies:
@@ -2237,12 +2237,6 @@ jest-validate@^22.4.2:
     jest-get-type "^22.1.0"
     leven "^2.1.0"
     pretty-format "^22.4.0"
-
-jest-when@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/jest-when/-/jest-when-1.1.0.tgz#c3a7bf6faa6e6e2c0db51fec199faf74ca55625c"
-  dependencies:
-    expect "^22.1.0"
 
 jest-worker@^22.2.2:
   version "22.2.2"
