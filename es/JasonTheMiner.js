@@ -273,7 +273,7 @@ class JasonTheMiner {
         followLink,
         followSchema: !schemaPath.length ? schema : get(schema, schemaPath),
         followParsedPath,
-        isPaginate,
+        isPaginate: !!isPaginate,
       }));
 
     debug(nextFollows);
