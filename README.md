@@ -257,12 +257,13 @@ Jason has 4 built-in element **matchers**:
 They are used to test an element in order to decide whether to include/discard it from parsing.
 If not specified, Jason includes every element.
 
-4 built-in text **extractors**:
+5 built-in text **extractors**:
 
 - `text` (by default)
 - `html`
 - `attr([attribute name])`
 - `regex([regex string])`
+- `uuid` (generates a uuid v1, from https://www.npmjs.com/package/uuid)
 
 and 4 built-in text **filters**:
 

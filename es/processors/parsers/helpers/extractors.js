@@ -1,3 +1,4 @@
+const uuid = require('uuid/v1');
 const regexCache = require('./regex-cache');
 
 /**
@@ -15,4 +16,5 @@ module.exports = {
     const matches = regexCache.get(regexString).exec($el.text());
     return (matches && matches[1]) || '';
   },
+  uuid: () => uuid(),
 };
