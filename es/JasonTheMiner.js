@@ -331,8 +331,8 @@ class JasonTheMiner {
     }
 
     // readable output in all cases
-    if (!error.msg) {
-      error.msg = error.toString(); // eslint-disable-line no-param-reassign
+    if (!error.message) {
+      error.message = error.toString(); // eslint-disable-line no-param-reassign
     }
 
     return error;
