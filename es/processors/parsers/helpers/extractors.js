@@ -9,7 +9,10 @@ const regexCache = require('./regex-cache');
 module.exports = {
   // must always return a string for the filters to work properly
   default: $el => $el.text() || '',
-  text: $el => $el.text() || '',
+  text: (staticTextOr$el, $el) => {
+    const text = !$el ? staticTextOr$el.text() : staticTextOr$el;
+    return text || '';
+  },
   html: $el => $el.html() || '',
   attr: (attr, $el) => $el.attr(attr) || '',
   regex: (regexString, $el) => {

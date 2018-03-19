@@ -259,7 +259,7 @@ If not specified, Jason includes every element.
 
 5 built-in text **extractors**:
 
-- `text` (by default)
+- `text([optional static text])` (by default)
 - `html`
 - `attr([attribute name])`
 - `regex([regex string])`
