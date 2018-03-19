@@ -11,10 +11,10 @@ const pad = require('pad-left');
 const debug = require('debug')('jason:transform:download-file');
 
 const MB = 1024 * 1024;
-const REGEXP_UUID = /%uuid%/g;
-const REGEXP_HASH = /%hash%/g;
-const REGEXP_NUM = /%num%/g;
-const REGEXP_NAME = /%name%/g;
+const REGEX_UUID = /%uuid%/g;
+const REGEX_HASH = /%hash%/g;
+const REGEX_NUM = /%num%/g;
+const REGEX_NAME = /%name%/g;
 
 /**
  * A processor that downloads files.
@@ -189,15 +189,15 @@ class FileDownloader {
 }
 
 FileDownloader.replacers = {
-  name: (name, namePattern) => namePattern.replace(REGEXP_NAME, name),
+  name: (name, namePattern) => namePattern.replace(REGEX_NAME, name),
   num: (num, totalNum, namePattern) => {
     const padCount = Math.ceil(Math.log10(totalNum));
-    return namePattern.replace(REGEXP_NUM, pad(num, padCount, '0'));
+    return namePattern.replace(REGEX_NUM, pad(num, padCount, '0'));
   },
-  uuid: namePattern => namePattern.replace(REGEXP_UUID, uuid()),
+  uuid: namePattern => namePattern.replace(REGEX_UUID, uuid()),
   hash: (namePattern) => {
     const md5Hash = crypto.createHash('md5').update(namePattern).digest('hex');
-    return namePattern.replace(REGEXP_HASH, md5Hash);
+    return namePattern.replace(REGEX_HASH, md5Hash);
   },
 };
 

@@ -5,7 +5,7 @@ const debug = require('debug')('jason:parse:html');
 const REGEX_SELECTOR_DEFINITION = /([^?<|]+)?(\?[^<|]+|\?[^(]+\(.+\))?(<[^|]+|<[^(]+\(.+\))?(\|.+)?/;
 const REGEX_HELPER_WITHOUT_PARENS = /([^()]+)/;
 const REGEX_HELPER_WITH_PARENS = /([^()]+)\((.*)\)/;
-const REGEXP_SLICE_PARAMS = /\D*(\d+)\D*,\D*(\d+)/;
+const REGEX_SLICE_PARAMS = /\D*(\d+)\D*,\D*(\d+)/;
 
 /**
  * @param {string|Array|Object} definition
@@ -426,7 +426,7 @@ class HtmlParser {
 
     debug('%sAfter matching: %d element(s)', tab, elementsCount);
 
-    const sliceMatch = slice.match(REGEXP_SLICE_PARAMS);
+    const sliceMatch = slice.match(REGEX_SLICE_PARAMS);
     if (sliceMatch) {
       $elements = $elements.slice(sliceMatch[1], sliceMatch[2]);
       elementsCount = $elements.length;

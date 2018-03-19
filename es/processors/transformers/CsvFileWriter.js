@@ -24,9 +24,15 @@ class CsvFileWriter {
     this._config = {
       outputPath: path.join(process.cwd(), config.path),
       encoding: config.encoding || 'utf8',
-      csv: Object.assign({ header: true, delimiter: ';' }, config),
+      csv: {
+        header: true,
+        delimiter: ';',
+        ...config,
+      },
     };
+
     delete this._config.csv.path;
+
     debug('CsvFileWriter instance created.');
     debug('config', this._config);
   }
