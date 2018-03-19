@@ -5,6 +5,7 @@ const crypto = require('crypto');
 
 const axios = require('axios');
 const debug = require('debug')('jason:load:http');
+const makeDir = require('make-dir');
 
 const REGEX_PAGINATION_PARAMS = /[^{]*{\D*(\d+)\D*,\D*(\d+).*/;
 const REGEX_PAGINATION_EXP = /{.+}/;
@@ -55,10 +56,8 @@ class HttpClient {
 
   _setupCache() {
     const folderPath = path.join(process.cwd(), this._config.cache.folder);
-    if (!fs.existsSync(folderPath)) {
-      debug('Warning: folder "%s" does not exist. Cache is disabled.', folderPath);
-      return;
-    }
+    debug('Creating folder "%s"...', folderPath);
+    makeDir.sync(folderPath);
 
     const originalRequest = this._httpClient.request.bind(this._httpClient);
 
