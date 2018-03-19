@@ -140,16 +140,17 @@ class HttpClient {
    * @return {Object}
    */
   buildLoadOptions({ link }) {
-    const loadParams = { ...this._lastHttpConfig };
+    const options = { ...this._lastHttpConfig };
 
     if (link.match(REGEX_ABSOLUTE_LINK)) {
-      loadParams.baseURL = link;
-      loadParams.url = '';
+      options.baseURL = link;
+      options.url = '';
     } else {
-      loadParams.url = link;
+      options.baseURL = this._httpConfig.baseURL;
+      options.url = link;
     }
 
-    return loadParams;
+    return options;
   }
 
   /**
