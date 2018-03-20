@@ -5,8 +5,7 @@ const debug = require('debug')('jason:load:file');
 
 const readFileAsync = promisify(fs.readFile);
 
-const REGEX_PAGINATION_PARAMS = /[^{]*{\D*(\d+)\D*,\D*(\d+).*/;
-const REGEX_PAGINATION_EXP = /{.+}/;
+const REGEX_PAGINATION_EXP = /{(.+)}/;
 
 /**
  * Reads the content of a file.
@@ -59,22 +58,31 @@ class FileReader {
    * @return {Array}
    */
   buildPaginationLinks() {
-    const paginationParams = this._readConfig.path.match(REGEX_PAGINATION_PARAMS);
-
-    if (!paginationParams) {
+    const matches = this._readConfig.path.match(REGEX_PAGINATION_EXP);
+    if (!matches) {
       return [this._readConfig.path];
     }
 
+    let [start, end] = matches[1].split(',').map(s => Number(s));
+
+    if (end === undefined) {
+      end = start;
+    } else if (Number.isNaN(end) || end < start) {
+      debug('Warning: invalid end value for pagination ("%s")! Forcing to %s.', end, start);
+      end = start;
+    }
+
+    debug('Building pagination from %d -> %d.', start, end);
+
     const links = [];
 
-    const [startPage, endPage] = paginationParams.slice(1, 3).map(Number);
-    let n = startPage;
-
-    while (n <= endPage) {
-      const path = this._readConfig.path.replace(REGEX_PAGINATION_EXP, n);
+    while (start <= end) {
+      const path = this._readConfig.path.replace(REGEX_PAGINATION_EXP, start);
       links.push(path);
-      n += 1;
+      start += 1;
     }
+
+    debug(links);
 
     return links;
   }

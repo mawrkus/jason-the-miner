@@ -8,8 +8,7 @@ const makeDir = require('make-dir');
 const get = require('lodash.get');
 const debug = require('debug')('jason:load:http');
 
-const REGEX_PAGINATION_PARAMS = /[^{]*{\D*(\d+)\D*,\D*(\d+).*/;
-const REGEX_PAGINATION_EXP = /{.+}/;
+const REGEX_PAGINATION_EXP = /{(.+)}/;
 const REGEX_ABSOLUTE_LINK = /^https?:\/\//;
 
 const readFileAsync = promisify(fs.readFile);
@@ -115,22 +114,31 @@ class HttpClient {
    * @return {Array}
    */
   buildPaginationLinks() {
-    const paginationParams = this._httpConfig.url.match(REGEX_PAGINATION_PARAMS);
-
-    if (!paginationParams) {
+    const matches = this._httpConfig.url.match(REGEX_PAGINATION_EXP);
+    if (!matches) {
       return [this._httpConfig.url];
     }
 
+    let [start, end] = matches[1].split(',').map(s => Number(s));
+
+    if (end === undefined) {
+      end = start;
+    } else if (Number.isNaN(end) || end < start) {
+      debug('Warning: invalid end value for pagination ("%s")! Forcing to %s.', end, start);
+      end = start;
+    }
+
+    debug('Building pagination from %d -> %d.', start, end);
+
     const links = [];
 
-    const [startPage, endPage] = paginationParams.slice(1, 3).map(Number);
-    let n = startPage;
-
-    while (n <= endPage) {
-      const url = this._httpConfig.url.replace(REGEX_PAGINATION_EXP, n);
+    while (start <= end) {
+      const url = this._httpConfig.url.replace(REGEX_PAGINATION_EXP, start);
       links.push(url);
-      n += 1;
+      start += 1;
     }
+
+    debug(links);
 
     return links;
   }
