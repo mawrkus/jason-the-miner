@@ -462,6 +462,7 @@ describe('HtmlParser', () => {
             url: 'a < attr(data-url)',
           }],
           anchors: ['a ? attr(href,^#\\d) < attr(href)'],
+          note: '< text(Jason, you\'re fantastic!)',
         };
 
         const { result } = await parser.run({ data: html, schema });
@@ -479,6 +480,7 @@ describe('HtmlParser', () => {
             },
           ],
           anchors: ['#1', '#3'],
+          note: 'Jason, you\'re fantastic!',
         });
       });
     });

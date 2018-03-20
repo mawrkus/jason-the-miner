@@ -474,10 +474,17 @@ class HtmlParser {
         return categoryHelpers.default.bind(categoryHelpers);
       }
 
-      const { name, params } = this._parseHelperDef({ helperDef });
+      const { name, params, rawParams } = this._parseHelperDef({ helperDef });
 
       if (!categoryHelpers[name]) {
         throw new Error(`Unknown ${category} helper "${name}"!`);
+      }
+
+      // ugly fix to make static text like "hey,you,oh!" to work properly
+      // until a better idea/syntax for parsing
+      if (category === 'extract' && name === 'text' && params.length) {
+        helperDebug.push(`${category}="${name}(${rawParams})"`);
+        return categoryHelpers[name].bind(categoryHelpers, rawParams);
       }
 
       helperDebug.push(`${category}="${name}(${params})"`);
@@ -500,6 +507,7 @@ class HtmlParser {
    * @return {Object} parsed
    * @return {string} parsed.name E.g: attr
    * @return {string[]} parsed.params E.g: ['href', 'https?://']
+   * @return {string} parsed.rawParams E.g: 'href,https?://'
    */
   // eslint-disable-next-line class-methods-use-this
   _parseHelperDef({ helperDef }) {
@@ -512,11 +520,11 @@ class HtmlParser {
       matches = helperDef.match(REGEX_HELPER_WITHOUT_PARENS);
     }
 
-    let [, name = '', params = ''] = matches;
-    name = name.trim();
-    params = !params ? [] : params.split(',').map(p => p.trim());
+    const [, rawName = '', rawParams = ''] = matches;
+    const name = rawName.trim();
+    const params = !rawParams ? [] : rawParams.split(',').map(p => p.trim());
 
-    return { name, params };
+    return { name, params, rawParams };
   }
 
   /**
