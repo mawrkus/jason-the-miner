@@ -174,8 +174,8 @@ class JasonTheMiner {
       { concurrency },
     );
 
-    debug('Finished pagination.');
-    debug(followResults);
+    /* debug('Finished pagination.');
+    debug(followResults); */
 
     const results = followResults.reduce((acc, newResult) => {
       this._mergeResults({ to: acc, newResult });
@@ -287,21 +287,21 @@ class JasonTheMiner {
    */
   // eslint-disable-next-line class-methods-use-this
   _mergeResults({ to, newResult }) {
-    debug('Merging...');
+    /* debug('Merging...');
     debug(newResult);
     debug('to ------>');
     debug(to);
-    debug('=======');
+    debug('=========='); */
 
     // eslint-disable-next-line consistent-return
-    const mergedResult = mergeWith(to, newResult, (obj, src) => {
+    /* const mergedResult = */ mergeWith(to, newResult, (obj, src) => {
       if (Array.isArray(obj)) {
         return obj.concat(src);
       }
     });
 
-    debug('merged result');
-    debug(mergedResult);
+    /* debug('Merged result');
+    debug(mergedResult); */
   }
 
   /**
