@@ -421,7 +421,7 @@ class HtmlParser {
     let elementsCount = $elements.length;
     debug('%sFound %d DOM element(s) for selector "%s".', tab, elementsCount, selector);
 
-    $elements = $elements.filter((index, domElement) => matcher(this._$(domElement)));
+    $elements = $elements.filter((index, domElement) => matcher(this._$(domElement), index));
     elementsCount = $elements.length;
 
     debug('%sAfter matching: %d element(s)', tab, elementsCount);

@@ -11,4 +11,5 @@ module.exports = {
   text: (regexString, $el) => regexCache.get(regexString).test($el.text() || ''),
   html: (regexString, $el) => regexCache.get(regexString).test($el.html() || ''),
   attr: (attr, regexString, $el) => regexCache.get(regexString).test($el.attr(attr) || ''),
+  slice: (begin, end, $el, index) => index >= begin && index < end,
 };

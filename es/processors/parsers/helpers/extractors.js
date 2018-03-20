@@ -1,3 +1,4 @@
+const moment = require('moment');
 const uuid = require('uuid/v1');
 const regexCache = require('./regex-cache');
 
@@ -18,6 +19,10 @@ module.exports = {
   regex: (regexString, $el) => {
     const matches = regexCache.get(regexString).exec($el.text());
     return (matches && matches[1]) || '';
+  },
+  date: (inputFormat, outputFormat, $el) => {
+    const dateString = $el.text() || '';
+    return moment(dateString, inputFormat).format(outputFormat);
   },
   uuid: () => uuid(),
 };

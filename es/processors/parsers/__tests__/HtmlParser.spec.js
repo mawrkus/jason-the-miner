@@ -448,7 +448,7 @@ describe('HtmlParser', () => {
           _$: '.top ? attr(class,songs)',
           title: '.title ? html(^Best) | uppercase',
           songs: [{
-            _$: 'li ? text(radio edit)',
+            _$: 'li ? slice(1,3)',
             title: 'span < text | trim',
             url: 'a < attr(data-url)',
           }],
@@ -461,12 +461,12 @@ describe('HtmlParser', () => {
           title: 'BEST SONGS',
           songs: [
             {
-              title: 'La vie en rose (radio edit)',
-              url: 'http://rose-life.com/',
-            },
-            {
               title: 'Dream (radio edit)',
               url: 'http://dreamland.com/',
+            },
+            {
+              title: 'Lua',
+              url: 'http://luavega.com/',
             },
           ],
           anchors: ['#1', '#3'],

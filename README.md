@@ -250,20 +250,22 @@ For instance:
 
 Jason has 4 built-in element **matchers**:
 
-- `text([regex string])`
-- `html([regex string])`
-- `attr([attribute name],[regex])`
+- `text(regexString)`
+- `html(regexString)`
+- `attr(attributeName,regexString)`
+- `slice(begin,end)`
 
 They are used to test an element in order to decide whether to include/discard it from parsing.
 If not specified, Jason includes every element.
 
-5 built-in text **extractors**:
+6 built-in text **extractors**:
 
-- `text([optional static text])` (by default)
-- `html`
-- `attr([attribute name])`
-- `regex([regex string])`
-- `uuid` (generates a uuid v1, from https://www.npmjs.com/package/uuid)
+- `text([optionalStaticText])` (by default)
+- `html()`
+- `attr(attributeName)`
+- `regex(regexString)`
+- `date(inputFormat,outputFormat)` (parses a date with https://www.npmjs.com/package/moment)
+- `uuid()` (generates a uuid v1 with https://www.npmjs.com/package/uuid)
 
 and 4 built-in text **filters**:
 
