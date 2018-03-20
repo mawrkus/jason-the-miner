@@ -161,11 +161,11 @@ class HttpClient {
     this._lastHttpConfig = { ...this._lastHttpConfig, ...options };
 
     try {
-      this._logRequest(this._lastHttpConfig);
+      const start = this._logRequest(this._lastHttpConfig);
 
       const response = await this._httpClient.request(this._lastHttpConfig);
 
-      this._logResponse(response);
+      this._logResponse(response, start);
 
       return response.data;
     } catch (requestError) {
@@ -181,6 +181,7 @@ class HttpClient {
 
   /**
    * @param  {Object} request
+   * @return  {number}
    */
   // eslint-disable-next-line class-methods-use-this
   _logRequest(request) {
@@ -190,14 +191,20 @@ class HttpClient {
       url = '',
       params = '',
     } = request;
+
     debug('%s %s%s...', method.toUpperCase(), baseURL, url, params);
+
+    return Date.now();
   }
 
   /**
    * @param  {Object} response
+   * @param  {number} start
    */
   // eslint-disable-next-line class-methods-use-this
-  _logResponse(response) {
+  _logResponse(response, start) {
+    const elapsed = Date.now() - start;
+
     const {
       config,
       status,
@@ -212,7 +219,7 @@ class HttpClient {
       '?';
 
     debug('%s %s: %s (%d)', method.toUpperCase(), url, statusText, status, params);
-    debug('%s chars of "%s" received.', contentLength, headers['content-type']);
+    debug('%dms -> %s chars of "%s".', elapsed, contentLength, headers['content-type']);
   }
 }
 
