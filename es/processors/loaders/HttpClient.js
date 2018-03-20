@@ -4,8 +4,9 @@ const { promisify } = require('util');
 const crypto = require('crypto');
 
 const axios = require('axios');
-const debug = require('debug')('jason:load:http');
 const makeDir = require('make-dir');
+const get = require('lodash.get');
+const debug = require('debug')('jason:load:http');
 
 const REGEX_PAGINATION_PARAMS = /[^{]*{\D*(\d+)\D*,\D*(\d+).*/;
 const REGEX_PAGINATION_EXP = /{.+}/;
@@ -213,10 +214,7 @@ class HttpClient {
     } = response;
 
     const { method = 'get', url, params = '' } = config;
-
-    const contentLength = headers['content-length'] !== undefined ?
-      headers['content-length'] :
-      '?';
+    const contentLength = get(headers, 'content-length') || get(response, 'data.length') || '?';
 
     debug('%s %s: %s (%d)', method.toUpperCase(), url, statusText, status, params);
     debug('%dms -> %s chars of "%s".', elapsed, contentLength, headers['content-type']);

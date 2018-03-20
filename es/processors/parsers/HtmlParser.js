@@ -65,10 +65,12 @@ class HtmlParser {
     this._paginate = [];
 
     debug('Parsing schema...', schema);
+    const start = Date.now();
 
     const result = this._parseSchema({ schema, $context: $root });
 
-    debug('Done parsing schema.');
+    const elapsed = Date.now() - start;
+    debug('Done parsing schema in %dms.', elapsed);
 
     return {
       result,

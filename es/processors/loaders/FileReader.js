@@ -114,8 +114,10 @@ class FileReader {
     debug('Reading data from "%s" file "%s"...', encoding, currentPath);
 
     try {
+      const start = Date.now();
       const data = await readFileAsync(currentPath, encoding);
-      debug('%d chars read.', data.length);
+      const elapsed = Date.now() - start;
+      debug('%dms -> %s chars read from "%s".', elapsed, data.length, currentPath);
       return data;
     } catch (readError) {
       debug(readError.message);
