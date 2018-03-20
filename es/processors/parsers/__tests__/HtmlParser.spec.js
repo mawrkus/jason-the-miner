@@ -280,6 +280,11 @@ describe('HtmlParser', () => {
                     _slice: '2,4',
                     name: 'a',
                   }],
+                  artists: [{
+                    _$: '.top-artists .list-item',
+                    _slice: '1',
+                    name: 'a',
+                  }],
                 };
 
                 const { result } = await parser.run({ data: html, schema });
@@ -288,6 +293,10 @@ describe('HtmlParser', () => {
                   items: [
                     { name: 'John Frusciante' },
                     { name: 'Island Life' },
+                  ],
+                  artists: [
+                    { name: 'Primal Scream' },
+                    { name: 'John Frusciante' },
                   ],
                 });
               });

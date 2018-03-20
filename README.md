@@ -228,7 +228,7 @@ A schema is a plain object that recursively defines:
  - how to extract them: `[selector] ? [matcher] < [extractor] | [filter]` (see "Parse helpers" below)
 
 - `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector
-- `_slice` limits the number of elements to parse
+- `_slice` limits the number of elements to parse, like `String.prototype.slice(begin[, end])`
 - `_follow` tells Jason to follow a **single link** (fetch new data) & to continue scraping when the new data is received
 - `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context, here **multiple links** can be selected to scrape in parallel multiple pages (be careful)
 
