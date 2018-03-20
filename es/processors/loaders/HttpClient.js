@@ -52,6 +52,8 @@ class HttpClient {
     if (this._config.cache) {
       this._setupCache();
     }
+
+    this._runs = 0;
   }
 
   _setupCache() {
@@ -168,6 +170,8 @@ class HttpClient {
    */
   async run({ options }) {
     this._lastHttpConfig = { ...this._lastHttpConfig, ...options };
+    this._runs += 1;
+    debug('Run #%s...', this._runs);
 
     try {
       const start = this._logRequest(this._lastHttpConfig);
