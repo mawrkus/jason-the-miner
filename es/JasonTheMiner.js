@@ -330,10 +330,8 @@ class JasonTheMiner {
       delete errorResponse.data;
     }
 
-    // readable output in all cases
-    if (!error.message) {
-      error.message = error.toString(); // eslint-disable-line no-param-reassign
-    }
+    // to have a readable after stringifying
+    error.msg = error.msg || error.toString(); // eslint-disable-line no-param-reassign
 
     return error;
   }
