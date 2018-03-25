@@ -19,15 +19,8 @@
     "crawl",
     "crawler",
     "crawling",
-    "harvest",
-    "harvester",
-    "harvesting",
     "web",
     "html",
-    "data extraction",
-    "data grabbing",
-    "data harvesting",
-    "content extraction",
     "cheerio",
     "axios"
   ],
@@ -67,7 +60,6 @@
     "make-dir": "^1.2.0",
     "mime": "^1.3.4",
     "moment": "^2.21.0",
-    "mustache": "^2.2.1",
     "nodemailer": "^2.6.4",
     "ora": "^0.3.0",
     "pad-left": "^2.1.0",
@@ -78,7 +70,8 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jest": "^21.12.3",
-    "jest": "^22.4.2"
+    "jest": "^22.4.2",
+    "mustache": "^2.2.1"
   },
   "jest": {
     "testPathIgnorePatterns": [
