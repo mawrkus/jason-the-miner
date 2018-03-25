@@ -410,7 +410,7 @@ describe('HtmlParser', () => {
           },
         };
 
-        const { result, follow } = await parser.run({ data: html, schema });
+        const { result, follows } = await parser.run({ data: html, schema });
 
         expect(result).toEqual({
           title: 'Best artists',
@@ -424,7 +424,7 @@ describe('HtmlParser', () => {
           },
         });
 
-        expect(follow).toEqual([
+        expect(follows).toEqual([
           {
             link: 'http://the-stooges.com/',
             parsedPath: ['items', 0, 'artist'],
@@ -485,7 +485,7 @@ describe('HtmlParser', () => {
       });
     });
 
-    describe('when the schema contains a "paginate" definitions', () => {
+    describe('when the schema contains "paginate" definitions', () => {
       it('should return the partial parsed values and the correct "paginate" configuration', async () => {
         const parser = createParser();
 
@@ -512,7 +512,7 @@ describe('HtmlParser', () => {
           },
         };
 
-        const { result, paginate } = await parser.run({ data: html, schema });
+        const { result, paginates } = await parser.run({ data: html, schema });
 
         expect(result).toEqual({
           title: 'Best songs',
@@ -532,7 +532,7 @@ describe('HtmlParser', () => {
           ],
         });
 
-        expect(paginate).toEqual([
+        expect(paginates).toEqual([
           {
             link: 'http://rose-life.com/pics',
             depth: 2,

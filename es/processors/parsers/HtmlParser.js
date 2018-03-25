@@ -42,8 +42,8 @@ class HtmlParser {
     this._schema = schema || {};
     this._helpers = helpers;
     this._$ = cheerio;
-    this._follow = [];
-    this._paginate = [];
+    this._follows = [];
+    this._paginates = [];
 
     debug('HtmlParser instance created.');
     debug('schema', this._schema);
@@ -61,8 +61,8 @@ class HtmlParser {
     const $root = this._$.root();
 
     schema = schema || this._schema; // eslint-disable-line no-param-reassign
-    this._follow = [];
-    this._paginate = [];
+    this._follows = [];
+    this._paginates = [];
 
     debug('Parsing schema...', schema);
     const start = Date.now();
@@ -75,8 +75,8 @@ class HtmlParser {
     return {
       result,
       schema,
-      follow: this._follow,
-      paginate: this._paginate,
+      follows: this._follows,
+      paginates: this._paginates,
     };
   }
 
@@ -341,7 +341,7 @@ class HtmlParser {
       return;
     }
 
-    this._follow = this._follow.concat({ link, schemaPath, parsedPath });
+    this._follows = this._follows.concat({ link, schemaPath, parsedPath });
   }
 
   /**
@@ -393,7 +393,7 @@ class HtmlParser {
         return;
       }
 
-      this._paginate = this._paginate.concat({
+      this._paginates = this._paginates.concat({
         link,
         depth: Number(depth), // just in case
         schemaPath,

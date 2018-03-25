@@ -144,7 +144,7 @@ class JasonTheMiner {
     const transformer = this._buildProcessor('transform', transform);
 
     try {
-      const results = await this._loadAndParse({ loader, parser });
+      const results = await this._harvest({ loader, parser });
       return transformer.run({ results }); // TODO: support array of transformers ?
     } catch (error) {
       this._formatError(error);
@@ -157,151 +157,225 @@ class JasonTheMiner {
    * @param  {Parser} parser
    * @return {Promise.<Object>}
    */
-  async _loadAndParse({ loader, parser }) {
-    const follows = loader.buildPaginationLinks().map(link => ({ link }));
+  async _harvest({ loader, parser }) {
     const { concurrency = 1 } = loader.getConfig();
+    const paginationLinks = loader.buildPaginationLinks();
 
-    debug('Paginating %d link(s) at max concurrency=%d...', follows.length, concurrency);
+    const root = {
+      parent: null,
+      result: {},
+      children: [],
+      childrenCount: 0,
+    };
 
-    const followResults = await Bluebird.map(
-      follows,
-      ({ link }) => this._followLink({
+    const crawls = paginationLinks
+      .map(link => ({
         link,
-        loader,
-        concurrency,
-        parser,
+        parent: root,
+        mergePath: [],
+        level: 0,
+      }));
+
+    root.childrenCount = crawls.length;
+
+    await this._crawLinks({
+      crawls,
+      loader,
+      concurrency,
+      parser,
+    });
+
+    return root.result;
+  }
+
+  /**
+   * @param  {Array} crawls
+   * @param  {Loader} loader
+   * @param  {number} concurrency
+   * @param  {Parser} parser
+   * @return {Promise}
+   */
+  async _crawLinks({
+    crawls,
+    loader,
+    concurrency,
+    parser,
+  }) {
+    debug('Crawling %d link(s) at max concurrency=%d...', crawls.length, concurrency);
+
+    const crawlResults = await Bluebird.map(
+      crawls,
+      (async (crawl) => {
+        const {
+          link,
+          schema,
+          parent,
+          mergePath,
+          level,
+        } = crawl;
+
+        const parserResult = await this._crawLink({
+          loader,
+          link,
+          parser,
+          schema,
+        });
+
+        return {
+          parent,
+          mergePath,
+          parserResult,
+          level,
+        };
       }),
       { concurrency },
     );
 
-    /* debug('Finished pagination.');
-    debug(followResults); */
+    const nextCrawls = this._processCrawlResults({ crawlResults });
 
-    const results = followResults.reduce((acc, newResult) => {
-      this._mergeResults({ to: acc, newResult });
-      return acc;
-    }, {});
+    debug('Found %d more link(s) to crawl.', nextCrawls.length);
 
-    return results;
+    if (nextCrawls.length) {
+      // recursive case
+      await this._crawLinks({
+        crawls: nextCrawls,
+        loader,
+        concurrency,
+        parser,
+      });
+    }
   }
 
   /**
    * @param  {string} link
    * @param  {Loader} loader
-   * @param  {number} concurrency
    * @param  {Parser} parser
    * @param  {Object} [schema]
-   * @param  {number} [level=0]
    * @return {Promise}
    */
-  async _followLink({
+  async _crawLink({
     link,
     loader,
-    concurrency,
     parser,
     schema,
-    level = 0,
   }) {
-    debug('Following "%s"...', link);
+    debug('Crawling "%s"...', link);
     try {
       const options = loader.buildLoadOptions({ link });
       const loadResult = await loader.run({ options });
-      const parserResult = await parser.run({ data: loadResult, schema });
-      const { result } = parserResult;
-
-      const follows = this._getNextFollows({ parserResult, level });
-      if (!follows.length) {
-        debug('No (more) links to follow.');
-        return result;
-      }
-
-      await Bluebird.map(
-        follows,
-        (async ({
-          followLink,
-          followSchema,
-          followParsedPath,
-          isPaginate,
-        }) => {
-          const newResult = await this._followLink({
-            link: followLink,
-            loader,
-            concurrency,
-            parser,
-            schema: followSchema,
-            level: isPaginate ? level + 1 : level,
-          });
-
-          const partialResult = !followParsedPath.length ?
-            result :
-            get(result, followParsedPath);
-
-          this._mergeResults({ to: partialResult, newResult });
-        }),
-        { concurrency },
-      );
-
-      return result;
+      return parser.run({ data: loadResult, schema });
     } catch (error) {
       debug(error);
-      return { _errors: [this._formatError(error)] };
+      return {
+        result: {
+          _errors: [this._formatError(error)],
+        },
+        follows: [],
+        paginates: [],
+      };
     }
   }
 
-  /**
-   * @param {Object} parserResult
-   * @param {number} level
-   * @return {Array}
-   */
   // eslint-disable-next-line class-methods-use-this
-  _getNextFollows({ parserResult, level }) {
-    const { schema, follow, paginate } = parserResult;
+  _processCrawlResults({ crawlResults }) {
+    debug('Processing %d crawl result(s)...', crawlResults.length);
 
-    const allowedPaginates = paginate
-      .filter(({ depth }) => level < depth)
-      .map(p => ({ ...p, isPaginate: true }));
+    let nextCrawls = [];
 
-    debug('Found %d link(s) and %d page(s) to follow.', follow.length, allowedPaginates.length);
+    crawlResults.forEach((crawlResult) => {
+      const {
+        parent,
+        mergePath,
+        parserResult,
+        level,
+      } = crawlResult;
 
-    const nextFollows = follow.concat(allowedPaginates)
-      .map(({
-        link: followLink,
-        schemaPath,
-        parsedPath: followParsedPath,
-        isPaginate,
-      }) => ({
-        followLink,
-        followSchema: !schemaPath.length ? schema : get(schema, schemaPath),
-        followParsedPath,
-        isPaginate: !!isPaginate,
-      }));
+      const {
+        result,
+        schema,
+        follows,
+        paginates,
+      } = parserResult;
 
-    debug(nextFollows);
+      const filteredPaginates = paginates
+        .filter(({ depth }) => level < depth)
+        .map(p => ({ ...p, isPaginated: true }));
 
-    return nextFollows;
+      let nextFollows = [...follows, ...filteredPaginates];
+
+      const newParent = {
+        parent,
+        mergePath,
+        result,
+        childrenCount: nextFollows.length,
+        children: [],
+      };
+
+      parent.children.push(newParent);
+
+      nextFollows = nextFollows.map((follow) => {
+        const {
+          link,
+          schemaPath,
+          parsedPath,
+          isPaginated,
+        } = follow;
+
+        return {
+          link,
+          schema: !schemaPath.length ? schema : get(schema, schemaPath),
+          parent: newParent,
+          mergePath: parsedPath,
+          level: isPaginated ? level + 1 : level,
+        };
+      });
+
+      if (nextFollows.length) {
+        nextCrawls = [...nextCrawls, ...nextFollows];
+      } else {
+        this._mergePartialResults({ leafNode: newParent });
+      }
+    });
+
+    return nextCrawls;
   }
 
-  /**
-   * @param {Object} to
-   * @param {Array} nextResults
-   */
+  _mergePartialResults({ leafNode }) {
+    let node = leafNode;
+
+    do {
+      const { result, parent, mergePath } = node;
+
+      this._mergeResults({
+        result,
+        to: parent.result,
+        mergePath,
+      });
+
+      parent.childrenCount -= 1;
+
+      if (parent.childrenCount > 0) {
+        break;
+      }
+
+      parent.children = null;
+
+      node = parent;
+    } while (node.parent);
+  }
+
   // eslint-disable-next-line class-methods-use-this
-  _mergeResults({ to, newResult }) {
-    /* debug('Merging...');
-    debug(newResult);
-    debug('to ------>');
-    debug(to);
-    debug('=========='); */
+  _mergeResults({ result, to, mergePath }) {
+    const dest = !mergePath || !mergePath.length ? to : get(to, mergePath);
 
     // eslint-disable-next-line consistent-return
-    /* const mergedResult = */ mergeWith(to, newResult, (obj, src) => {
+    mergeWith(dest, result, (obj, src) => {
       if (Array.isArray(obj)) {
         return obj.concat(src);
       }
     });
 
-    /* debug('Merged result');
-    debug(mergedResult); */
+    return to;
   }
 
   /**
