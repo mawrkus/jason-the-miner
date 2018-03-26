@@ -33,11 +33,11 @@ const demoFiles = [
   'http-html-follow-json.json',
   /* Imdb images */
   'http-html-follow-paginate-json.json',
+  'http-html-download.json',
 ];
 
 /* const miscDemoFiles = [
   'file-html-stdout.json',
-  'http-html-download.json',
   'http-html-email.json',
   'http-html-json.json',
 ]; */
