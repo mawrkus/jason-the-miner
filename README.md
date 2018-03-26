@@ -279,6 +279,7 @@ and 4 built-in text **filters**:
 - `stdout`: writes the results to stdout. Options: `[encoding="utf8"]`.
 - `json-file`: writes the results to a JSON file. Options: `path` & `[encoding="utf8"]`.
 - `csv-file`: writes the results to a CSV file. Uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same options, as well as `path` and `[encoding='utf8']`.
+- `download-file`: downloads files to a given folder. Uses Axios and supports only the following options: `[baseURL]`, `[parseKey]`, `[folder='.']`, `[namePattern='{name}']`, `[maxSizeInMb=1]` and `[concurrency=1]`.
 - `email`: uses [nodemailer](https://github.com/nodemailer/nodemailer/) & supports the same options.
 
 ## ⛏ API

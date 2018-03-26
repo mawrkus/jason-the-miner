@@ -44,7 +44,7 @@
     "postrelease": "npm run push && npm publish",
     "push": "git push origin master && git push origin --tags",
     "demos": "npm run demos:clean && node demos/index.js",
-    "demos:clean": "clear && rm -rf demos/data/out/* && touch demos/data/out/.gitkeep",
+    "demos:clean": "clear && rm -rf demos/data/out/* && touch demos/data/out/.gitkeep && mkdir demos/data/out/downloads && touch demos/data/out/downloads/.gitkeep",
     "demos:debug": "DEBUG=jason:* npm run demos"
   },
   "dependencies": {
