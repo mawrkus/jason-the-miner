@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { promisify } = require('util');
-const Mustache = require('mustache');
+const Mustache = require('mustache'); // eslint-disable-line import/no-extraneous-dependencies
 const debug = require('debug')('jason:transform:templater');
 
 const readFileAsync = promisify(fs.readFile);
