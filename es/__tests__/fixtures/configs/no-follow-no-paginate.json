@@ -1,0 +1,21 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
+      "_concurrency": 2,
+      "_cache": {
+        "folder": "es/__tests__/fixtures/cache"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "repos": [{
+        "_$": ".repo-list .repo-list-item",
+        "_slice": "0,1",
+        "name": "h3 > a"
+      }]
+    }
+  }
+}

@@ -4,7 +4,7 @@ const HttpClient = require('../processors/loaders/HttpClient');
 
 /* eslint-enable class-methods-use-this */
 
-function createJason() {
+async function createJason({ configFile }) {
   const jason = new JasonTheMiner();
 
   jason.registerProcessor({
@@ -13,7 +13,7 @@ function createJason() {
     processor: HttpClient,
   });
 
-  jason.loadConfig('./es/__tests__/fixtures/test-config'); // with cache ;)
+  await jason.loadConfig(`./es/__tests__/fixtures/configs/${configFile}`); // with cache ;)
 
   return {
     jason,
@@ -30,38 +30,111 @@ describe('JasonTheMiner', () => {
   });
 
   describe('#harvest({ load, parse, transform })', () => {
-    it('should properly load parse & transform', async () => {
-      const { jason } = createJason();
+    describe('when there is neither a "follow" nor a "paginate" definition in the parse schema', () => {
+      it('should properly load, parse & return the result', async () => {
+        const { jason } = await createJason({ configFile: 'no-follow-no-paginate.json' });
 
-      const results = await jason.harvest();
+        const results = await jason.harvest();
 
-      expect(results).toEqual({
-        results: {
-          repos: [
-            {
-              description: 'x-ray - The next web scraper. See through the <html> noise.',
-              'last-update': '2018-03-14T23:16:21Z',
+        expect(results).toEqual({
+          results: {
+            repos: [{ name: 'matthewmueller/x-ray' }],
+          },
+        });
+      });
+    });
+
+    describe('when there is only a "follow" definition in the parse schema', () => {
+      it('should properly load, parse & return the result', async () => {
+        const { jason } = await createJason({ configFile: 'follow-no-paginate.json' });
+
+        const results = await jason.harvest();
+
+        expect(results).toEqual({
+          results: {
+            repos: [{
               name: 'matthewmueller/x-ray',
-              stats: {
-                forks: '278',
-                stars: '4,239',
-                watchers: '104',
-              },
-              url: 'https://github.com/matthewmueller/x-ray',
-            },
-            {
-              description: 'newsdiffs - Automatic scraper that tracks changes in news articles over time.',
-              'last-update': '2017-11-06T19:38:52Z',
+              description: 'x-ray - The next web scraper. See through the <html> noise.',
+            }],
+          },
+        });
+      });
+    });
+
+    describe('when there is only a "paginate" definition in the parse schema', () => {
+      it('should properly load, parse & return the result', async () => {
+        const { jason } = await createJason({ configFile: 'no-follow-paginate.json' });
+
+        const results = await jason.harvest();
+
+        expect(results).toEqual({
+          results: {
+            repos: [{
+              name: 'matthewmueller/x-ray',
+            }, {
               name: 'ecprice/newsdiffs',
-              stats: {
-                forks: '96',
-                stars: '348',
-                watchers: '38',
+            }],
+          },
+        });
+      });
+    });
+
+    describe('when there is a single level of "follow" & paginate" definitions in the parse schema', () => {
+      it('should properly load, parse & return the result', async () => {
+        const { jason } = await createJason({ configFile: 'follow-paginate-depth-1.json' });
+
+        const results = await jason.harvest();
+
+        expect(results).toEqual({
+          results: {
+            repos: [{
+              name: 'matthewmueller/x-ray',
+              description: 'x-ray - The next web scraper. See through the <html> noise.',
+            }, {
+              name: 'ecprice/newsdiffs',
+              description: 'newsdiffs - Automatic scraper that tracks changes in news articles over time.',
+            }],
+          },
+        });
+      });
+    });
+
+    describe('when there are nested levels of "follow" & paginate" definitions in the parse schema', () => {
+      it('should properly load parse & transform', async () => {
+        const { jason } = await createJason({ configFile: 'follow-paginate-nested.json' });
+
+        const results = await jason.harvest();
+
+        expect(results).toEqual({
+          results: {
+            repos: [
+              {
+                name: 'matthewmueller/x-ray',
+                description: 'x-ray - The next web scraper. See through the <html> noise.',
+                'open-issues': [
+                  {
+                    desc: 'isUrl module breaks nesting',
+                    opened: '2018-03-23T14:54:19Z',
+                  },
+                  {
+                    desc: 'silently fails if img@src image element doesn\'t exist',
+                    opened: '2017-02-12T10:25:40Z',
+                  },
+                ],
               },
-              url: 'https://github.com/ecprice/newsdiffs',
-            },
-          ],
-        },
+              {
+                name: 'ecprice/newsdiffs',
+                description: 'newsdiffs - Automatic scraper that tracks changes in news articles over time.',
+                'open-issues': [
+                  {
+                    desc: 'Docs fail to mention check on robots.txt',
+                    opened: '2018-01-14T02:17:14Z',
+                  },
+                ],
+              },
+            ],
+          },
+        });
       });
     });
   });

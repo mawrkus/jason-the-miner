@@ -2,6 +2,7 @@ const path = require('path');
 const Bluebird = require('bluebird');
 const get = require('lodash.get');
 const mergeWith = require('lodash.mergewith');
+const uuid = require('uuid/v1');
 const debug = require('debug')('jason:core');
 
 const defaultProcessors = require('./processors');
@@ -128,7 +129,8 @@ class JasonTheMiner {
   }
 
   /**
-   * Launches the whole process: load > parse > transform.
+   * Launches the whole process: (load > parse) * n -> transform
+   * TODO: think about "streaming", (load > parse > transform) * n
    * @param  {Object} [options={}] An optional config that can override the current one
    * @param  {Object} [options.load]
    * @param  {Object} [options.parse]
@@ -162,10 +164,10 @@ class JasonTheMiner {
     const paginationLinks = loader.buildPaginationLinks();
 
     const root = {
+      id: 1,
       parent: null,
       result: {},
-      children: [],
-      childrenCount: 0,
+      children: {},
     };
 
     const crawls = paginationLinks
@@ -175,8 +177,6 @@ class JasonTheMiner {
         mergePath: [],
         level: 0,
       }));
-
-    root.childrenCount = crawls.length;
 
     await this._crawLinks({
       crawls,
@@ -203,54 +203,49 @@ class JasonTheMiner {
   }) {
     debug('Crawling %d link(s) at max concurrency=%d...', crawls.length, concurrency);
 
-    const crawlResults = await Bluebird.map(
-      crawls,
-      (async (crawl) => {
-        const {
-          link,
-          schema,
-          parent,
-          mergePath,
-          level,
-        } = crawl;
+    let currentCrawls = crawls;
 
-        const parserResult = await this._crawLink({
-          loader,
-          link,
-          parser,
-          schema,
-        });
+    do {
+      // eslint-disable-next-line no-await-in-loop
+      const crawlResults = await Bluebird.map(
+        currentCrawls,
+        (async (crawl) => {
+          const {
+            link,
+            schema,
+            parent,
+            mergePath,
+            level,
+          } = crawl;
 
-        return {
-          parent,
-          mergePath,
-          parserResult,
-          level,
-        };
-      }),
-      { concurrency },
-    );
+          const parserResult = await this._crawLink({
+            loader,
+            link,
+            parser,
+            schema,
+          });
 
-    const nextCrawls = this._processCrawlResults({ crawlResults });
+          return {
+            parent,
+            mergePath,
+            parserResult,
+            level,
+          };
+        }),
+        { concurrency },
+      );
 
-    debug('Found %d more link(s) to crawl.', nextCrawls.length);
+      currentCrawls = this._processCrawlResults({ crawlResults });
 
-    if (nextCrawls.length) {
-      // recursive case
-      await this._crawLinks({
-        crawls: nextCrawls,
-        loader,
-        concurrency,
-        parser,
-      });
-    }
+      debug('Found %d more link(s) to crawl.', currentCrawls.length);
+    } while (currentCrawls.length);
   }
 
   /**
    * @param  {string} link
    * @param  {Loader} loader
    * @param  {Parser} parser
-   * @param  {Object} [schema]
+   * @param  {Object} schema
    * @return {Promise}
    */
   async _crawLink({
@@ -270,81 +265,98 @@ class JasonTheMiner {
         result: {
           _errors: [this._formatError(error)],
         },
+        schema,
         follows: [],
         paginates: [],
       };
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
+  /**
+   * @param  {Array} crawlResults
+   * @return {Array}
+   */
   _processCrawlResults({ crawlResults }) {
     debug('Processing %d crawl result(s)...', crawlResults.length);
 
     let nextCrawls = [];
+    const nodesToMerge = [];
 
     crawlResults.forEach((crawlResult) => {
-      const {
-        parent,
-        mergePath,
-        parserResult,
-        level,
-      } = crawlResult;
-
-      const {
-        result,
-        schema,
-        follows,
-        paginates,
-      } = parserResult;
-
-      const filteredPaginates = paginates
-        .filter(({ depth }) => level < depth)
-        .map(p => ({ ...p, isPaginated: true }));
-
-      let nextFollows = [...follows, ...filteredPaginates];
-
-      const newParent = {
+      const { parent, mergePath, parserResult } = crawlResult;
+      const { result } = parserResult;
+      const id = uuid();
+      const newNode = {
+        id,
         parent,
         mergePath,
         result,
-        childrenCount: nextFollows.length,
-        children: [],
+        children: {},
       };
+      parent.children[id] = newNode;
 
-      parent.children.push(newParent);
-
-      nextFollows = nextFollows.map((follow) => {
-        const {
-          link,
-          schemaPath,
-          parsedPath,
-          isPaginated,
-        } = follow;
-
-        return {
-          link,
-          schema: !schemaPath.length ? schema : get(schema, schemaPath),
-          parent: newParent,
-          mergePath: parsedPath,
-          level: isPaginated ? level + 1 : level,
-        };
-      });
+      const nextFollows = this._getNextFollows({ crawlResult, parent: newNode });
 
       if (nextFollows.length) {
         nextCrawls = [...nextCrawls, ...nextFollows];
       } else {
-        this._mergePartialResults({ leafNode: newParent });
+        nodesToMerge.push(newNode);
       }
     });
+
+    // as the merging process depends on the total number of children of a given node,
+    // this must be done after adding all leaf nodes
+    nodesToMerge.forEach(leafNode => this._mergePartialResults({ leafNode }));
 
     return nextCrawls;
   }
 
+  /**
+   * @param  {Object} crawlResult
+   * @param  {Object} parent
+   * @return {Array}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _getNextFollows({ crawlResult, parent }) {
+    const { parserResult, level } = crawlResult;
+    const { schema, follows, paginates } = parserResult;
+
+    const filteredPaginates = paginates
+      .filter(({ depth }) => level < depth)
+      .map(p => ({ ...p, isPaginated: true }));
+
+    const nextFollows = [...follows, ...filteredPaginates].map((follow) => {
+      const {
+        link,
+        schemaPath,
+        parsedPath,
+        isPaginated,
+      } = follow;
+
+      return {
+        link,
+        schema: !schemaPath.length ? schema : get(schema, schemaPath),
+        parent,
+        mergePath: parsedPath,
+        level: isPaginated ? level + 1 : level,
+      };
+    });
+
+    return nextFollows;
+  }
+
+  /**
+   * Starting from a leaf node in the tree of partial results, this function goes up to merge them
+   * all until it reaches the root or a node that has still some pending results (we basically
+   * emulates what the stack and recursive calls would give us if we didn't care about limiting the
+   * loads concurrency)
+   * @param  {Object} leafNode
+   */
   _mergePartialResults({ leafNode }) {
-    let node = leafNode;
+    let currentNode = leafNode;
 
     do {
-      const { result, parent, mergePath } = node;
+      const { result, parent, mergePath } = currentNode;
 
       this._mergeResults({
         result,
@@ -352,18 +364,22 @@ class JasonTheMiner {
         mergePath,
       });
 
-      parent.childrenCount -= 1;
+      delete currentNode.parent;
+      delete parent.children[currentNode.id];
 
-      if (parent.childrenCount > 0) {
+      if (Object.keys(parent.children).length > 0) {
         break;
       }
 
-      parent.children = null;
-
-      node = parent;
-    } while (node.parent);
+      currentNode = parent;
+    } while (currentNode.parent);
   }
 
+  /**
+   * @param  {Object} result
+   * @param  {Object} to
+   * @param  {string} mergePath
+   */
   // eslint-disable-next-line class-methods-use-this
   _mergeResults({ result, to, mergePath }) {
     const dest = !mergePath || !mergePath.length ? to : get(to, mergePath);
@@ -374,8 +390,6 @@ class JasonTheMiner {
         return obj.concat(src);
       }
     });
-
-    return to;
   }
 
   /**

@@ -5,7 +5,7 @@
       "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
       "_concurrency": 2,
       "_cache": {
-        "folder": "es/__tests__/fixtures"
+        "folder": "es/__tests__/fixtures/cache"
       }
     }
   },
@@ -15,17 +15,9 @@
         "_$": ".repo-list .repo-list-item",
         "_slice": "0,1",
         "name": "h3 > a",
-        "last-update": "relative-time < attr(datetime)",
         "_follow": {
           "_link": "h3 > a",
-          "description": "meta[property='og:description'] < attr(content)",
-          "url": "link[rel='canonical'] < attr(href)",
-          "stats": {
-            "_$": ".pagehead-actions",
-            "watchers": "li:nth-child(1) a.social-count | trim",
-            "stars": "li:nth-child(2) a.social-count | trim",
-            "forks": "li:nth-child(3) a.social-count | trim"
-          }
+          "description": "meta[property='og:description'] < attr(content)"
         }
       }],
       "_paginate": {
