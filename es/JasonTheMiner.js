@@ -285,6 +285,7 @@ class JasonTheMiner {
     crawlResults.forEach((crawlResult) => {
       const { parent, mergePath, parserResult } = crawlResult;
       const { result } = parserResult;
+
       const id = uuid();
       const newNode = {
         id,
@@ -382,7 +383,7 @@ class JasonTheMiner {
    */
   // eslint-disable-next-line class-methods-use-this
   _mergeResults({ result, to, mergePath }) {
-    const dest = !mergePath || !mergePath.length ? to : get(to, mergePath);
+    const dest = !mergePath.length ? to : get(to, mergePath);
 
     // eslint-disable-next-line consistent-return
     mergeWith(dest, result, (obj, src) => {

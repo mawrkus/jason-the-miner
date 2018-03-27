@@ -46,7 +46,14 @@ Scrape the most starred Javascript scrapers from GitHub:
 {
   "load": {
     "http": {
-      "url": "https://github.com/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories"
+      "url": "https://github.com/search",
+      "params": {
+        "l": "JavaScript",
+        "o": "desc",
+        "q": "scraper",
+        "s": "stars",
+        "type": "Repositories"
+      }
     }
   },
   "parse": {
@@ -153,8 +160,8 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 
 Jason the Miner comes with 3 built-in loaders:
 
-- `http`: uses [Axios](https://github.com/mzabriskie/axios) as HTTP client & supports the same options (including "headers", "proxy", etc.). It adds a `[_concurrency=1]` option to limit the number concurrent requests when following/paginating. It also supports a `_cache` option to cache responses on the filesystem.
-- `file`: reads the content of a file. Options: `path`, `[stream=false]` & `[encoding="utf8"]`. It also adds a `[_concurrency=1]` option to limit the number concurrent requests when paginating.
+- `http`: uses [axios](https://github.com/mzabriskie/axios) as HTTP client & supports the same options (including "headers", "proxy", etc.). It adds a `[_concurrency=1]` option to limit the number concurrent requests when following/paginating. It also supports a `_cache` option to cache responses on the filesystem.
+- `file`: reads the content of a file. Options: `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]` option to limit the number concurrent requests when paginating.
 - `stdin`: reads the content from the standard input. Options: `[encoding="utf8"]`.
 
 For example, an HTTP load config with pagination (pages 1 -> 3) where responses will be cached in the "tests/http-cache" folder:
@@ -224,13 +231,13 @@ For example, an HTTP load config with pagination (pages 1 -> 3) where responses 
 ```
 
 A schema is a plain object that recursively defines:
- - the name of the values/collection of values that you want to extract: `title` (single value), `metas` (object), `stylesheets` (collection), `repos` (collection)
+ - the name of the values/collection of values that you want to extract: "title" (single value), "metas" (object), "stylesheets" (collection), "repos" (collection)
  - how to extract them: `[selector] ? [matcher] < [extractor] | [filter]` (see "Parse helpers" below)
 
 - `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector
 - `_slice` limits the number of elements to parse, like `String.prototype.slice(begin[, end])`
-- `_follow` tells Jason to follow a **single link** (fetch new data) & to continue scraping when the new data is received
-- `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context, here **multiple links** can be selected to scrape in parallel multiple pages (be careful)
+- `_follow` tells Jason to follow a **single link** (fetch new data) & to continue scraping after the new data has been been received
+- `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context, here **multiple links** can be selected to scrape in parallel multiple pages
 
 ##### Parse helpers
 
@@ -264,8 +271,8 @@ If not specified, Jason includes every element.
 - `html()`
 - `attr(attributeName)`
 - `regex(regexString)`
-- `date(inputFormat,outputFormat)` (parses a date with https://www.npmjs.com/package/moment)
-- `uuid()` (generates a uuid v1 with https://www.npmjs.com/package/uuid)
+- `date(inputFormat,outputFormat)` (parses a date with [moment](https://www.npmjs.com/package/moment))
+- `uuid()` (generates a uuid v1 with [uuid](https://www.npmjs.com/package/uuid))
 
 and 4 built-in text **filters**:
 
@@ -278,8 +285,8 @@ and 4 built-in text **filters**:
 
 - `stdout`: writes the results to stdout. Options: `[encoding="utf8"]`.
 - `json-file`: writes the results to a JSON file. Options: `path` & `[encoding="utf8"]`.
-- `csv-file`: writes the results to a CSV file. Uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same options, as well as `path` and `[encoding='utf8']`.
-- `download-file`: downloads files to a given folder. Uses Axios and supports only the following options: `[baseURL]`, `[parseKey]`, `[folder='.']`, `[namePattern='{name}']`, `[maxSizeInMb=1]` and `[concurrency=1]`.
+- `csv-file`: writes the results to a CSV file. Uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same options, as well as `path` & `[encoding='utf8']`.
+- `download-file`: downloads files to a given folder. Uses [axios](https://github.com/mzabriskie/axios) & supports only the following options: `[baseURL]`, `[parseKey]`, `[folder='.']`, `[namePattern='{name}']`, `[maxSizeInMb=1]` & `[concurrency=1]`.
 - `email`: uses [nodemailer](https://github.com/nodemailer/nodemailer/) & supports the same options.
 
 ## ⛏ API
