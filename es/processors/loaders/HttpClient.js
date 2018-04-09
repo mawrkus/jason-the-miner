@@ -116,9 +116,11 @@ class HttpClient {
    * @return {Array}
    */
   buildPaginationLinks() {
-    const matches = this._httpConfig.url.match(REGEX_PAGINATION_EXP);
+    const configUrl = this._httpConfig.url || '';
+
+    const matches = configUrl.match(REGEX_PAGINATION_EXP);
     if (!matches) {
-      return [this._httpConfig.url];
+      return [configUrl];
     }
 
     let [start, end] = matches[1].split(',').map(s => Number(s));
@@ -135,7 +137,7 @@ class HttpClient {
     const links = [];
 
     while (start <= end) {
-      const url = this._httpConfig.url.replace(REGEX_PAGINATION_EXP, start);
+      const url = configUrl.replace(REGEX_PAGINATION_EXP, start);
       links.push(url);
       start += 1;
     }
