@@ -58,9 +58,11 @@ class FileReader {
    * @return {Array}
    */
   buildPaginationLinks() {
-    const matches = this._readConfig.path.match(REGEX_PAGINATION_EXP);
+    const configPath = this._readConfig.path || '';
+
+    const matches = configPath.match(REGEX_PAGINATION_EXP);
     if (!matches) {
-      return [this._readConfig.path];
+      return [configPath];
     }
 
     let [start, end] = matches[1].split(',').map(s => Number(s));
@@ -77,7 +79,7 @@ class FileReader {
     const links = [];
 
     while (start <= end) {
-      const path = this._readConfig.path.replace(REGEX_PAGINATION_EXP, start);
+      const path = configPath.replace(REGEX_PAGINATION_EXP, start);
       links.push(path);
       start += 1;
     }
