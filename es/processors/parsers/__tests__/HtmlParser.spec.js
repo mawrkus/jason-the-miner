@@ -7,7 +7,7 @@ function createParser() {
 }
 
 describe('HtmlParser', () => {
-  it('should be a class with the following API: run({ data: )', () => {
+  it('should be a class with the following API: run({ data, schema })', () => {
     expect(HtmlParser).toBeInstanceOf(Function);
     expect(HtmlParser.prototype.run).toBeInstanceOf(Function);
   });

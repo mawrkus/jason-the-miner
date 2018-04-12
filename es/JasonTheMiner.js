@@ -10,13 +10,12 @@ const defaultParserHelpers = require('./processors/parsers/helpers');
 
 /**
  * Web harvester aka Jason the Miner.
- * See the "demo" folder for usage examples.
- * @see ../demo/index.js
+ * See the "demos" folder for examples.
+ * @see ../demos/index.js
  */
 class JasonTheMiner {
   /**
-   * Creates a new instance and registers the default processors (defined in "processors/index.js")
-   * and the default parse helpers (defined in "processors/parsers/index.js").
+   * Creates a new instance and registers the default processors and the default parse helpers.
    * @param  {Object} [options={}]
    * @param  {Object} [options.fallbacks] Fallback processors for each category, defaults to
    * { load: 'identity', parse: 'identity', transform: 'identity' }
@@ -46,7 +45,8 @@ class JasonTheMiner {
 
   /**
    * Registers a new processor, i.e. a class that must implement the "run()" method.
-   * The loaders and parsers must also implement the "getConfig()" and "buildLoadParams()" methods.
+   * The loaders must also implement the "getConfig()", "buildPaginationLinks()" and
+   * "buildLoadOptions()" methods.
    * See the "processors" subfolders for examples.
    * @param  {Object} options
    * @param  {string} options.category "load", "parse" or "transform"
@@ -63,7 +63,7 @@ class JasonTheMiner {
     }
 
     if (typeof processor.prototype.run !== 'function') {
-      throw new TypeError(`Invalid processor "${name}"! Missing "run" method.`);
+      throw new TypeError(`Invalid "${category}" processor "${name}"! Missing method.`);
     }
 
     if (
@@ -73,7 +73,7 @@ class JasonTheMiner {
         typeof processor.prototype.buildLoadOptions !== 'function'
       )
     ) {
-      throw new TypeError(`Invalid load processor "${name}"! Missing "getConfig" and/or "buildLoadParams" method.`);
+      throw new TypeError(`Invalid "load" processor "${name}"! Missing method.`);
     }
 
     this._processors[category][name] = processor;
@@ -103,8 +103,8 @@ class JasonTheMiner {
   }
 
   /**
-   * Loads a JSON config file.
-   * @param  {string} configPath The path to the JSON config
+   * Loads a JSON/JS config file.
+   * @param  {string} configPath The path to the config file
    * @return {Promise.<Object|Error>}
    */
   loadConfig(configPath) {
@@ -400,26 +400,26 @@ class JasonTheMiner {
    */
   // eslint-disable-next-line class-methods-use-this
   _formatError(error) {
-    const errorConfig = error.config;
-    if (errorConfig) {
-      delete errorConfig.adapter;
-      delete errorConfig.transformRequest;
-      delete errorConfig.transformResponse;
-      delete errorConfig.validateStatus;
+    const { config, request, response } = error;
+
+    if (config) {
+      delete config.adapter;
+      delete config.transformRequest;
+      delete config.transformResponse;
+      delete config.validateStatus;
     }
 
-    if (error.request) {
+    if (request) {
       delete error.request; // eslint-disable-line no-param-reassign
     }
 
-    const errorResponse = error.response;
-    if (errorResponse) {
-      delete errorResponse.config;
-      delete errorResponse.request;
-      delete errorResponse.data;
+    if (response) {
+      delete response.config;
+      delete response.request;
+      delete response.data;
     }
 
-    // to have a readable after stringifying
+    // to be readable after stringifying
     error.msg = error.msg || error.toString(); // eslint-disable-line no-param-reassign
 
     return error;
@@ -440,7 +440,7 @@ class JasonTheMiner {
     const processorName = Object.keys(config)[0] || Object.keys(categoryConfig)[0];
     const fallbackName = this._fallbacks[category];
     const Processor = categoryProcessors[processorName] || categoryProcessors[fallbackName];
-    const customConfig = Object.assign({}, categoryConfig[processorName], config[processorName]);
+    const customConfig = { ...categoryConfig[processorName], ...config[processorName] };
 
     if (!processorName) {
       debug('No "%s" processor specified. Using fallback "%s".', category, fallbackName);
