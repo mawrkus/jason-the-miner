@@ -6,15 +6,15 @@ Harvesting data at the HTML mine... Jason the Miner, a versatile Web scraper for
 
 ## ⛏ Features
 
-- **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 3 categories processors:
+- **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 3 processor categories:
   1. `loaders`: to fetch the data (via HTTP requests, by reading text files, etc.)
-  2. `parsers`: to parse the data & extract the relevant parts according to predefined schemas (HTML by default)
+  2. `parsers`: to parse the data (HTML by default) & extract the relevant parts according to a predefined schema
   3. `transformers`: to transform and/or output the results (to a CSV file, via email, etc.)
-- **Configurable:** each processor is chosen & configured independently.
-- **Extensible:** you can register your own custom processors.
-- **CLI-friendly:** Jason the Miner works well with pipes & redirections.
-- **Promise-based API**.
-- **MIT-licensed**.
+- **Configurable:** each processor can be chosen & configured independently
+- **Extensible:** you can register your own custom processors
+- **CLI-friendly:** Jason the Miner works well with pipes & redirections
+- **Promise-based API**
+- **MIT-licensed**
 
 ## ⛏ Installation
 
@@ -98,7 +98,6 @@ OR alternatively, with pipes & redirections:
 *Shell:*
 ```shell
 $ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories | jason-the-miner -c github-config.json > github-repos.json
-$ cat ./github-repos.json
 ```
 
 #### API example
@@ -160,8 +159,8 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 
 Jason the Miner comes with 3 built-in loaders:
 
-- `http`: uses [axios](https://github.com/mzabriskie/axios) as HTTP client & supports the same options (including "headers", "proxy", etc.). It adds a `[_concurrency=1]` option to limit the number concurrent requests when following/paginating. It also supports a `_cache` option to cache responses on the filesystem.
-- `file`: reads the content of a file. Options: `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]` option to limit the number concurrent requests when paginating.
+- `http`: uses [axios](https://github.com/mzabriskie/axios) as HTTP client & supports the same options (including "headers", "proxy", etc.). It adds a `[_concurrency=1]` option to limit the number of concurrent requests when following/paginating. It also supports a `[_cache]` option to cache responses on the filesystem.
+- `file`: reads the content of a file. Options: `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]`, to limit the number of concurrent requests when paginating.
 - `stdin`: reads the content from the standard input. Options: `[encoding="utf8"]`.
 
 For example, an HTTP load config with pagination (pages 1 -> 3) where responses will be cached in the "tests/http-cache" folder:
@@ -182,6 +181,8 @@ For example, an HTTP load config with pagination (pages 1 -> 3) where responses 
 ```
 
 ### Parsers
+
+Jason the Miner comes with a single built-in parser:
 
 - `html`: uses [Cheerio](https://github.com/cheeriojs/cheerio) as HTML parser.
 
@@ -231,12 +232,13 @@ For example, an HTTP load config with pagination (pages 1 -> 3) where responses 
 ```
 
 A schema is a plain object that recursively defines:
- - the name of the values/collection of values that you want to extract: "title" (single value), "metas" (object), "stylesheets" (collection), "repos" (collection)
+ - the names of the values/collection of values that you want to extract: "title" (single value), "metas" (object), "stylesheets" (collection of values), "repos" (collection of objects)
  - how to extract them: `[selector] ? [matcher] < [extractor] | [filter]` (see "Parse helpers" below)
 
+Additional instructions can be passed to the parser:
 - `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector
 - `_slice` limits the number of elements to parse, like `String.prototype.slice(begin[, end])`
-- `_follow` tells Jason to follow a **single link** (fetch new data) & to continue scraping after the new data has been been received
+- `_follow` tells Jason to follow a **single link** (fetch new data) & to continue scraping after the new data is received
 - `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context, here **multiple links** can be selected to scrape in parallel multiple pages
 
 ##### Parse helpers
@@ -360,7 +362,7 @@ jason
 
 ##### registerHelper({ category, name, helper })
 
-Registers a parse helpers in one of the 3 categories: `match`, `extract` or `filter`.
+Registers a parse helper in one of the 3 categories: `match`, `extract` or `filter`.
 `helper` must be a function.
 
 ```js
@@ -431,7 +433,7 @@ $ npm run test
 
 Please take these guidelines in consideration when scraping:
 
-- Content being scraped is not copyright protected.
+- The content being scraped is not copyright protected.
 - The act of scraping does not burden the services of the site being scraped.
 - The scraper does not violate the Terms of Use of the site being scraped.
 - The scraper does not gather sensitive user information.
