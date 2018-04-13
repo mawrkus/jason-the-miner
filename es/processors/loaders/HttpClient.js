@@ -173,11 +173,12 @@ class HttpClient {
   async run({ options }) {
     this._lastHttpConfig = { ...this._lastHttpConfig, ...options };
     this._runs += 1;
+
     debug('Run #%s...', this._runs);
 
-    try {
-      const start = this._logRequest(this._lastHttpConfig);
+    const start = this._logRequest(this._lastHttpConfig);
 
+    try {
       const response = await this._httpClient.request(this._lastHttpConfig);
 
       this._logResponse(response, start);
@@ -185,7 +186,7 @@ class HttpClient {
       return response.data;
     } catch (requestError) {
       if (requestError.response) {
-        this._logResponse(requestError.response);
+        this._logResponse(requestError.response, start);
       } else {
         debug(requestError.message);
       }
