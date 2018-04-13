@@ -22,7 +22,7 @@ class NoOperationProcessor {
   }
 
   /**
-   * Returns the config . Used for following/paginating.
+   * Returns the config. Used for limiting the concurrency when following/paginating.
    * @return {Object}
    */
   getConfig() {
@@ -30,12 +30,21 @@ class NoOperationProcessor {
   }
 
   /**
-   * Builds a new load config. Used for following/paginating.
+   * Builds all the links defined by the pagination config.
+   * @return {Array}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  buildPaginationLinks() {
+    return [];
+  }
+
+  /**
+   * Builds new load options. Used for following/paginating.
    * @param {string} link
    * @return {Object}
    */
   // eslint-disable-next-line class-methods-use-this
-  buildLoadParams() {
+  buildLoadOptions() {
     return {};
   }
 }

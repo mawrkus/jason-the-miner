@@ -45,11 +45,21 @@ class StdinReader {
   }
 
   /**
-   * Returns the config . Used for following/paginating.
+   * Returns the config. Used for limiting the concurrency when following/paginating.
    * @return {Object}
    */
   getConfig() {
     return this._config;
+  }
+
+  /**
+   * Builds all the links defined by the pagination config.
+   * @return {Array}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  buildPaginationLinks() {
+    // dummy link to allow the harvesting process to start
+    return ['stdin is in the house'];
   }
 
   /**

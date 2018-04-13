@@ -90,7 +90,7 @@ Alternatively, with pipes & redirections:
         "description": "div:first-child > p | trim"
       }]
     }
-  },
+  }
 }
 ```
 
