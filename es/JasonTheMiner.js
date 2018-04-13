@@ -279,7 +279,7 @@ class JasonTheMiner {
   _processCrawlResults({ crawlResults }) {
     debug('Processing %d crawl result(s)...', crawlResults.length);
 
-    let nextCrawls = [];
+    let allNextCrawls = [];
     const nodesToMerge = [];
 
     crawlResults.forEach((crawlResult) => {
@@ -296,20 +296,20 @@ class JasonTheMiner {
       };
       parent.children[id] = newNode;
 
-      const nextFollows = this._getNextFollows({ crawlResult, parent: newNode });
+      const nextCrawls = this._getNextCrawls({ crawlResult, parent: newNode });
 
-      if (nextFollows.length) {
-        nextCrawls = [...nextCrawls, ...nextFollows];
+      if (nextCrawls.length) {
+        allNextCrawls = [...allNextCrawls, ...nextCrawls];
       } else {
         nodesToMerge.push(newNode);
       }
     });
 
     // as the merging process depends on the total number of children of a given node,
-    // this must be done after adding all leaf nodes
+    // this must be done here, after adding all leaf nodes
     nodesToMerge.forEach(leafNode => this._mergePartialResults({ leafNode }));
 
-    return nextCrawls;
+    return allNextCrawls;
   }
 
   /**
@@ -318,7 +318,7 @@ class JasonTheMiner {
    * @return {Array}
    */
   // eslint-disable-next-line class-methods-use-this
-  _getNextFollows({ crawlResult, parent }) {
+  _getNextCrawls({ crawlResult, parent }) {
     const { parserResult, level } = crawlResult;
     const { schema, follows, paginates } = parserResult;
 
@@ -326,7 +326,7 @@ class JasonTheMiner {
       .filter(({ depth }) => level < depth)
       .map(p => ({ ...p, isPaginated: true }));
 
-    const nextFollows = [...follows, ...filteredPaginates].map((follow) => {
+    const nextCrawls = [...follows, ...filteredPaginates].map((follow) => {
       const {
         link,
         schemaPath,
@@ -343,7 +343,7 @@ class JasonTheMiner {
       };
     });
 
-    return nextFollows;
+    return nextCrawls;
   }
 
   /**
