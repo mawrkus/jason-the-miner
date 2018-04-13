@@ -1,7 +1,7 @@
 {
   "name": "jason-the-miner",
   "version": "0.5.0",
-  "description": "A versatile Web scraper for Node.js",
+  "description": "Harvesting data at the <html> mine.",
   "author": "mawrkus <web@sparring-partner.be>",
   "license": "MIT",
   "homepage": "https://github.com/mawrkus/jason-the-miner",
@@ -13,40 +13,39 @@
     "url": "git://github.com/mawrkus/jason-the-miner.git"
   },
   "keywords": [
-    "web",
-    "html",
     "scrape",
     "scraper",
     "scraping",
+    "crawl",
     "crawler",
-    "harvester",
-    "data extraction",
-    "data grabbing",
-    "data harvesting",
-    "content extraction",
-    "cheerio"
+    "crawling",
+    "web",
+    "html",
+    "cheerio",
+    "axios"
   ],
-  "main": "lib/jason-the-miner.js",
+  "main": "es/JasonTheMiner.js",
   "bin": "bin/jason-the-miner.js",
   "engines": {
-    "node": ">= 6.5"
+    "node": ">= 8.9"
   },
   "files": [
     "bin",
+    "es",
     "lib"
   ],
   "scripts": {
-    "lint": "eslint lib bin tests",
+    "lint": "eslint es/ bin/ demos/",
     "pretest": "npm run lint",
-    "test": "node tests/unit/index.js",
-    "dev": "gaze \"npm run test\" \"**/*.{js,json}\" \"!node_modules/**/*\"",
-    "demos": "npm run demos:clean && node demos/index.js",
-    "demos:clean": "clear && rm -rf demos/data/out/* && touch demos/data/out/.gitkeep",
-    "demos:debug": "DEBUG=jason:* npm run demos",
-    "prerelease": "npm test",
+    "test": "jest es/",
+    "tdd": "jest es/ --watch --verbose",
+    "prerelease": "npm run test",
     "release": "npm version -m \"New version: %s\"",
     "postrelease": "npm run push && npm publish",
-    "push": "git push origin master && git push origin --tags"
+    "push": "git push origin master && git push origin --tags",
+    "demos": "npm run demos:clean && node demos/index.js",
+    "demos:clean": "clear && rm -rf demos/data/out/* && touch demos/data/out/.gitkeep && mkdir demos/data/out/downloads && touch demos/data/out/downloads/.gitkeep",
+    "demos:debug": "DEBUG=jason:* npm run demos"
   },
   "dependencies": {
     "axios": "^0.16.1",
@@ -57,21 +56,28 @@
     "csv-stringify": "^1.0.4",
     "debug": "^2.2.0",
     "lodash.get": "^4.4.2",
+    "lodash.mergewith": "^4.6.1",
+    "make-dir": "^1.2.0",
     "mime": "^1.3.4",
-    "mustache": "^2.2.1",
+    "moment": "^2.21.0",
     "nodemailer": "^2.6.4",
     "ora": "^0.3.0",
     "pad-left": "^2.1.0",
-    "uuid": "^2.0.3"
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "eslint": "^3.7.1",
-    "eslint-config-airbnb-base": "^8.0.0",
-    "eslint-plugin-import": "^2.0.0",
-    "eslint-plugin-jasmine": "^2.0.0",
-    "gaze-cli": "^0.2.0",
-    "jasmine": "^2.5.2",
-    "jasmine-spec-reporter": "^2.7.0",
-    "sinon": "^1.17.6"
+    "eslint": "^4.18.2",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jest": "^21.12.3",
+    "jest": "^22.4.2",
+    "mustache": "^2.2.1"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib/",
+      "<rootDir>/node_modules/"
+    ],
+    "testRegex": "/__tests__/.*\\.spec\\.js$"
   }
 }

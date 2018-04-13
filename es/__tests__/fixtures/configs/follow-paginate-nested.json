@@ -1,0 +1,44 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
+      "_concurrency": 2,
+      "_cache": {
+        "folder": "es/__tests__/fixtures/cache"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "repos": [{
+        "_$": ".repo-list .repo-list-item",
+        "_slice": "0,1",
+        "name": "h3 > a",
+        "_follow": {
+          "_link": "h3 > a",
+          "description": "meta[property='og:description'] < attr(content)",
+          "_follow": {
+            "_link": ".js-repo-nav span[itemprop='itemListElement']:nth-child(2) > a",
+            "open-issues": [{
+              "_$": ".js-navigation-container li > div > div:nth-child(3)",
+              "_slice": "0,1",
+              "desc": "a:first-child | trim",
+              "opened": "relative-time < attr(datetime)"
+            }],
+            "_paginate": {
+              "link": ".pagination > a",
+              "slice": "0,1",
+              "depth": 1
+            }
+          }
+        }
+      }],
+      "_paginate": {
+        "link": ".pagination > a[rel='next']",
+        "slice": "0,1",
+        "depth": 1
+      }
+    }
+  }
+}

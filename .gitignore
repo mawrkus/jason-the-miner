@@ -1,5 +1,5 @@
 node_modules
-demos/config/party-time
+lib
 demos/data/out/*
 !demos/data/out/.gitkeep
-ROADMAP.md
+_todo

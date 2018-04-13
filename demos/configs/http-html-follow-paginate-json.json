@@ -1,0 +1,38 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "http://www.imdb.com",
+      "url": "/title/tt2356777/?ref_=fn_al_tt_1",
+      "headers": {
+        "Accept-Language": "en-US,en;q=0.9,es;q=0.8,fr;q=0.7",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36"
+      },
+      "_concurrency": 2
+    }
+  },
+  "parse": {
+    "html": {
+      "title": ".title_wrapper h1 | trim",
+      "images-count": ".slate .caption a:last-child < regex((\\d+))",
+      "_follow": {
+        "_link": ".slate .caption a:last-child",
+        "images": [{
+          "_$": ".media_index_thumb_list img",
+          "_slice": "0,1",
+          "title": "< attr(alt) | trim",
+          "src": "< attr(src)"
+        }],
+        "_paginate": {
+          "link": ".page_list:first-child > a",
+          "slice": "0,3",
+          "depth": 1
+        }
+      }
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/imdb-show-images.json"
+    }
+  }
+}
