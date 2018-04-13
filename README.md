@@ -16,7 +16,7 @@ Harvesting data at the <html> mine... Jason the Miner, a versatile Web scraper f
 - **Promise-based API**
 - **MIT-licensed**
 
-## ⛏ Installation
+## ⛏ Installing
 
 ```shell
 $ npm install -g jason-the-miner
@@ -33,16 +33,16 @@ $ npm install
 $ npm run demos
 ```
 
-...and have a look at the `demos` folder.
+...and have a look at the "demos" folder.
 
-## ⛏ Usage
+## ⛏ Examples
 
-#### CLI example
+#### CLI
 
-Scrape the most starred Javascript scrapers from GitHub:
+Scraping the most popular Javascript scrapers from GitHub:
 
-*github-config.json*:
 ```js
+// github-config.json
 {
   "load": {
     "http": {
@@ -73,15 +73,14 @@ Scrape the most starred Javascript scrapers from GitHub:
 }
 ```
 
-*Shell*:
 ```shell
 $ jason-the-miner -c github-config.json
 ```
 
-OR alternatively, with pipes & redirections:
+Alternatively, with pipes & redirections:
 
-*github-config.json:*
 ```js
+// github-config.json
 {
   "parse": {
     "html": {
@@ -95,12 +94,11 @@ OR alternatively, with pipes & redirections:
 }
 ```
 
-*Shell:*
 ```shell
 $ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories | jason-the-miner -c github-config.json > github-repos.json
 ```
 
-#### API example
+#### API
 
 ```js
 const JasonTheMiner = require('jason-the-miner');
@@ -159,9 +157,11 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 
 Jason the Miner comes with 3 built-in loaders:
 
-- `http`: uses [axios](https://github.com/mzabriskie/axios) as HTTP client & supports the same options (including "headers", "proxy", etc.). It adds a `[_concurrency=1]` option to limit the number of concurrent requests when following/paginating. It also supports a `[_cache]` option to cache responses on the filesystem.
-- `file`: reads the content of a file. Options: `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]`, to limit the number of concurrent requests when paginating.
-- `stdin`: reads the content from the standard input. Options: `[encoding="utf8"]`.
+| Name | Description | Options |
+| --- |---| --- |
+| `http` | Uses [axios](https://github.com/mzabriskie/axios) as HTTP client | All [axios](https://github.com/mzabriskie/axios) request options + `[_concurrency=1]` (to limit the number of concurrent requests when following/paginating) &  `[_cache]` (to cache responses on the file system) |
+| `file` | Reads the content of a file | `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]` (to limit the number of concurrent requests when paginating) |
+| `stdin` | Reads the content from the standard input | `[encoding="utf8"]` |
 
 For example, an HTTP load config with pagination (pages 1 -> 3) where responses will be cached in the "tests/http-cache" folder:
 
@@ -180,13 +180,17 @@ For example, an HTTP load config with pagination (pages 1 -> 3) where responses 
 ...
 ```
 
+Check the "demos" folder for more examples.
+
 ### Parsers
 
-Jason the Miner comes with a single built-in parser:
+Currently, Jason the Miner comes with a single built-in parser:
 
-- `html`: uses [Cheerio](https://github.com/cheeriojs/cheerio) as HTML parser.
+| Name | Description | Options |
+| --- |---| --- |
+|`html`|Parses HTML, built with [Cheerio](https://github.com/cheeriojs/cheerio)|A parse schema|
 
-#### Schemas definition
+#### Schema definition
 
 ```js
 ...
@@ -233,17 +237,17 @@ Jason the Miner comes with a single built-in parser:
 
 A schema is a plain object that recursively defines:
  - the names of the values/collection of values that you want to extract: "title" (single value), "metas" (object), "stylesheets" (collection of values), "repos" (collection of objects)
- - how to extract them: `[selector] ? [matcher] < [extractor] | [filter]` (see "Parse helpers" below)
+ - how to extract them: `[selector] ? [matcher] < [extractor] | [filter]` (check "Parse helpers" below)
 
 Additional instructions can be passed to the parser:
-- `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector
-- `_slice` limits the number of elements to parse, like `String.prototype.slice(begin[, end])`
-- `_follow` tells Jason to follow a **single link** (fetch new data) & to continue scraping after the new data is received
-- `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context, here **multiple links** can be selected to scrape in parallel multiple pages
+ - `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector
+ - `_slice` limits the number of elements to parse, like `String.prototype.slice(begin[, end])`
+ - `_follow` tells Jason to follow a **single link** (fetch new data) & to continue scraping after the new data is received
+ - `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context, here **multiple links** can be selected to scrape in parallel multiple pages
 
 ##### Parse helpers
 
-You can specify how to extract a value with the following syntax:
+The following syntax specifies how to extract a value:
 
 ```
 [property name]: [selector] ? [matcher] < [extractor] | [filter]
@@ -256,6 +260,8 @@ For instance:
 "repos": [".repo-list-item h3 > a ? text(crawler) < attr(title) | trim"]
 ...
 ```
+
+Will extract a "repos" array of values from the links identified by the ".repo-list-item h3 > a" selector, matching only the ones containing the text "crawler". The values will be retrieved from the "title" attribute of each link and will be trimmed.
 
 Jason has 4 built-in element **matchers**:
 
@@ -285,11 +291,13 @@ and 4 built-in text **filters**:
 
 ### Transformers
 
-- `stdout`: writes the results to stdout. Options: `[encoding="utf8"]`.
-- `json-file`: writes the results to a JSON file. Options: `path` & `[encoding="utf8"]`.
-- `csv-file`: writes the results to a CSV file. Uses [csv-stringify](http://csv.adaltas.com/stringify/) & supports the same options, as well as `path` & `[encoding='utf8']`.
-- `download-file`: downloads files to a given folder. Uses [axios](https://github.com/mzabriskie/axios) & supports only the following options: `[baseURL]`, `[parseKey]`, `[folder='.']`, `[namePattern='{name}']`, `[maxSizeInMb=1]` & `[concurrency=1]`.
-- `email`: uses [nodemailer](https://github.com/nodemailer/nodemailer/) & supports the same options.
+| Name | Description | Options |
+| --- |---| --- |
+| `stdout` | Writes the results to stdout | `[encoding="utf8"]` |
+| `json-file` | Writes the results to a JSON file | `path` & `[encoding="utf8"]` |
+| `csv-file` | Writes the results to a CSV file using [csv-stringify](http://csv.adaltas.com/stringify/) | Same as [csv-stringify](http://csv.adaltas.com/stringify/) + `path` & `[encoding='utf8']` |
+| `download-file` | Downloads files to a given folder using [axios](https://github.com/mzabriskie/axios) | `[baseURL]`, `[parseKey]`, `[folder='.']`, `[namePattern='{name}']`, `[maxSizeInMb=1]` & `[concurrency=1]`
+| `email` | Sends the results by email using [nodemailer](https://github.com/nodemailer/nodemailer/) | Same as [nodemailer](https://github.com/nodemailer/nodemailer/) |
 
 ## ⛏ API
 
@@ -315,7 +323,7 @@ jason.loadConfig('./harvest-me.json');
 
 ### harvest({ load, parse, output, pagination } = {})
 
-Launches the whole harvesting process:
+Launches the harvesting process:
 
 ```js
 jason
@@ -324,7 +332,7 @@ jason
   .catch(error => console.error(error));
 ```
 
-You can also pass custom options to temporarily override the current config:
+You can pass custom options to temporarily override the current config:
 
 ```js
 jason
@@ -407,10 +415,10 @@ jason.config.transform = {
 };
 ```
 
-Note that loaders **must also implement** the `getConfig()`, `buildPaginationLinks()` and `buildLoadOptions({ link })` methods.
+Be aware that loaders **must also implement** the `getConfig()`, `buildPaginationLinks()` and `buildLoadOptions({ link })` methods.
 Have a look at the source code for more info.
 
-## ⛏ Tests
+## ⛏ Testing
 
 ```shell
 $ git clone https://github.com/mawrkus/jason-the-miner.git
