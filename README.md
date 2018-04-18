@@ -2,7 +2,7 @@
  [![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
 ![Node version](https://img.shields.io/node/v/jason-the-miner.svg?style=flat-square)
 
-Harvesting data at the <html> mine... Jason the Miner, a versatile Web scraper for Node.js.
+Harvesting data at the `<html>` mine... Jason the Miner, a versatile Web scraper for Node.js.
 
 ## ⛏ Features
 
