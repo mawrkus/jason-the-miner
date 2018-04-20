@@ -7,9 +7,9 @@ Harvesting data at the `<html>` mine... Jason the Miner, a versatile Web scraper
 ## ⛏ Features
 
 - **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 3 processor categories:
-  1. `loaders`: to fetch the data (via HTTP requests, by reading text files, etc.)
-  2. `parsers`: to parse the data (HTML by default) & extract the relevant parts according to a predefined schema
-  3. `transformers`: to transform and/or output the results (to a CSV file, via email, etc.)
+  1. loaders: to fetch the data (via HTTP requests, by reading text files, etc.)
+  2. parsers: to parse the data (HTML by default) & extract the relevant parts according to a predefined schema
+  3. transformers: to transform and/or output the results (to a CSV file, via email, etc.)
 - **Configurable:** each processor can be chosen & configured independently
 - **Extensible:** you can register your own custom processors
 - **CLI-friendly:** Jason the Miner works well with pipes & redirections
@@ -180,7 +180,7 @@ For example, an HTTP load config with pagination (pages 1 -> 3) where responses 
 ...
 ```
 
-Check the "demos" folder for more examples.
+Check the [demos](demos/configs) folder for more examples.
 
 ### Parsers
 
