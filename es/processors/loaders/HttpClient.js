@@ -22,7 +22,7 @@ class HttpClient {
   /**
    * @param {Object} config The config object
    * @param {*} config.*
-   * Keys prefixed with "_" will be used for the loader own configuration.
+   * Keys prefixed with "_" will be used for the loader's own configuration.
    * Other keys will be used as axios options.
    * @param {number} [config._concurrency=1] The concurrency limit when following links and/or
    * paginating.

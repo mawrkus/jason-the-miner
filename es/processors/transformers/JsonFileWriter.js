@@ -6,7 +6,7 @@ const debug = require('debug')('jason:transform:json-file');
 const writeFileAsync = promisify(fs.writeFile);
 
 /**
- * A processor that writes results to JSON files.
+ * A processor that writes results to a JSON file.
  */
 class JsonFileWriter {
   /**

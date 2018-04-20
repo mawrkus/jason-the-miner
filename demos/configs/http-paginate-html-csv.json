@@ -19,7 +19,9 @@
   },
   "transform": {
     "csv-file": {
-      "path": "demos/data/out/github-search-html-extended.csv"
+      "_path": "demos/data/out/github-search-html-extended.csv",
+      "header": true,
+      "delimiter": ";"
     }
   }
 }

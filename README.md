@@ -295,7 +295,7 @@ and 4 built-in text **filters**:
 | --- |---| --- |
 | `stdout` | Writes the results to stdout | `[encoding="utf8"]` |
 | `json-file` | Writes the results to a JSON file | `path` & `[encoding="utf8"]` |
-| `csv-file` | Writes the results to a CSV file using [csv-stringify](http://csv.adaltas.com/stringify/) | Same as [csv-stringify](http://csv.adaltas.com/stringify/) + `path` & `[encoding='utf8']` |
+| `csv-file` | Writes the results to a CSV file using [csv-stringify](http://csv.adaltas.com/stringify/) | Same as [csv-stringify](http://csv.adaltas.com/stringify/) + `_path` & `[_encoding='utf8']` |
 | `download-file` | Downloads files to a given folder using [axios](https://github.com/mzabriskie/axios) | `[baseURL]`, `[parseKey]`, `[folder='.']`, `[namePattern='{name}']`, `[maxSizeInMb=1]` & `[concurrency=1]`
 | `email` | Sends the results by email using [nodemailer](https://github.com/nodemailer/nodemailer/) | Same as [nodemailer](https://github.com/nodemailer/nodemailer/) |
 
