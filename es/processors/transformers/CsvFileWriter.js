@@ -6,6 +6,7 @@ const debug = require('debug')('jason:transform:csv-file');
 
 const csvStringifyAsync = promisify(csvStringify);
 const writeFileAsync = promisify(fs.writeFile);
+const appendFileAsync = promisify(fs.appendFile);
 
 /**
  * A processor that writes results to a CSV file. Depends on the "csv-stringify" package.
@@ -19,6 +20,7 @@ class CsvFileWriter {
    * Other keys will be used as csv-stringify options.
    * @param {number} config._path
    * @param {string} [config._encoding='utf8']
+   * @param {boolean} [config._append=false]
    */
   constructor(config) {
     this._csvConfig = {};
@@ -35,6 +37,7 @@ class CsvFileWriter {
     this._config = {
       outputPath: path.join(process.cwd(), this._config.path),
       encoding: 'utf8',
+      append: false,
       ...this._config,
     };
 
@@ -53,7 +56,7 @@ class CsvFileWriter {
       return results;
     }
 
-    const { outputPath, encoding } = this._config;
+    const { outputPath, encoding, append } = this._config;
 
     const rootKey = Object.keys(results)[0];
     const lines = results[rootKey];
@@ -63,7 +66,11 @@ class CsvFileWriter {
     try {
       const csvString = await csvStringifyAsync(lines, this._csvConfig);
 
-      await writeFileAsync(outputPath, csvString, encoding);
+      if (append) {
+        await appendFileAsync(outputPath, csvString, encoding);
+      } else {
+        await writeFileAsync(outputPath, csvString, encoding);
+      }
 
       debug('Wrote %d chars.', csvString.length);
     } catch (error) {
