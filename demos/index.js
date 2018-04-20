@@ -31,6 +31,8 @@ const demoFiles = [
   'http-html-follow-x2-paginate-x2-json.json',
   /* Google search for apps */
   'http-html-follow-json.json',
+  /* Goodreads search for books */
+  'http-html-follow-follow-json-stdout.json',
   /* Imdb images */
   'http-html-follow-paginate-json.json',
   'http-html-download.json',

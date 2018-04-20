@@ -117,7 +117,11 @@ class JasonTheMiner {
       ['load', 'parse', 'transform']
         .filter(category => !!config[category])
         .forEach((category) => {
-          this.config[category] = { ...config[category] };
+          this.config[category] = Array.isArray(config[category]) ?
+            // eslint-disable-next-line array-bracket-spacing
+            [ ...config[category] ] :
+            { ...config[category] };
+
           debug('"%s" config set', category, this.config[category]);
         });
 
@@ -134,7 +138,7 @@ class JasonTheMiner {
    * @param  {Object} [options={}] An optional config that can override the current one
    * @param  {Object} [options.load]
    * @param  {Object} [options.parse]
-   * @param  {Object} [options.transform]
+   * @param  {Object|Array} [options.transform]
    * @throws
    * @return {Promise.<Object>}
    */
@@ -143,11 +147,27 @@ class JasonTheMiner {
 
     const loader = this._buildProcessor('load', load);
     const parser = this._buildProcessor('parse', parse);
-    const transformer = this._buildProcessor('transform', transform);
+
+    let transforms = transform || this.config.transform || this._fallbacks.transform || [];
+    if (transforms) {
+      transforms = Array.isArray(transforms) ? transforms : [transforms];
+    }
+    const transformers = transforms.map(t => this._buildProcessor('transform', t));
 
     try {
       const results = await this._harvest({ loader, parser });
-      return transformer.run({ results }); // TODO: support array of transformers ?
+
+      let transformedResults = results;
+      let transformParams = { previousResults: null, results };
+
+      /* eslint-disable no-restricted-syntax, no-await-in-loop */
+      for (const t of transformers) {
+        transformedResults = await t.run(transformParams);
+        transformParams = { previousResults: transformedResults, results };
+      }
+      /* eslint-enable no-restricted-syntax, no-await-in-loop */
+
+      return transformedResults;
     } catch (error) {
       this._formatError(error);
       throw error;
