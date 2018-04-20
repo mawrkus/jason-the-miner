@@ -39,8 +39,7 @@ class HttpClient {
       }
     });
 
-    this._httpClient = axios.create(this._httpConfig);
-    this._lastHttpConfig = this._httpConfig;
+    this._httpClient = axios.create();
 
     this._config = { concurrency: 1, ...this._config };
     this._config.concurrency = Number(this._config.concurrency); // just in case
@@ -148,12 +147,12 @@ class HttpClient {
   }
 
   /**
-   * Builds new load options. Used for following/paginating.
+   * Builds new load options.
    * @param {string} link
    * @return {Object}
    */
   buildLoadOptions({ link }) {
-    const options = { ...this._lastHttpConfig };
+    const options = {};
 
     if (link.match(REGEX_ABSOLUTE_LINK)) {
       options.baseURL = link;
@@ -167,19 +166,19 @@ class HttpClient {
   }
 
   /**
-   * @param {Object} [options] Optional HTTP options, used when following/paginating.
+   * @param {Object} [options] Optional HTTP options.
    * @return {Promise}
    */
   async run({ options }) {
-    this._lastHttpConfig = { ...this._lastHttpConfig, ...options };
+    const httpConfig = { ...this._httpConfig, ...options };
     this._runs += 1;
 
     debug('Run #%s...', this._runs);
 
-    const start = this._logRequest(this._lastHttpConfig);
+    const start = this._logRequest(httpConfig);
 
     try {
-      const response = await this._httpClient.request(this._lastHttpConfig);
+      const response = await this._httpClient.request(httpConfig);
 
       this._logResponse(response, start);
 

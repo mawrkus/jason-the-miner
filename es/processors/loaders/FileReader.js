@@ -35,7 +35,6 @@ class FileReader {
       encoding: 'utf8',
       ...this._readConfig,
     };
-    this._lastReadConfig = this._readConfig;
 
     this._config = { concurrency: 1, ...this._config };
     this._config.concurrency = Number(this._config.concurrency); // just in case
@@ -90,29 +89,29 @@ class FileReader {
   }
 
   /**
-   * Builds new load options. Used for following/paginating.
+   * Builds new load options.
    * @param {string} link
    * @return {Object}
    */
+  // eslint-disable-next-line class-methods-use-this
   buildLoadOptions({ link }) {
-    const options = { ...this._lastReadoptions };
-    options.path = link; // TODO: handle this better?
+    const options = { path: link }; // TODO: handle this better with basePath?
     return options;
   }
 
   /**
-   * @param {Object} [options] Optional read options, used when following/paginating.
+   * @param {Object} [options] Optional read options.
    * @return {Promise}
    */
   async run({ options }) {
-    this._lastReadConfig = { ...this._lastReadConfig, ...options };
+    const readConfig = { ...this._readConfig, ...options };
 
     const {
       basePath,
       path,
       stream,
       encoding,
-    } = this._lastReadConfig;
+    } = readConfig;
 
     const currentPath = nodePath.join(basePath, path);
 

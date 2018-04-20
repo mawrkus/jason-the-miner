@@ -63,7 +63,7 @@ class StdinReader {
   }
 
   /**
-   * Builds new load options. Used for following/paginating.
+   * Builds new load options.
    * @param {string} link
    * @return {Object}
    */

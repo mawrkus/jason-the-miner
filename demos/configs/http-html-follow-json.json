@@ -2,27 +2,25 @@
   "load": {
     "http": {
       "baseURL": "https://www.google.com",
-      "url": "/search",
-      "params": {
-        "q": "best mobile games 2018",
-        "num": 10,
-        "hl": "en"
-      },
+      "url": "/search?hl=en&num=10&q=best mobile games 2018",
       "headers": {
-        "Accept-Language": "en-US,en;q=0.9,es;q=0.8,fr;q=0.7",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36"
+        "Accept-Language": "en-US,en;q=0.9,es;q=0.8,fr;q=0.7,it;q=0.6,de;q=0.5,ca;q=0.4,nl;q=0.3,pl;q=0.2,pt;q=0.1,ja;q=0.1",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
       },
-      "_concurrency": 4
+      "_concurrency": 4,
+      "_cache": {
+        "folder": "demos/data/out/cache/google"
+      }
     }
   },
   "parse": {
     "html": {
       "games": [{
-        "_$": "#search .rc > h3",
-        "result": "a",
-        "url": "a < attr(href)",
+        "_$": "#search .rc > h3 a",
+        "result": "",
+        "url": "< attr(href)",
         "_follow": {
-          "_link": "a",
+          "_link": "",
           "links": ["a ? isAppStoreLink() < attr(href)"]
         }
       }]
