@@ -374,10 +374,20 @@ Registers a parse helper in one of the 3 categories: `match`, `extract` or `filt
 `helper` must be a function.
 
 ```js
+const url = require('url');
+
 jason.registerHelper({
   category: 'filter',
-  name: 'remove-protocol',
-  helper: text => text.replace(/^https?:/, '')
+  name: 'remove-query-params',
+  helper: (href = '') => {
+    if (!href || href === '#') {
+      return href;
+    }
+
+    const { protocol, host, pathname } = url.parse(href);
+
+    return `${protocol}//${host}${pathname}`;
+  }
 });
 ```
 
