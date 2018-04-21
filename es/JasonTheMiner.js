@@ -167,7 +167,9 @@ class JasonTheMiner {
       }
       /* eslint-enable no-restricted-syntax, no-await-in-loop */
 
-      return { results };
+      delete transformedResults.previousResults;
+
+      return transformedResults;
     } catch (error) {
       this._formatError(error);
       throw error;
