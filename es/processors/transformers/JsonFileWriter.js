@@ -24,7 +24,9 @@ class JsonFileWriter {
   }
 
   /**
-   * @param {Object} results
+   * @param {Object} results The results from the previous transformer if any, or the
+   * parse results by default
+   * @param {Object} parseResults The original parse results
    * @return {Promise}
    */
   async run({ results }) {
@@ -40,8 +42,10 @@ class JsonFileWriter {
       debug('Error writing JSON file: %s!', error.message);
       throw error;
     }
+
     debug('Wrote %d chars.', json.length);
-    return this._config.outputPath;
+
+    return { results, filePath: outputPath };
   }
 }
 

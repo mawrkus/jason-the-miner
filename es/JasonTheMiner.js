@@ -155,19 +155,19 @@ class JasonTheMiner {
     const transformers = transforms.map(t => this._buildProcessor('transform', t));
 
     try {
-      const results = await this._harvest({ loader, parser });
+      const parseResults = await this._harvest({ loader, parser });
 
-      let transformedResults = results;
-      let transformParams = { previousResults: null, results };
+      let transformedResults = { results: parseResults };
+      let transformParams = { parseResults, results: parseResults };
 
       /* eslint-disable no-restricted-syntax, no-await-in-loop */
       for (const t of transformers) {
         transformedResults = await t.run(transformParams);
-        transformParams = { previousResults: transformedResults, results };
+        transformParams = { ...transformedResults, parseResults };
       }
       /* eslint-enable no-restricted-syntax, no-await-in-loop */
 
-      delete transformedResults.previousResults;
+      delete transformedResults.parseResults;
 
       return transformedResults;
     } catch (error) {

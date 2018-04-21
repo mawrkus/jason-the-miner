@@ -9,7 +9,7 @@
     }
   },
   "parse": {
-    "mixcloud-stats": {
+    "html": {
       "mixes": [{
         "_$": ".card",
         "name": ".card-title h1 | trim",
@@ -21,7 +21,12 @@
       }]
     }
   },
-  "transform": {
+  "transform": [{
+    "tpl": {
+      "templatePath": "demos/data/in/mixcloud-stats.html.tpl",
+      "outputPath": "demos/data/out/mixcloud-stats.html"
+    }
+  }, {
     "email": {
       "smtp": {
         "host": "host",
@@ -36,5 +41,5 @@
       "to": "jack@riper.com",
       "subject": "🎧 Mixcloud stats"
     }
-  }
+  }]
 }

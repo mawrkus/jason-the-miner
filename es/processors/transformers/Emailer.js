@@ -20,9 +20,11 @@ class Emailer {
   }
 
   /**
-   * @param {Object} results
+   * @param {Object} results The results from the previous transformer if any, or the
+   * parse results by default
    * @param {string} [results.subject]
    * @param {string} [results.body]
+   * @param {Object} parseResults The original parse results
    * @return {Promise}
    */
   run({ results }) {
@@ -41,15 +43,15 @@ class Emailer {
       // debug('Sending e-mail...', mailOptions);
 
       nodemailer.createTransport(this._config.smtp)
-        .sendMail(mailOptions, (error, info) => {
+        .sendMail(mailOptions, (error, mailInfo) => {
           if (error) {
             debug(error.message);
             reject(error);
             return;
           }
 
-          debug('E-mail sent:', info.response);
-          resolve(info);
+          debug('E-mail sent:', mailInfo.response);
+          resolve({ results, mailInfo });
         });
     });
   }

@@ -47,7 +47,9 @@ class CsvFileWriter {
   }
 
   /**
-   * @param {Object} results
+   * @param {Object} results The results from the previous transformer if any, or the
+   * parse results by default
+   * @param {Object} parseResults The original parse results
    * @return {Promise}
    */
   async run({ results }) {
@@ -78,7 +80,7 @@ class CsvFileWriter {
       throw error;
     }
 
-    return outputPath;
+    return { results, filePath: outputPath };
   }
 }
 

@@ -52,7 +52,9 @@ class FileDownloader {
   }
 
   /**
-   * @param {Object} results
+   * @param {Object} results The results from the previous transformer if any, or the
+   * parse results by default
+   * @param {Object} parseResults The original parse results
    * @return {Promise}
    */
   async run({ results }) {
@@ -71,11 +73,13 @@ class FileDownloader {
     debug('Found %d file(s) to download at max concurrency=%d...', total, concurrency);
     // debug(urls);
 
-    return Bluebird.map(
+    const filePaths = await Bluebird.map(
       urls,
       (url, index) => this._download({ url, index, total }),
       { concurrency },
     );
+
+    return { results, filePaths };
   }
 
   /**

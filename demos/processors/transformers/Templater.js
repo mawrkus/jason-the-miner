@@ -39,12 +39,11 @@ class Templater {
         debug('Saving results to "%s" file "%s"...', encoding, outputPath);
         await writeFileAsync(outputPath, rendered, encoding);
         debug('Wrote %d chars.', rendered.length);
-        return outputPath;
+        return { results: rendered, filePath: outputPath };
       }
 
-      debug('No output path specified, writing to stdout...');
-      process.stdout.write(rendered);
-      return rendered;
+      debug('No output path specified.');
+      return { results: rendered };
     } catch (error) {
       debug(error.message);
       throw error;

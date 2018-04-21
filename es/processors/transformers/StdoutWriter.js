@@ -15,7 +15,9 @@ class StdoutWriter {
   }
 
   /**
-   * @param {Object} results
+   * @param {Object} results The results from the previous transformer if any, or the
+   * parse results by default
+   * @param {Object} parseResults The original parse results
    * @return {Promise}
    */
   run({ results }) {
@@ -24,9 +26,9 @@ class StdoutWriter {
 
     return new Promise((resolve) => {
       if (!process.stdout.write(`${data}\n`, this._config.encoding)) {
-        process.stdout.once('drain', () => resolve(results));
+        process.stdout.once('drain', () => resolve({ results }));
       } else {
-        resolve(results);
+        resolve({ results });
       }
     });
   }
