@@ -333,9 +333,10 @@ class HtmlParser {
     if (elementsCount > 1) {
       debug('%sWarning: keeping only the first link!', tab);
     }
+    const $first = $elements.first();
 
     // TODO: allow custom extractor and filter?
-    const link = ($elements.first().attr('href') || '').trim();
+    const link = ($first.attr('href') || $first.attr('src') || '').trim();
     if (!link) {
       debug('%sWarning: empty link found for selector "%s"! Nothing to follow.', tab, selector);
       return;
