@@ -73,11 +73,12 @@ class HttpClient {
         }
 
         const response = await readFileAsync(cacheFile);
-        debug('Response from cache file "%s".', cacheKey, args);
+        debug('Response from cache file "%s".', cacheKey);
 
         return JSON.parse(response);
       } catch (readError) {
-        debug('Response not from cache file "%s".', cacheKey, args, readError.toString());
+        debug('Creating cache file... Reason ->', readError.toString());
+
         const response = await originalRequest(args);
 
         try {
@@ -90,9 +91,9 @@ class HttpClient {
           };
 
           await writeFileAsync(cacheFile, JSON.stringify(cachedResponse));
-          debug('Cache file "%s" written.', cacheKey, args);
+          debug('Cache file "%s" created.', cacheKey);
         } catch (writeError) {
-          debug('Error writing cache file "%s"!', cacheKey, args, writeError.toString());
+          debug('Error creating cache file "%s"!', cacheKey, args, writeError.toString());
         }
 
         return response;
@@ -205,9 +206,11 @@ class HttpClient {
       baseURL = '',
       url = '',
       params = '',
+      headers,
     } = request;
 
     debug('%s %s%s...', method.toUpperCase(), baseURL, url, params);
+    debug(headers);
 
     return Date.now();
   }
