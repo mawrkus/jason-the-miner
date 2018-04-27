@@ -16,11 +16,11 @@
   "parse": {
     "html": {
       "games": [{
-        "_$": "#search .rc > h3 a",
-        "result": "",
-        "url": "< attr(href)",
+        "_$": "#search .rc > h3",
+        "result": "a",
+        "url": "a < attr(href)",
         "_follow": {
-          "_link": "",
+          "_link": "a",
           "links": ["a ? isAppStoreLink() < attr(href)"]
         }
       }]
