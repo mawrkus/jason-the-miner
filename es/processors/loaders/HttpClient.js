@@ -188,7 +188,7 @@ class HttpClient {
       if (requestError.response) {
         this._logResponse(requestError.response, start);
       } else {
-        debug(requestError.message);
+        debug(requestError.toString());
       }
 
       throw requestError;
