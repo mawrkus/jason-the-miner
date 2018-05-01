@@ -48,11 +48,11 @@ Scraping the most popular Javascript scrapers from GitHub:
     "http": {
       "url": "https://github.com/search",
       "params": {
-        "l": "JavaScript",
-        "o": "desc",
         "q": "scraper",
-        "s": "stars",
-        "type": "Repositories"
+        "l": "JavaScript",
+        "type": "Repositories",
+        "s": "stars",        
+        "o": "desc"
       }
     }
   },
@@ -87,7 +87,7 @@ Alternatively, with pipes & redirections:
 ```
 
 ```shell
-$ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories | jason-the-miner -c github-config.json > github-repos.json
+$ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories&s=stars&o=desc | jason-the-miner -c github-config.json > github-repos.json
 ```
 
 #### API
