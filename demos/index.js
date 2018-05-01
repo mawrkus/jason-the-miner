@@ -30,14 +30,12 @@ const demoFiles = [
   /* Imdb images */
   'http-html-follow-paginate-json.json',
   'http-html-download.json',
-  /* */
+  /* Misc */
+  // 'file-html-stdout.json',
+  // 'http-html-email.json',
+  // 'http-html-email-from-parse.json',
+  // 'http-html-json.json',
 ];
-
-/* const miscDemoFiles = [
-  'file-html-stdout.json',
-  'http-html-email.json',
-  'http-html-json.json',
-]; */
 
 (async () => {
   console.log('Jason the Miner demos suite ⛏⛏⛏');

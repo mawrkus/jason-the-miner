@@ -10,7 +10,9 @@
   },
   "parse": {
     "html": {
-      "mixes": [{
+      "subject": "title",
+      "to": "< text(web@sparring-partner.be)",
+      "text": [{
         "_$": ".card",
         "name": ".card-title h1 | trim",
         "stats": {
@@ -22,10 +24,7 @@
     }
   },
   "transform": [{
-    "tpl": {
-      "templatePath": "demos/data/in/mixcloud-stats.html.tpl",
-      "outputPath": "demos/data/out/mixcloud-stats.html"
-    }
+    "stdout": true
   }, {
     "email": {
       "smtp": {
