@@ -58,11 +58,7 @@ Scraping the most popular Javascript scrapers from GitHub:
   },
   "parse": {
     "html": {
-      "repos": [{
-        "_$": ".repo-list .repo-list-item",
-        "name": "h3 > a",
-        "description": "div:first-child > p | trim"
-      }]
+      "repos": [".repo-list .repo-list-item h3 > a"]
     }
   },
   "transform": {
@@ -84,11 +80,7 @@ Alternatively, with pipes & redirections:
 {
   "parse": {
     "html": {
-      "repos": [{
-        "_$": ".repo-list .repo-list-item",
-        "name": "h3 > a",
-        "description": "div:first-child > p | trim"
-      }]
+      "repos": [".repo-list .repo-list-item h3 > a"]
     }
   }
 }
@@ -120,11 +112,7 @@ const load = {
 
 const parse = {
   html: {
-    repos: [{
-      _$: ".repo-list .repo-list-item",
-      name: "h3 > a",
-      description: "div:first-child > p | trim"
-    }]
+    "repos": [".repo-list .repo-list-item h3 > a"]
   }
 };
 
