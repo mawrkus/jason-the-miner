@@ -500,15 +500,15 @@ describe('HtmlParser', () => {
               name: 'img < attr(alt)',
               src: 'img < attr(src)',
               _paginate: {
-                link: '.more',
-                depth: 2,
+                _link: '.more',
+                _depth: 2,
               },
             }],
           }],
           _paginate: {
-            link: '.next-page',
-            slice: '0,3',
-            depth: 1,
+            _link: '.next-page',
+            _slice: '0,3',
+            _depth: 1,
           },
         };
 

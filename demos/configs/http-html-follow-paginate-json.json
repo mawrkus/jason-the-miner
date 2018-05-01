@@ -23,9 +23,9 @@
           "src": "< attr(src)"
         }],
         "_paginate": {
-          "link": ".page_list:first-child > a",
-          "slice": "0,3",
-          "depth": 1
+          "_link": ".page_list:first-child > a",
+          "_slice": "0,3",
+          "_depth": 1
         }
       }
     }

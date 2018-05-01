@@ -224,9 +224,9 @@ Currently, Jason the Miner comes with a single built-in parser:
             "opened": "relative-time < attr(datetime)"
           }],
           "_paginate": {
-            "link": "a[rel='next']",
-            "slice": "0,1",
-            "depth": 2
+            "_link": "a[rel='next']",
+            "_slice": "0,1",
+            "_depth": 2
           }
         }
       }

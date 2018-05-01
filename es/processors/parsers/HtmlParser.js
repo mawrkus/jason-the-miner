@@ -359,7 +359,7 @@ class HtmlParser {
     parsedPath,
     tab,
   }) {
-    const { link: selectorDef, slice = '', depth = 1 } = schema;
+    const { _link: selectorDef, _slice: slice = '', _depth: depth = 1 } = schema;
 
     if (!selectorDef) {
       debug('%sWarning: no link selector! Skipping pagination.', tab);
