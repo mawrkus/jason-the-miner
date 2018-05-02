@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0] - 2018-05-xxx
+
+### Added
+
+- Support for an array of transformers
+- New demos
+
+### Changed
+
+- HTML parser: pagination options are prefixed by an underscore for the sake of consistency
+- CSV transformer: Jason-specific options are prefixed by an underscore for the sake of consistency
+- E-mail transformer: options are split between "smtp" and "message"
+
 ## [1.0.1] - 2018-04-13
 
 ### Fixed
