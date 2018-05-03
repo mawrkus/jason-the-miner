@@ -6,20 +6,54 @@ const debug = require('debug')('jason:identity');
 class IdentityProcessor {
   /**
    * @param  {Object} config
+   * @param  {Object} config.data
    */
-  constructor(config) {
+  constructor({ config, category }) {
     this._config = config;
+    this._category = category;
     debug('IdentityProcessor instance created.');
     debug('config', config);
+    debug('category', category);
   }
 
   /**
-   * @return {Promise.<*>}
+   * We ensure the return values compliant with the different categories of processors
+   * @param {Object} [data] Optional data to parse.
+   * @param {Object} [results] Optional results to transform.
+   * @return {Promise}
    */
   // eslint-disable-next-line class-methods-use-this
-  async run(input) {
-    debug('Returning input.');
-    return input;
+  async run({ data, results }) {
+    const staticConfigData = this._config.data;
+
+    if (staticConfigData) {
+      debug('Returning static data from the config:');
+      debug(staticConfigData);
+    } else if (data) {
+      debug('Returning data received from the loader:');
+      debug(data);
+    } else if (results) {
+      debug('Returning data received from the parser:');
+      debug(results);
+    }
+
+    if (this._category === 'load') {
+      return staticConfigData;
+    }
+
+    if (this._category === 'parse') {
+      const resultData = staticConfigData || data;
+      return {
+        // the parser is expected to produce result as an object ;)
+        result: { data: resultData },
+        schema: null,
+        follows: [],
+        paginates: [],
+      };
+    }
+
+    // transform category
+    return { results };
   }
 
   /**
@@ -36,7 +70,7 @@ class IdentityProcessor {
    */
   // eslint-disable-next-line class-methods-use-this
   buildPaginationLinks() {
-    return [];
+    return ['*']; // Force Jason to do one crawl
   }
 
   /**
@@ -46,7 +80,7 @@ class IdentityProcessor {
    */
   // eslint-disable-next-line class-methods-use-this
   buildLoadOptions() {
-    return {};
+    return this._config.data;
   }
 }
 

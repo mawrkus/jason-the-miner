@@ -7,7 +7,7 @@ class NoOperationProcessor {
   /**
    * @param  {Object} config
    */
-  constructor(config) {
+  constructor({ config }) {
     debug('NoOperationProcessor instance created.');
     debug('config', config);
   }

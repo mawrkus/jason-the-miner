@@ -32,14 +32,14 @@ function typeOf(definition) {
  */
 class HtmlParser {
   /**
-   * @param  {Object} schema The schema definition
+   * @param  {Object} config The schema definition
    * @param  {Object} helpers A set of parse helpers
    * @param  {Object} helpers.match A set of matchers
    * @param  {Object} helpers.extract A set of extractors
    * @param  {Object} helpers.filter A set of filters
    */
-  constructor(schema, helpers) {
-    this._schema = schema || {};
+  constructor({ config, helpers }) {
+    this._schema = config || {};
     this._helpers = helpers;
     this._$ = cheerio;
     this._follows = [];

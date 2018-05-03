@@ -17,7 +17,7 @@ class FileReader {
    * @param {boolean} [config.stream=false]
    * @param {string} [config.encoding='utf8']
    */
-  constructor(config) {
+  constructor({ config }) {
     this._readConfig = {};
     this._config = {};
 

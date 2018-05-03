@@ -35,6 +35,7 @@ const demoFiles = [
   // 'http-html-email.json',
   // 'http-html-email-from-parse.json',
   // 'http-html-json.json',
+  // 'identity-html-stdout.json',
 ];
 
 (async () => {

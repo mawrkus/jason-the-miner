@@ -3,7 +3,7 @@ const HtmlParser = require('../HtmlParser');
 const defaultParserHelpers = require('../helpers');
 
 function createParser() {
-  return new HtmlParser({}, defaultParserHelpers);
+  return new HtmlParser({ helpers: defaultParserHelpers });
 }
 
 describe('HtmlParser', () => {

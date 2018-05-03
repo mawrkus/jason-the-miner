@@ -470,7 +470,9 @@ class JasonTheMiner {
       debug('No "%s" processor found with the name "%s"! Using fallback "%s".', category, processorName, fallbackName);
     }
 
-    return category === 'parse' ? new Processor(customConfig, this._parseHelpers) : new Processor(customConfig);
+    return category === 'parse' ?
+      new Processor({ config: customConfig, helpers: this._parseHelpers, category }) :
+      new Processor({ config: customConfig, category });
   }
 }
 
