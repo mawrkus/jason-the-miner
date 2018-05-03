@@ -271,12 +271,13 @@ If not specified, Jason includes every element.
 - `date(inputFormat,outputFormat)` (parses a date with [moment](https://www.npmjs.com/package/moment))
 - `uuid()` (generates a uuid v1 with [uuid](https://www.npmjs.com/package/uuid))
 
-and 4 built-in text **filters**:
+and 5 built-in text **filters**:
 
 - `trim`
 - `single-space`
 - `lowercase`
 - `uppercase`
+- `json-parse` (to parse JSON, like [JSON-LD](https://json-ld.org/))
 
 ### Transformers
 
@@ -393,7 +394,7 @@ jason.registerProcessor({
 });
 
 class Templater {
-  constructor(config) {
+  constructor({ config }) {
     // receives automatically its config
   }
 
