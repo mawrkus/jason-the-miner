@@ -12,4 +12,5 @@ module.exports = {
   'single-space': text => text.replace(REGEX_SINGLE_SPACE, ' ').trim(),
   lowercase: text => text.toLowerCase(),
   uppercase: text => text.toUpperCase(),
+  'json-parse': text => JSON.parse(text),
 };
