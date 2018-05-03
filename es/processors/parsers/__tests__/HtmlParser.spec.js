@@ -1,4 +1,4 @@
-process.env.DEBUG = 'jason:parse:html';
+// process.env.DEBUG = 'jason:parse:html';
 const HtmlParser = require('../HtmlParser');
 const defaultParserHelpers = require('../helpers');
 
@@ -486,7 +486,7 @@ describe('HtmlParser', () => {
     });
 
     describe('when the schema contains "paginate" definitions', () => {
-      fit('should return the partial parsed values and the correct "paginate" configuration', async () => {
+      it('should return the partial parsed values and the correct "paginate" configuration', async () => {
         const parser = createParser();
 
         const schema = {
