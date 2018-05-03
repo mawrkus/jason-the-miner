@@ -1,5 +1,6 @@
 # Jason the Miner
- [![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
+
+[![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
 ![Node version](https://img.shields.io/node/v/jason-the-miner.svg?style=flat-square)
 
 Harvesting data at the `<html>` mine... Jason the Miner, a versatile Web scraper for Node.js.
@@ -51,7 +52,7 @@ Scraping the most popular Javascript scrapers from GitHub:
         "q": "scraper",
         "l": "JavaScript",
         "type": "Repositories",
-        "s": "stars",        
+        "s": "stars",
         "o": "desc"
       }
     }
@@ -161,7 +162,7 @@ For example, an HTTP load config with pagination (pages 1 -> 3) where responses 
     "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories&p={1,3}",
     "_concurrency": 2,
     "_cache": {
-      "folder": "tests/http-cache"
+      "_folder": "tests/http-cache"
     }
   }
 }

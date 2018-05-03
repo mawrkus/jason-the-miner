@@ -41,16 +41,24 @@ class HttpClient {
 
     this._httpClient = axios.create();
 
+    debug('HttpClient instance created.');
+    debug('HTTP config', this._httpConfig);
+
     this._config = { concurrency: 1, ...this._config };
     this._config.concurrency = Number(this._config.concurrency); // just in case
 
-    debug('HttpClient instance created.');
-    debug('HTTP config', this._httpConfig);
-    debug('config', this._config);
-
     if (this._config.cache) {
+      const cacheConfig = this._config.cache;
+
+      Object.keys(cacheConfig).forEach((key) => {
+        cacheConfig[key.slice(1)] = cacheConfig[key];
+        delete cacheConfig[key];
+      });
+
       this._setupCache();
     }
+
+    debug('config', this._config);
 
     this._runs = 0;
   }

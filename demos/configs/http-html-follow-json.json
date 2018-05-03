@@ -9,7 +9,7 @@
       },
       "_concurrency": 4,
       "_cache": {
-        "folder": "demos/data/out/cache/google"
+        "_folder": "demos/data/out/cache/google"
       }
     }
   },
