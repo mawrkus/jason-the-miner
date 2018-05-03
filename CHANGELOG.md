@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- HTML parser: pagination options are prefixed by an underscore for the sake of consistency
+- HTML parser: follow and paginate links have full support of matchers, extractors and filters
+- HTML parser: paginate options are prefixed by an underscore for the sake of consistency
 - CSV transformer: Jason-specific options are prefixed by an underscore for the sake of consistency
 - E-mail transformer: options are split between "smtp" and "message"
 
