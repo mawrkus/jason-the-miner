@@ -1,4 +1,4 @@
-const parse = require('csv-parse/lib/sync')
+const parse = require('csv-parse/lib/sync');
 const debug = require('debug')('jason:parse:csv');
 
 /**
