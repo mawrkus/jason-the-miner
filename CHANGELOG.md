@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Support for multiple transformers
 - Identity processor: allow static data definition in its config
-- New CSV parser
-- New HTML parser filter: 'json-parse' (useful for parsing json-ld for instance)
-- New HTML parser extractor: 'count', counts the number of elements matching the selector (needs an array schema definition)
+- New "csv" parser
+- New HTML parse filter: "json-parse" (useful for parsing json-ld for instance)
+- New HTML parse extractor: "count", counts the number of elements matching the selector (needs an array schema definition)
 - New demos
 
 ### Changed
@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - HTML parser: paginate options are prefixed by an underscore for the sake of consistency
 - CSV transformer: Jason-specific options are prefixed by an underscore for the sake of consistency
 - E-mail transformer: options are split between "smtp" and "message"
-- All processors now received their configuration within an object: { config }
+- All processors now received their configuration object within an object: { config }
 
 ## [1.0.1] - 2018-04-13
 
