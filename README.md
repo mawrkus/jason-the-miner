@@ -178,6 +178,7 @@ Currently, Jason the Miner comes with a single built-in parser:
 | Name | Description | Options |
 | --- |---| --- |
 |`html`|Parses HTML, built with [Cheerio](https://github.com/cheeriojs/cheerio)|A parse schema|
+|`csv`|Parses CSV, built with [csv-parse](https://github.com/adaltas/node-csv-parse)|All [csv-parse](http://csv.adaltas.com/parse) options|
 
 #### Schema definition
 
