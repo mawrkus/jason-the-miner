@@ -55,9 +55,8 @@ const demoFiles = [
       await jason.harvest(); // eslint-disable-line no-await-in-loop
       spinner.succeed();
     } catch (error) {
-      console.error('Ooops! Something went wrong. :(');
+      spinner.fail('Ooops! Something went wrong. :(');
       console.error(error);
-      spinner.fail();
     }
   }
 })();

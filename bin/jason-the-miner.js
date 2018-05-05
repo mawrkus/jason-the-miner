@@ -43,7 +43,6 @@ jason
   .then(() => jason.harvest())
   .then(() => spinner.succeed())
   .catch((error) => {
-    spinner.fail();
-    console.error('Ooops! Something went wrong. :(');
+    spinner.fail('Ooops! Something went wrong. :(');
     console.error(error);
   });
