@@ -26,6 +26,7 @@ const demoFiles = [
   /* Google search for apps */
   'http-html-follow-json.json',
   /* Goodreads search for books */
+  'file-csv-json.json',
   'http-html-follow-follow-json-csv-stdout.json',
   /* Imdb images */
   'http-html-follow-paginate-json.json',
