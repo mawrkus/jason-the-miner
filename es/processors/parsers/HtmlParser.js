@@ -256,17 +256,7 @@ class HtmlParser {
       slice = definition._slice;
     }
 
-    const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
-
-    if (definitionType === 'string') {
-      // Ideally the matcher part of the selector definition should be removed as well
-      // but it works because _extractElementValue() makes a special case for empty selectors
-      newSchema = selectorDef.replace(selector, '');
-    } else {
-      newSchema = { ...definition };
-      delete newSchema._$;
-      delete newSchema._slice;
-    }
+    const { selector, matcher, extractor } = this._parseSelectorDef({ selectorDef, tab });
 
     const { $elements, elementsCount } = this._findSlicedElements({
       selector,
@@ -275,6 +265,22 @@ class HtmlParser {
       $context,
       tab,
     });
+
+    if (definitionType === 'string') {
+      if (extractor._name === 'count') {
+        const value = elementsCount;
+        debug('%s* Value="%s"', `${tab}  `, value);
+        return value;
+      }
+
+      // Ideally the matcher part of the selector definition should be removed as well
+      // but it works because _extractElementValue() makes a special case for empty selectors
+      newSchema = selectorDef.replace(selector, '');
+    } else {
+      newSchema = { ...definition };
+      delete newSchema._$;
+      delete newSchema._slice;
+    }
 
     $elements.each((index, domElement) => {
       debug('%s--> %d/%d', tab, index + 1, elementsCount);

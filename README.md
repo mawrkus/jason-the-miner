@@ -262,7 +262,7 @@ Jason has 4 built-in element **matchers**:
 They are used to test an element in order to decide whether to include/discard it from parsing.
 If not specified, Jason includes every element.
 
-6 built-in text **extractors**:
+7 built-in text **extractors**:
 
 - `text([optionalStaticText])` (by default)
 - `html()`
@@ -270,6 +270,7 @@ If not specified, Jason includes every element.
 - `regex(regexString)`
 - `date(inputFormat,outputFormat)` (parses a date with [moment](https://www.npmjs.com/package/moment))
 - `uuid()` (generates a uuid v1 with [uuid](https://www.npmjs.com/package/uuid))
+- `count()` (counts the number of elements matching the selector, needs an array schema definition)
 
 and 5 built-in text **filters**:
 

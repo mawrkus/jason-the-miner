@@ -461,6 +461,7 @@ describe('HtmlParser', () => {
             title: 'span < text | trim',
             url: 'a < attr(data-url)',
           }],
+          totalSongs: ['li < count()'],
           anchors: ['a ? attr(href,^#\\d) < attr(href)'],
           note: '< text(Jason, you\'re fantastic!)',
         };
@@ -479,6 +480,7 @@ describe('HtmlParser', () => {
               url: 'http://luavega.com/',
             },
           ],
+          totalSongs: 3,
           anchors: ['#1', '#3'],
           note: 'Jason, you\'re fantastic!',
         });

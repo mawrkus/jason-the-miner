@@ -25,4 +25,5 @@ module.exports = {
     return moment(dateString, inputFormat).format(outputFormat);
   },
   uuid: () => uuid(),
+  count: () => 1,
 };
