@@ -28,7 +28,7 @@ class CsvParser {
     const result = parse(csv, this._config);
 
     const elapsed = Date.now() - start;
-    debug('Done parsing CSV in %dms.', elapsed);
+    debug('Done parsing %d CSV record(s) in %dms.', result.length, elapsed);
 
     return {
       result: { csv: result },
