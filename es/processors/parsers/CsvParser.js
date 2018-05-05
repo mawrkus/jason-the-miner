@@ -31,7 +31,7 @@ class CsvParser {
     debug('Done parsing CSV in %dms.', elapsed);
 
     return {
-      result: { result },
+      result: { csv: result },
       schema: null,
       follows: [],
       paginates: [],
