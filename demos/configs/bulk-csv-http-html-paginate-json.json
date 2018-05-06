@@ -33,7 +33,7 @@
       }
     }
   },
-  "__transform": {
+  "transform": {
     "csv-file": {
       "path": "demos/data/out/github-search-bulk.csv",
       "csv": {

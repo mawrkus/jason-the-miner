@@ -151,14 +151,14 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 
 ### Loaders
 
-Jason the Miner comes with 3 built-in loaders:
+Jason the Miner comes with 4 built-in loaders:
 
 | Name | Description | Options |
 | --- |---| --- |
 | `http` | Uses [axios](https://github.com/mzabriskie/axios) as HTTP client | All [axios](https://github.com/mzabriskie/axios) request options + `[_concurrency=1]` (to limit the number of concurrent requests when following/paginating) &  `[_cache]` (to cache responses on the file system) |
 | `file` | Reads the content of a file | `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]` (to limit the number of concurrent requests when paginating) |
+| `csv-file` | Uses [csv-parse](https://github.com/adaltas/node-csv-parse) to read a CSV file | All [csv-parse](http://csv.adaltas.com/parse) options in a `csv` object + `path`+ `[encoding="utf8"]` |
 | `stdin` | Reads the content from the standard input | `[encoding="utf8"]` |
-| `csv-file` | Uses [csv-parse](https://github.com/adaltas/node-csv-parse) to read a CSV file | All [csv-parse](http://csv.adaltas.com/parse) options + `path`+ `[encoding="utf8"]` |
 
 For example, an HTTP load config which responses will be cached in the "tests/http-cache" folder:
 
@@ -181,7 +181,7 @@ Check the [demos](demos/configs) folder for more examples.
 
 ### Parsers
 
-Currently, Jason the Miner comes with a single built-in parser:
+Currently, Jason the Miner comes with a 2 built-in parsers:
 
 | Name | Description | Options |
 | --- |---| --- |
@@ -207,7 +207,7 @@ Currently, Jason the Miner comes with a single built-in parser:
       "description": ".repo-list .repo-list-item div:first-child"
     }
 
-    // or, by providing a root selector _$
+    // Object, providing a root selector _$
     "repo": {
       "_$": ".repo-list .repo-list-item",
       "name": "h3 > a",
@@ -377,6 +377,38 @@ Jason supports a single transformer or an array of transformers:
     }
   }]
 }
+```
+
+### ⛏ Bulk processing
+
+```js
+{
+  "bulk": {
+    "csv-file": {
+      "path": "./github-search-queries.csv",
+      "csv": {
+        "columns": true,
+        "delimiter": ","
+      }
+    }
+  },
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l={language}&o=desc&q={query}&s=stars&type=Repositories",
+      "_concurrency": 2
+    }
+  },
+  ...
+}
+```
+
+github-search-queries.csv :
+
+```
+language,query
+JavaScript,scraper
+Python,scraper
 ```
 
 ## ⛏ API

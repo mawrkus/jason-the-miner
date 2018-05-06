@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - New "csv" parser
 - New HTML parse filter: "json-parse" (useful for parsing json-ld for instance)
 - New HTML parse extractor: "count", counts the number of elements matching the selector (needs an array schema definition)
-- New bulk processor (TODO: update README)
+- New bulk processor
 - New demos
 
 ### Removed
