@@ -11,10 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Support for multiple transformers
 - Identity processor: allow static data definition in its config
+- New "csv-file" loader
 - New "csv" parser
 - New HTML parse filter: "json-parse" (useful for parsing json-ld for instance)
 - New HTML parse extractor: "count", counts the number of elements matching the selector (needs an array schema definition)
-- New "csv-file" loader
 - New bulk processor (TODO: update README)
 - New demos
 
