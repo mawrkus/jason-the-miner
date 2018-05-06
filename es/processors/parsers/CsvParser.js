@@ -1,5 +1,8 @@
-const parse = require('csv-parse/lib/sync');
+const { promisify } = require('util');
+const csvParse = require('csv-parse');
 const debug = require('debug')('jason:parse:csv');
+
+const csvParseAsync = promisify(csvParse);
 
 /**
  * Parses CSV. Depends on the "csv-parse" package.
@@ -7,8 +10,7 @@ const debug = require('debug')('jason:parse:csv');
  */
 class CsvParser {
   /**
-   * @param  {Object} config
-   * @param {*} config.*
+   * @param  {Object} config csv-parse options
    */
   constructor({ config }) {
     this._config = config || {};
@@ -25,7 +27,7 @@ class CsvParser {
     debug('Parsing...');
     const start = Date.now();
 
-    const result = parse(csv, this._config);
+    const result = await csvParseAsync(csv, this._config);
 
     const elapsed = Date.now() - start;
     debug('Done parsing %d CSV record(s) in %dms.', result.length, elapsed);
