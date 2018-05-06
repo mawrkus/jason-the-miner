@@ -36,12 +36,12 @@ const jason = new JasonTheMiner({
 
 const configPath = path.join(config);
 
-const spinner = ora({ spinner: 'dots4' }).start();
+const spinner = ora({ spinner: 'dots4' }).start('⛏  Harvesting...');
 
 jason
   .loadConfig(configPath)
   .then(() => jason.harvest())
-  .then(() => spinner.succeed())
+  .then(() => spinner.succeed('All good! :D'))
   .catch((error) => {
     spinner.fail('Ooops! Something went wrong. :(');
     console.error(error);
