@@ -34,7 +34,14 @@ $ npm install
 $ npm run demos
 ```
 
-...and have a look at the "demos" folder.
+...and have a look at the "demos" folder, among them, you'll find:
+
+- Simple GitHub search (json, csv or md output)
+- Extended GitHub search with issues (including following links & paginating)
+- Google search and following links for finding mobile apps
+- Goodreads books and following to Amazon to grab their product ID
+- Imdb images gallery links
+- Avatars download
 
 ## ⛏ Examples
 
@@ -153,14 +160,14 @@ Jason the Miner comes with 3 built-in loaders:
 | `stdin` | Reads the content from the standard input | `[encoding="utf8"]` |
 | `csv-file` | Uses [csv-parse](https://github.com/adaltas/node-csv-parse) to read a CSV file | All [csv-parse](http://csv.adaltas.com/parse) options + `path`+ `[encoding="utf8"]` |
 
-For example, an HTTP load config with pagination (pages 1 -> 3) where responses will be cached in the "tests/http-cache" folder:
+For example, an HTTP load config which responses will be cached in the "tests/http-cache" folder:
 
 ```js
 ...
 "load": {
   "http": {
     "baseURL": "https://github.com",
-    "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories&p={1,3}",
+    "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
     "_concurrency": 2,
     "_cache": {
       "_folder": "tests/http-cache"
@@ -181,7 +188,70 @@ Currently, Jason the Miner comes with a single built-in parser:
 |`html`|Parses HTML, built with [Cheerio](https://github.com/cheeriojs/cheerio)|A parse schema|
 |`csv`|Parses CSV, built with [csv-parse](https://github.com/adaltas/node-csv-parse)|All [csv-parse](http://csv.adaltas.com/parse) options|
 
-#### Schema definition
+#### HTML schema definition
+
+##### Examples
+
+```js
+...
+  "html": {
+    // Single value
+    "repo": ".repo-list .repo-list-item h3 > a"
+
+    // Collection of values
+    "repos": [".repo-list .repo-list-item h3 > a"]
+
+    // Object
+    "repo": {
+      "name": ".repo-list .repo-list-item h3 > a",
+      "description": ".repo-list .repo-list-item div:first-child"
+    }
+
+    // or, by providing a root selector _$
+    "repo": {
+      "_$": ".repo-list .repo-list-item",
+      "name": "h3 > a",
+      "description": "div:first-child"
+    }
+
+    // Collection of objects
+    "repos": [{
+      "_$": ".repo-list .repo-list-item",
+      "name": "h3 > a",
+      "description": "div:first-child"
+    }]
+
+    // Following
+    "repos": [{
+      "_$": ".repo-list .repo-list-item",
+      "name": "h3 > a",
+      "description": "div:first-child",
+      "_follow": {
+        "_link": "h3 > a",
+        "stats": {
+          "_$": ".pagehead-actions",
+          "watchers": "li:nth-child(1) a.social-count",
+          "stars": "li:nth-child(2) a.social-count",
+          "forks": "li:nth-child(3) a.social-count"
+        }
+      }
+    }]
+
+    // Paginating
+    "repos": [{
+      "_$": ".repo-list .repo-list-item",
+      "name": "h3 > a",
+      "description": "div:first-child",
+      "_paginate": {
+        "_link": ".pagination > a[rel='next']",
+        "_depth": 1
+      }
+    }]
+  }
+...
+```
+
+**Full flavour**
 
 ```js
 ...
@@ -226,7 +296,7 @@ Currently, Jason the Miner comes with a single built-in parser:
 ...
 ```
 
-A schema is a plain object that recursively defines:
+As you can see, a schema is a plain object that recursively defines:
  - the names of the values/collection of values that you want to extract: "title" (single value), "metas" (object), "stylesheets" (collection of values), "repos" (collection of objects)
  - how to extract them: `[selector] ? [matcher] < [extractor] | [filter]` (check "Parse helpers" below)
 
@@ -291,6 +361,23 @@ and 5 built-in text **filters**:
 | `csv-file` | Writes the results to a CSV file using [csv-stringify](http://csv.adaltas.com/stringify/) | `csv`: same as [csv-stringify](http://csv.adaltas.com/stringify/) + `path`, `[encoding='utf8']` and `[append=false]` (whether to append the results to an existing file or not) |
 | `download-file` | Downloads files to a given folder using [axios](https://github.com/mzabriskie/axios) | `[baseURL]`, `[parseKey]`, `[folder='.']`, `[namePattern='{name}']`, `[maxSizeInMb=1]` & `[concurrency=1]`
 | `email` | Sends the results by email using [nodemailer](https://github.com/nodemailer/nodemailer/) | Same as [nodemailer](https://github.com/nodemailer/nodemailer/), split between the `smtp` and `message` options |
+
+Jason supports a single transformer or an array of transformers:
+
+```js
+{
+  ...
+  "transform": [{
+    "json-file": {
+      "path": "./github-repos.json"
+    }
+  }, {
+    "csv-file": {
+      "path": "./github-repos.csv"
+    }
+  }]
+}
+```
 
 ## ⛏ API
 
@@ -418,7 +505,7 @@ jason.config.transform = {
 };
 ```
 
-Be aware that loaders **must also implement** the `getConfig()`, `buildPaginationLinks()` and `buildLoadOptions({ link })` methods.
+Be aware that loaders **must also implement** the `getConfig()` and `buildLoadOptions({ link })` methods.
 Have a look at the source code for more info.
 
 ## ⛏ Testing
