@@ -53,16 +53,6 @@ class StdinReader {
   }
 
   /**
-   * Builds all the links defined by the pagination config.
-   * @return {Array}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  buildPaginationLinks() {
-    // dummy link to allow the harvesting process to start
-    return ['stdin is in the house'];
-  }
-
-  /**
    * Builds new load options.
    * @param {string} link
    * @return {Object}

@@ -35,7 +35,7 @@ class CsvFileLoader {
    * @param {Object} [options] Optional read options.
    * @return {Promise}
    */
-  async run({ options }) {
+  async run({ options } = {}) {
     const config = { ...this._config, ...options };
 
     const {
@@ -74,22 +74,14 @@ class CsvFileLoader {
   }
 
   /**
-   * Builds all the links defined by the pagination config.
-   * @return {Array}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  buildPaginationLinks() {
-    return ['*']; // Force Jason to do one crawl
-  }
-
-  /**
-   * Builds new load options. Used for following/paginating.
+   * Builds new load options.
    * @param {string} link
    * @return {Object}
    */
   // eslint-disable-next-line class-methods-use-this
-  buildLoadOptions() {
-    return {};
+  buildLoadOptions({ link }) {
+    const options = { path: link }; // TODO: handle this better with basePath?
+    return options;
   }
 }
 

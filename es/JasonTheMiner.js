@@ -105,7 +105,7 @@ class JasonTheMiner {
   /**
    * Loads a JSON/JS config file.
    * @param  {string} configPath The path to the config file
-   * @return {Promise.<Object|Error>}
+   * @return {Promise}
    */
   loadConfig(configPath) {
     debug('Loading config file "%s"...', configPath);
@@ -113,6 +113,13 @@ class JasonTheMiner {
     try {
       // eslint-disable-next-line global-require, import/no-dynamic-require
       const config = require(path.join(process.cwd(), configPath));
+
+      // we don't want old configs, especially if a bulk was previously defined
+      this.config = {
+        load: {},
+        parse: {},
+        transform: {},
+      };
 
       ['bulk', 'load', 'parse', 'transform']
         .filter(category => !!config[category])
@@ -137,38 +144,54 @@ class JasonTheMiner {
    * @param  {Object} [options.load]
    * @param  {Object} [options.parse]
    * @param  {Object|Array} [options.transform]
-   * @throws
-   * @return {Promise.<Object>}
+   * @return {Promise}
    */
   async harvest({ load, parse, transform } = {}) {
-    const { bulk } = this.config;
-    if (!bulk) {
-      return this._harvest({ load, parse, transform });
+    const { bulk: bulkConfig } = this.config;
+
+    const loadOptionsList = await this._buildBulkLoadOptions({ load, bulkConfig });
+
+    return this._harvest({
+      load,
+      parse,
+      transform,
+      loadOptionsList,
+    });
+  }
+
+  /**
+   * @param  {Object} options
+   * @param  {Object} [options.load]
+   * @param  {Object} [options.bulkConfig]
+   * @throws
+   * @return {Promise}
+   */
+  async _buildBulkLoadOptions({ load, bulkConfig }) {
+    if (!bulkConfig) {
+      return undefined;
     }
 
-    const { concurrency = 1 } = bulk;
-    debug('Enabling bulk processing at max concurrency=%d...', concurrency);
+    debug('Buildink bulk load options...');
 
-    const loader = this._buildProcessor('load', bulk);
+    const loader = this._buildProcessor('load', bulkConfig);
 
     try {
-      const options = loader.buildLoadOptions();
-      const argsList = await loader.run({ options });
+      const argsList = await loader.run();
 
-      return Bluebird.map(
-        argsList,
-        async (args) => {
-          // TODO: create getCurrentConfig(category) -> use here and in _harvest()
-          const currentLoadConfig = load || this.config.load || this._fallbacks.load;
+      // TODO: create getCurrentConfig(category) -> use here and in _harvest()
+      const loadConfig = load || this.config.load || this._fallbacks.load;
+      const processorName = Object.keys(loadConfig)[0];
+      const optionsTemplate = loadConfig[processorName];
 
-          return this._harvest({
-            load: this._renderConfigTemplate({ config: currentLoadConfig, args }),
-            parse,
-            transform,
-          });
-        },
-        { concurrency },
-      );
+      const loadOptionsList = argsList.map(args => this._renderOptionsTemplate({
+        optionsTemplate,
+        args,
+      }));
+
+      debug('%d "%s" load config(s) rendered.', loadOptionsList.length, processorName);
+      debug(loadOptionsList);
+
+      return loadOptionsList;
     } catch (error) {
       this._formatError(error);
       throw error;
@@ -176,30 +199,29 @@ class JasonTheMiner {
   }
 
   /**
-   * Launches the whole process: (load > parse) * n -> transform
-   * TODO: think about "streaming", (load > parse > transform) * n
-   * @param  {Object} options
-   * @param  {Object} options.load
-   * @param  {Object} options.parse
-   * @param  {Object|Array} options.transform
+   * Launches the whole process: (load > parse) * m ---> transform * n
+   * @param  {Object} [options={}]
+   * @param  {Object} [options.load]
+   * @param  {Object} [options.parse]
+   * @param  {Object|Array} [options.transform]
+   * @param  {Array} [options.loadOptionsList]
    * @throws
-   * @return {Promise.<Object>}
+   * @return {Promise}
    */
-  async _harvest({ load, parse, transform }) {
+  async _harvest({
+    load,
+    parse,
+    transform,
+    loadOptionsList,
+  }) {
     debug('Harvesting...');
 
     const loader = this._buildProcessor('load', load);
     const parser = this._buildProcessor('parse', parse);
-
-    // TODO: create getCurrentConfig(category) -> use here and in harvest()
-    let transforms = transform || this.config.transform || this._fallbacks.transform || [];
-    if (transforms) {
-      transforms = Array.isArray(transforms) ? transforms : [transforms];
-    }
-    const transformers = transforms.map(t => this._buildProcessor('transform', t));
+    const transformers = this._buildTransformers(transform);
 
     try {
-      const parseResults = await this._crawl({ loader, parser });
+      const parseResults = await this._crawl({ loader, parser, loadOptionsList });
 
       let transformedResults = { results: parseResults };
       let transformParams = { parseResults, results: parseResults };
@@ -221,13 +243,24 @@ class JasonTheMiner {
   }
 
   /**
+   * @param  {Object|Array} transform
+   * @return {Array}
+   */
+  _buildTransformers(transform) {
+    // TODO: create getCurrentConfig(category) -> use here and in harvest()
+    let transforms = transform || this.config.transform || this._fallbacks.transform || [];
+    transforms = Array.isArray(transforms) ? transforms : [transforms];
+    return transforms.map(t => this._buildProcessor('transform', t));
+  }
+
+  /**
    * @param  {Loader} loader
    * @param  {Parser} parser
-   * @return {Promise.<Object>}
+   * @param  {Array} [options.loadOptionsList=[{}]]
+   * @return {Promise}
    */
-  async _crawl({ loader, parser }) {
+  async _crawl({ loader, parser, loadOptionsList = [{}] }) {
     const { concurrency = 1 } = loader.getConfig();
-    const paginationLinks = loader.buildPaginationLinks();
 
     const root = {
       id: 1,
@@ -236,9 +269,9 @@ class JasonTheMiner {
       children: {},
     };
 
-    const crawls = paginationLinks
-      .map(link => ({
-        link,
+    const crawls = loadOptionsList
+      .map(loadOptions => ({
+        loadOptions,
         parent: root,
         mergePath: [],
         level: 0,
@@ -277,7 +310,7 @@ class JasonTheMiner {
         currentCrawls,
         (async (crawl) => {
           const {
-            link,
+            loadOptions,
             schema,
             parent,
             mergePath,
@@ -286,12 +319,13 @@ class JasonTheMiner {
 
           const parserResult = await this._crawLink({
             loader,
-            link,
+            loadOptions,
             parser,
             schema,
           });
 
           return {
+            loader,
             parent,
             mergePath,
             parserResult,
@@ -308,22 +342,21 @@ class JasonTheMiner {
   }
 
   /**
-   * @param  {string} link
+   * @param  {Object} loadOptions
    * @param  {Loader} loader
    * @param  {Parser} parser
    * @param  {Object} schema
    * @return {Promise}
    */
   async _crawLink({
-    link,
+    loadOptions,
     loader,
     parser,
     schema,
   }) {
-    debug('Crawling "%s"...', link);
+    debug('Crawling...', loadOptions);
     try {
-      const options = loader.buildLoadOptions({ link });
-      const loadResult = await loader.run({ options });
+      const loadResult = await loader.run({ options: loadOptions });
       return parser.run({ data: loadResult, schema });
     } catch (error) {
       debug(error);
@@ -385,7 +418,7 @@ class JasonTheMiner {
    */
   // eslint-disable-next-line class-methods-use-this
   _getNextCrawls({ crawlResult, parent }) {
-    const { parserResult, level } = crawlResult;
+    const { loader, parserResult, level } = crawlResult;
     const { schema, follows, paginates } = parserResult;
 
     const filteredPaginates = paginates
@@ -401,7 +434,7 @@ class JasonTheMiner {
       } = follow;
 
       return {
-        link,
+        loadOptions: loader.buildLoadOptions({ link }),
         schema: !schemaPath.length ? schema : get(schema, schemaPath),
         parent,
         mergePath: parsedPath,
@@ -494,32 +527,37 @@ class JasonTheMiner {
   /**
    * TODO: create a lib and reuse it in all loaders
    * E.g.:
-      "http": {
+      {
         "baseURL": "https://github.com",
-        "url": "/search?l={language}&o=desc&q={query}
+        "url": "/search?l={language}&o=desc&q={query},
+        "_concurrency": 42
       }
       { language: 'JavaScript', query: 'scraper' }
       ->
-      "http": {
+      {
         "baseURL": "https://github.com",
         "url": "/search?l=JavaScript&o=desc&q=scraper
       }
-   * @param  {Object} config
+   * @param  {Object} optionsTemplate
    * @param  {Object} args
    * @return {Object}
    */
   // eslint-disable-next-line class-methods-use-this
-  _renderConfigTemplate({ config, args }) {
-    const processorName = Object.keys(config)[0];
-    const renderedConfig = { ...config[processorName] };
+  _renderOptionsTemplate({ optionsTemplate, args }) {
+    const renderedConfig = { ...optionsTemplate };
 
     Object.keys(renderedConfig).forEach((param) => {
+      if (param[0] === '_') {
+        delete renderedConfig[param];
+        return;
+      }
+
       Object.keys(args).forEach((arg) => {
         renderedConfig[param] = renderedConfig[param].replace(`{${arg}}`, args[arg]);
       });
     });
 
-    return { [processorName]: renderedConfig };
+    return renderedConfig;
   }
 
   /**

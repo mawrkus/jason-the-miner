@@ -1,9 +1,13 @@
 {
+  "bulk": {
+    "identity": {
+      "data": [{ "page": 1 }, { "page": 2 }, { "page": 3 }, { "page": 4 }]
+    }
+  },
   "load": {
-    "http": {
-      "baseURL": "https://github.com",
-      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories&p={1,4}",
-      "_concurrency": 2
+    "file": {
+      "path": "demos/data/in/github-search-p{page}.html",
+      "_concurrency": 3
     }
   },
   "parse": {
@@ -19,7 +23,7 @@
   },
   "transform": {
     "csv-file": {
-      "path": "demos/data/out/github-search-html-extended.csv",
+      "path": "demos/data/out/github-search-file-extended.csv",
       "csv": {
         "header": true,
         "delimiter": ";"

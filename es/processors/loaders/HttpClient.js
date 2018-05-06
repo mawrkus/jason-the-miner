@@ -8,7 +8,6 @@ const makeDir = require('make-dir');
 const get = require('lodash.get');
 const debug = require('debug')('jason:load:http');
 
-const REGEX_PAGINATION_EXP = /{(.+)}/;
 const REGEX_ABSOLUTE_LINK = /^https?:\/\//;
 
 const readFileAsync = promisify(fs.readFile);
@@ -120,42 +119,6 @@ class HttpClient {
   }
 
   /**
-   * Builds all the links defined by the pagination config.
-   * @return {Array}
-   */
-  buildPaginationLinks() {
-    const configUrl = this._httpConfig.url || '';
-
-    const matches = configUrl.match(REGEX_PAGINATION_EXP);
-    if (!matches) {
-      return [configUrl];
-    }
-
-    let [start, end] = matches[1].split(',').map(s => Number(s));
-
-    if (end === undefined) {
-      end = start;
-    } else if (Number.isNaN(end) || end < start) {
-      debug('Warning: invalid end value for pagination ("%s")! Forcing to %s.', end, start);
-      end = start;
-    }
-
-    debug('Building pagination from %d -> %d.', start, end);
-
-    const links = [];
-
-    while (start <= end) {
-      const url = configUrl.replace(REGEX_PAGINATION_EXP, start);
-      links.push(url);
-      start += 1;
-    }
-
-    debug(links);
-
-    return links;
-  }
-
-  /**
    * Builds new load options.
    * @param {string} link
    * @return {Object}
@@ -178,7 +141,7 @@ class HttpClient {
    * @param {Object} [options] Optional HTTP options.
    * @return {Promise}
    */
-  async run({ options }) {
+  async run({ options } = {}) {
     const httpConfig = { ...this._httpConfig, ...options };
     this._runs += 1;
 

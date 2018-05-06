@@ -13,50 +13,99 @@ const jason = new JasonTheMiner();
 jason.registerProcessor({ category: 'transform', name: 'tpl', processor: Templater });
 jason.registerHelper({ category: 'match', name: 'isAppStoreLink', helper: isAppStoreLink });
 
-/* eslint-disable no-console */
-
-const demoFiles = [
+const demos = [
   /* GitHub searches */
-  'file-html-json.json',
-  'file-html-csv.json',
-  'file-html-tpl.json',
-  'file-paginate-html-csv.json',
-  'http-paginate-html-csv.json',
-  'http-html-follow-x2-paginate-x2-json.json',
+  {
+    name: 'GitHub search from file (json output)',
+    file: 'file-html-json.json',
+  },
+  {
+    name: 'GitHub search from file (csv output)',
+    file: 'file-html-csv.json',
+  },
+  {
+    name: 'GitHub search from file (md output)',
+    file: 'file-html-tpl.json',
+  },
+  {
+    name: 'GitHub bulk search (queries from csv file)',
+    file: 'bulk-csv-http-html-paginate-json.json',
+  },
+  {
+    name: 'GitHub bulk search (static pagination)',
+    file: 'bulk-identity-file-html-csv.json',
+  },
+  {
+    name: 'Extended GitHub search with issues',
+    file: 'http-html-follow-x2-paginate-x2-json.json',
+  },
   /* Google search for apps */
-  'http-html-follow-json.json',
+  {
+    name: 'Google search for app stores links',
+    file: 'http-html-follow-json.json',
+  },
   /* Goodreads search for books */
-  'file-csv-json.json',
-  'http-html-follow-follow-json-csv-stdout.json',
+  {
+    name: 'CSV to JSON file conversion',
+    file: 'file-csv-json.json',
+  },
+  {
+    name: 'Goodreads books with Amazon ID',
+    file: 'http-html-follow-follow-json-csv-stdout.json',
+  },
   /* Imdb images */
-  'http-html-follow-paginate-json.json',
-  'http-html-download.json',
+  {
+    name: 'Imdb images gallery links',
+    file: 'http-html-follow-paginate-json.json',
+  },
+  {
+    name: 'Avatars download',
+    file: 'http-html-download.json',
+  },
   /* Misc */
-  // 'file-html-stdout.json',
-  // 'http-html-email.json',
-  // 'http-html-email-from-parse.json',
-  // 'http-html-json.json',
-  // 'identity-html-stdout.json',
+  /* {
+    name: 'Misc',
+    file: 'file-html-stdout.json',
+  },
+  {
+    name: 'Misc',
+    file: 'http-html-email.json',
+  },
+  {
+    name: 'Misc',
+    file: 'http-html-email-from-parse.json',
+  },
+  {
+    name: 'Misc',
+    file: 'http-html-json.json',
+  },
+  {
+    name: 'Misc',
+    file: 'identity-html-stdout.json',
+  }, */
 ];
 
-(async () => {
-  console.log('Jason the Miner demos suite ⛏⛏⛏');
+/* eslint-disable no-console */
 
+(async () => {
   const spinner = ora({ spinner: 'dots4' });
 
+  /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-restricted-syntax
-  for (const file of demoFiles) {
-    spinner.start().text = `Launching "${file}" demo...`;
+  for (const demo of demos) {
+    const { file, name } = demo;
+    spinner.start().text = `Launching "${name}" demo (${file})...`;
 
     const demoPath = path.join('demos/configs', file);
 
     try {
-      await jason.loadConfig(demoPath); // eslint-disable-line no-await-in-loop
-      await jason.harvest(); // eslint-disable-line no-await-in-loop
-      spinner.succeed();
+      await jason.loadConfig(demoPath);
+      await jason.harvest();
+      spinner.succeed(`"${name}" demo finished (${file}).`);
     } catch (error) {
       spinner.fail('Ooops! Something went wrong. :(');
       console.error(error);
     }
   }
+  /* eslint-enable no-await-in-loop */
 })();

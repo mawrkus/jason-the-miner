@@ -30,15 +30,6 @@ class NoOperationProcessor {
   }
 
   /**
-   * Builds all the links defined by the pagination config.
-   * @return {Array}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  buildPaginationLinks() {
-    return [];
-  }
-
-  /**
    * Builds new load options. Used for following/paginating.
    * @param {string} link
    * @return {Object}

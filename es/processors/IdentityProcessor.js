@@ -23,7 +23,7 @@ class IdentityProcessor {
    * @return {Promise}
    */
   // eslint-disable-next-line class-methods-use-this
-  async run({ data, results }) {
+  async run({ data, results } = {}) {
     const staticConfigData = this._config.data;
 
     if (staticConfigData) {
@@ -62,15 +62,6 @@ class IdentityProcessor {
    */
   getConfig() {
     return this._config;
-  }
-
-  /**
-   * Builds all the links defined by the pagination config.
-   * @return {Array}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  buildPaginationLinks() {
-    return ['*']; // Force Jason to do one crawl
   }
 
   /**

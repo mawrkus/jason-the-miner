@@ -6,33 +6,36 @@
         "columns": true,
         "delimiter": ","
       }
-    },
-    "concurrency": 2
+    }
   },
   "load": {
     "http": {
       "baseURL": "https://github.com",
-      "url": "/search?l={language}&o=desc&q={query}&s=stars&type=Repositories"
+      "url": "/search?l={language}&o=desc&q={query}&s=stars&type=Repositories",
+      "_cache": {
+        "_folder": "demos/data/out/cache"
+      },
+      "_concurrency": 2
     }
   },
   "parse": {
     "html": {
       "repos": [{
-        "_$": ".repo-list .repo-list-item",
+        "_$": ".repo-list .repo-list-item ? slice(0,1)",
         "language": "div:nth-child(2) | trim",
         "name": "h3 > a",
-        "description": "div:first-child > p | trim",
-        "stats": {
-          "stars": ".col-2.text-right > a | trim",
-          "last-update": "relative-time < attr(datetime)"
-        }
-      }]
+        "description": "div:first-child > p | trim"
+      }],
+      "_paginate": {
+        "_link": ".pagination > a[rel='next']",
+        "_slice": "0,1",
+        "_depth": 1
+      }
     }
   },
-  "transform": {
+  "__transform": {
     "csv-file": {
       "path": "demos/data/out/github-search-bulk.csv",
-      "append": true,
       "csv": {
         "header": true,
         "delimiter": ";"

@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - New bulk processor (TODO: update README)
 - New demos
 
+### Removed
+
+- Loaders: pagination templates (in `path` or `url`) have been removed in favor of the "bulk" processor config
+
 ### Changed
 
 - HTML parser: follow and paginate links have full support of matchers, extractors and filters
