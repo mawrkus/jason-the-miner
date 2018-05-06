@@ -12,9 +12,11 @@
   },
   "transform": {
     "csv-file": {
-      "_path": "demos/data/out/goodreads-books-transformed.csv",
-      "delimiter": ";",
-      "quoted": true
+      "path": "demos/data/out/goodreads-books-transformed.csv",
+      "csv": {
+        "delimiter": ";",
+        "quoted": true
+      }
     }
   }
 }

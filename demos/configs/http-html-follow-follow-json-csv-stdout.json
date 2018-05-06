@@ -38,9 +38,11 @@
     }
   },{
     "csv-file": {
-      "_path": "demos/data/out/goodreads-books.csv",
-      "_append": false,
-      "header": true
+      "path": "demos/data/out/goodreads-books.csv",
+      "append": false,
+      "csv": {
+        "header": true
+      }
     }
   }, {
     "stdout": true

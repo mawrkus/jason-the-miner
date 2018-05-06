@@ -18,9 +18,11 @@
   },
   "transform": {
     "csv-file": {
-      "_path": "demos/data/out/github-search-file-extended.csv",
-      "header": true,
-      "delimiter": ";"
+      "path": "demos/data/out/github-search-file-extended.csv",
+      "csv": {
+        "header": true,
+        "delimiter": ";"
+      }
     }
   }
 }

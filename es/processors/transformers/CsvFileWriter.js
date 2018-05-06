@@ -15,35 +15,24 @@ const appendFileAsync = promisify(fs.appendFile);
 class CsvFileWriter {
   /**
    * @param {Object} config The config object
-   * @param {*} config.*
-   * Keys prefixed with "_" will be used for the transformer's own configuration.
-   * Other keys will be used as csv-stringify options.
-   * @param {number} config._path
-   * @param {string} [config._encoding='utf8']
-   * @param {boolean} [config._append=false]
+   * @param {Object} config.csv csv-stringify options
+   * @param {number} config.path
+   * @param {string} [config.encoding='utf8']
+   * @param {boolean} [config.append=false]
    */
   constructor({ config }) {
-    this._csvConfig = {};
-    this._config = {};
-
-    Object.keys(config).forEach((key) => {
-      if (key[0] !== '_') {
-        this._csvConfig[key] = config[key];
-      } else {
-        this._config[key.slice(1)] = config[key];
-      }
-    });
-
     this._config = {
-      outputPath: path.join(process.cwd(), this._config.path),
       encoding: 'utf8',
       append: false,
-      ...this._config,
+      ...config,
+      outputPath: path.join(process.cwd(), config.path),
     };
 
     debug('CsvFileWriter instance created.');
-    debug('CSV config', this._csvConfig);
-    debug('config', this._config);
+    debug('CSV config', this._config.csv);
+    debug('path', this._config.path);
+    debug('encoding', this._config.encoding);
+    debug('append', this._config.append);
   }
 
   /**
@@ -58,7 +47,12 @@ class CsvFileWriter {
       return results;
     }
 
-    const { outputPath, encoding, append } = this._config;
+    const {
+      csv,
+      outputPath,
+      encoding,
+      append,
+    } = this._config;
 
     const rootKey = Object.keys(results)[0];
     const lines = results[rootKey];
@@ -66,7 +60,7 @@ class CsvFileWriter {
     debug('Writing %d lines to "%s" CSV file "%s"...', lines.length, encoding, outputPath);
 
     try {
-      const csvString = await csvStringifyAsync(lines, this._csvConfig);
+      const csvString = await csvStringifyAsync(lines, csv);
 
       if (append) {
         await appendFileAsync(outputPath, csvString, encoding);
