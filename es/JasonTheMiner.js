@@ -114,7 +114,7 @@ class JasonTheMiner {
       // eslint-disable-next-line global-require, import/no-dynamic-require
       const config = require(path.join(process.cwd(), configPath));
 
-      ['load', 'parse', 'transform']
+      ['bulk', 'load', 'parse', 'transform']
         .filter(category => !!config[category])
         .forEach((category) => {
           this.config[category] = Array.isArray(config[category]) ?
@@ -133,8 +133,6 @@ class JasonTheMiner {
   }
 
   /**
-   * Launches the whole process: (load > parse) * n -> transform
-   * TODO: think about "streaming", (load > parse > transform) * n
    * @param  {Object} [options={}] An optional config that can override the current one
    * @param  {Object} [options.load]
    * @param  {Object} [options.parse]
@@ -143,11 +141,57 @@ class JasonTheMiner {
    * @return {Promise.<Object>}
    */
   async harvest({ load, parse, transform } = {}) {
+    const { bulk } = this.config;
+    if (!bulk) {
+      return this._harvest({ load, parse, transform });
+    }
+
+    const { concurrency = 1 } = bulk;
+    debug('Enabling bulk processing at max concurrency=%d...', concurrency);
+
+    const loader = this._buildProcessor('load', bulk);
+
+    try {
+      const options = loader.buildLoadOptions();
+      const argsList = await loader.run({ options });
+
+      return Bluebird.map(
+        argsList,
+        async (args) => {
+          // TODO: create getCurrentConfig(category) -> use here and in _harvest()
+          const currentLoadConfig = load || this.config.load || this._fallbacks.load;
+
+          return this._harvest({
+            load: this._renderConfigTemplate({ config: currentLoadConfig, args }),
+            parse,
+            transform,
+          });
+        },
+        { concurrency },
+      );
+    } catch (error) {
+      this._formatError(error);
+      throw error;
+    }
+  }
+
+  /**
+   * Launches the whole process: (load > parse) * n -> transform
+   * TODO: think about "streaming", (load > parse > transform) * n
+   * @param  {Object} options
+   * @param  {Object} options.load
+   * @param  {Object} options.parse
+   * @param  {Object|Array} options.transform
+   * @throws
+   * @return {Promise.<Object>}
+   */
+  async _harvest({ load, parse, transform }) {
     debug('Harvesting...');
 
     const loader = this._buildProcessor('load', load);
     const parser = this._buildProcessor('parse', parse);
 
+    // TODO: create getCurrentConfig(category) -> use here and in harvest()
     let transforms = transform || this.config.transform || this._fallbacks.transform || [];
     if (transforms) {
       transforms = Array.isArray(transforms) ? transforms : [transforms];
@@ -155,7 +199,7 @@ class JasonTheMiner {
     const transformers = transforms.map(t => this._buildProcessor('transform', t));
 
     try {
-      const parseResults = await this._harvest({ loader, parser });
+      const parseResults = await this._crawl({ loader, parser });
 
       let transformedResults = { results: parseResults };
       let transformParams = { parseResults, results: parseResults };
@@ -181,7 +225,7 @@ class JasonTheMiner {
    * @param  {Parser} parser
    * @return {Promise.<Object>}
    */
-  async _harvest({ loader, parser }) {
+  async _crawl({ loader, parser }) {
     const { concurrency = 1 } = loader.getConfig();
     const paginationLinks = loader.buildPaginationLinks();
 
@@ -445,6 +489,37 @@ class JasonTheMiner {
     error.msg = error.msg || error.toString(); // eslint-disable-line no-param-reassign
 
     return error;
+  }
+
+  /**
+   * TODO: create a lib and reuse it in all loaders
+   * E.g.:
+      "http": {
+        "baseURL": "https://github.com",
+        "url": "/search?l={language}&o=desc&q={query}
+      }
+      { language: 'JavaScript', query: 'scraper' }
+      ->
+      "http": {
+        "baseURL": "https://github.com",
+        "url": "/search?l=JavaScript&o=desc&q=scraper
+      }
+   * @param  {Object} config
+   * @param  {Object} args
+   * @return {Object}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _renderConfigTemplate({ config, args }) {
+    const processorName = Object.keys(config)[0];
+    const renderedConfig = { ...config[processorName] };
+
+    Object.keys(renderedConfig).forEach((param) => {
+      Object.keys(args).forEach((arg) => {
+        renderedConfig[param] = renderedConfig[param].replace(`{${arg}}`, args[arg]);
+      });
+    });
+
+    return { [processorName]: renderedConfig };
   }
 
   /**

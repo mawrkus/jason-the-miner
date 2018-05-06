@@ -55,7 +55,7 @@ class CsvFileWriter {
     } = this._config;
 
     const rootKey = Object.keys(results)[0];
-    const lines = results[rootKey];
+    const lines = results[rootKey] || [];
 
     debug('Writing %d lines to "%s" CSV file "%s"...', lines.length, encoding, outputPath);
 
