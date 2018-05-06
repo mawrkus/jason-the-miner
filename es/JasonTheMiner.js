@@ -69,7 +69,6 @@ class JasonTheMiner {
     if (
       category === 'load' && (
         typeof processor.prototype.getConfig !== 'function' ||
-        typeof processor.prototype.buildPaginationLinks !== 'function' ||
         typeof processor.prototype.buildLoadOptions !== 'function'
       )
     ) {
