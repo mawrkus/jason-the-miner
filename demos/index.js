@@ -107,5 +107,10 @@ const demos = [
       console.error(error);
     }
   }
+
+  spinner.start().stopAndPersist({
+    symbol: '⛏ ',
+    text: 'Have a look at the demos/data/out folder.',
+  });
   /* eslint-enable no-await-in-loop */
 })();
