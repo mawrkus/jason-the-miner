@@ -198,6 +198,46 @@ class JasonTheMiner {
   }
 
   /**
+   * E.g.:
+      optionsTemplate = {
+        "baseURL": "https://github.com",
+        "url": "/search?l={language}&o=desc&q={query},
+        "_concurrency": 42
+      }
+      args = { language: 'JavaScript', query: 'scraper' }
+      ->
+      {
+        "baseURL": "https://github.com",
+        "url": "/search?l=JavaScript&o=desc&q=scraper
+      }
+   * @param  {Object} optionsTemplate
+   * @param  {Object} args
+   * @return {Object}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _renderOptionsTemplate({ optionsTemplate, args }) {
+    const renderedConfig = { ...optionsTemplate };
+
+    Object.keys(renderedConfig)
+      .forEach((param) => {
+        if (param[0] === '_') {
+          delete renderedConfig[param];
+          return;
+        }
+
+        if (typeof renderedConfig[param] !== 'string') {
+          return;
+        }
+
+        Object.keys(args).forEach((arg) => {
+          renderedConfig[param] = renderedConfig[param].replace(`{${arg}}`, args[arg]);
+        });
+      });
+
+    return renderedConfig;
+  }
+
+  /**
    * Launches the whole process: (load > parse) * m ---> transform * n
    * @param  {Object} [options={}]
    * @param  {Object} [options.load]
@@ -521,43 +561,6 @@ class JasonTheMiner {
     error.msg = error.msg || error.toString(); // eslint-disable-line no-param-reassign
 
     return error;
-  }
-
-  /**
-   * E.g.:
-      optionsTemplate = {
-        "baseURL": "https://github.com",
-        "url": "/search?l={language}&o=desc&q={query},
-        "_concurrency": 42
-      }
-      args = { language: 'JavaScript', query: 'scraper' }
-      ->
-      {
-        "baseURL": "https://github.com",
-        "url": "/search?l=JavaScript&o=desc&q=scraper
-      }
-   * @param  {Object} optionsTemplate
-   * @param  {Object} args
-   * @return {Object}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  _renderOptionsTemplate({ optionsTemplate, args }) {
-    const renderedConfig = { ...optionsTemplate };
-
-    Object.keys(renderedConfig)
-      .filter(param => typeof renderedConfig[param] === 'string')
-      .forEach((param) => {
-        if (param[0] === '_') {
-          delete renderedConfig[param];
-          return;
-        }
-
-        Object.keys(args).forEach((arg) => {
-          renderedConfig[param] = renderedConfig[param].replace(`{${arg}}`, args[arg]);
-        });
-      });
-
-    return renderedConfig;
   }
 
   /**
