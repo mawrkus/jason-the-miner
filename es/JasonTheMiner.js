@@ -524,14 +524,13 @@ class JasonTheMiner {
   }
 
   /**
-   * TODO: create a lib and reuse it in all loaders
    * E.g.:
-      {
+      optionsTemplate = {
         "baseURL": "https://github.com",
         "url": "/search?l={language}&o=desc&q={query},
         "_concurrency": 42
       }
-      { language: 'JavaScript', query: 'scraper' }
+      args = { language: 'JavaScript', query: 'scraper' }
       ->
       {
         "baseURL": "https://github.com",
@@ -545,16 +544,18 @@ class JasonTheMiner {
   _renderOptionsTemplate({ optionsTemplate, args }) {
     const renderedConfig = { ...optionsTemplate };
 
-    Object.keys(renderedConfig).forEach((param) => {
-      if (param[0] === '_') {
-        delete renderedConfig[param];
-        return;
-      }
+    Object.keys(renderedConfig)
+      .filter(param => typeof renderedConfig[param] === 'string')
+      .forEach((param) => {
+        if (param[0] === '_') {
+          delete renderedConfig[param];
+          return;
+        }
 
-      Object.keys(args).forEach((arg) => {
-        renderedConfig[param] = renderedConfig[param].replace(`{${arg}}`, args[arg]);
+        Object.keys(args).forEach((arg) => {
+          renderedConfig[param] = renderedConfig[param].replace(`{${arg}}`, args[arg]);
+        });
       });
-    });
 
     return renderedConfig;
   }
