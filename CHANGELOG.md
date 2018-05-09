@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.2.0] - 2018-05-xxx
+## [1.1.0] - 2018-05-xxx
 
 ### Added
 
@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - New "csv-file" loader
 - New "csv" parser
 - New HTML parse filter: "json-parse" (useful for parsing json-ld for instance)
-- New HTML parse extractor: "count", counts the number of elements matching the selector (needs an array schema definition)
+- New HTML parse extractor: "count" -> counts the number of elements matching the selector (needs an array schema definition)
 - New bulk processor
 - New demos
 
