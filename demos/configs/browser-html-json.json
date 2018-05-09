@@ -1,0 +1,37 @@
+{
+  "load": {
+    "browser": {
+      "launch": {
+        "executablePath": "path to Chrome executable",
+        "timeout": 10000
+      },
+      "goto": {
+        "url": "https://outweb.io/",
+        "options": {
+          "waitUntil": "networkidle0"
+        }
+      },
+      "screenshot": {
+        "path": "demos/data/out/pwas.png"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "categories": [{
+          "_$": ".media",
+          "name": ".media_title",
+          "apps": [{
+            "_$": ".media_bundle .media_item",
+            "name": ".media_item_name",
+            "icon": ".media_item_icon < attr(src)"
+          }]
+      }]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/pwas.json"
+    }
+  }
+}

@@ -64,6 +64,7 @@
     "nodemailer": "^2.6.4",
     "ora": "^2.1.0",
     "pad-left": "^2.1.0",
+    "puppeteer": "^1.4.0",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
