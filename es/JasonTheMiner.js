@@ -516,8 +516,6 @@ class JasonTheMiner {
       debug('No "%s" processor found with the name "%s"! Using fallback "%s".', category, processorName, fallbackName);
     }
 
-    debug('Building "%s" processor "%s"...', category, processorName || fallbackName);
-
     const processorConfig = config[processorName];
 
     return category === 'parse' ?
