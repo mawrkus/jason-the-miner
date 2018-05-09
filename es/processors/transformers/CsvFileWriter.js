@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
 const csvStringify = require('csv-stringify');
+const makeDir = require('make-dir');
 const debug = require('debug')('jason:transform:csv-file');
 
 const csvStringifyAsync = promisify(csvStringify);
@@ -54,12 +55,15 @@ class CsvFileWriter {
       append,
     } = this._config;
 
+    const outputFolder = path.dirname(outputPath);
     const rootKey = Object.keys(results)[0];
-    const lines = results[rootKey] || [];
-
-    debug('Writing %d lines to "%s" CSV file "%s"...', lines.length, encoding, outputPath);
+    const lines = Array.isArray(results) ? results : (results[rootKey] || []);
 
     try {
+      debug('Creating ouput folder "%s"...', outputFolder);
+      await makeDir(outputFolder);
+
+      debug('Writing %d lines to "%s" CSV file "%s"...', lines.length, encoding, outputPath);
       const csvString = await csvStringifyAsync(lines, csv);
 
       if (append) {

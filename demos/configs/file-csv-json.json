@@ -11,12 +11,8 @@
     }
   },
   "transform": {
-    "csv-file": {
-      "path": "demos/data/out/goodreads-books-transformed.csv",
-      "csv": {
-        "delimiter": ";",
-        "quoted": true
-      }
+    "json-file": {
+      "path": "demos/data/out/goodreads-books-transformed.json"
     }
   }
 }

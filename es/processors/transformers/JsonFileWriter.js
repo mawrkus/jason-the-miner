@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
+const makeDir = require('make-dir');
 const debug = require('debug')('jason:transform:json-file');
 
 const writeFileAsync = promisify(fs.writeFile);
@@ -31,19 +32,22 @@ class JsonFileWriter {
    */
   async run({ results }) {
     const { outputPath, encoding } = this._config;
-
-    debug('Writing "%s" JSON file "%s"...', encoding, outputPath);
-
-    const json = JSON.stringify(results);
+    const outputFolder = path.dirname(outputPath);
 
     try {
+      const json = JSON.stringify(results);
+
+      debug('Creating ouput folder "%s"...', outputFolder);
+      await makeDir(outputFolder);
+
+      debug('Writing "%s" JSON file "%s"...', encoding, outputPath);
       await writeFileAsync(outputPath, json, encoding);
+
+      debug('Wrote %d chars.', json.length);
     } catch (error) {
       debug('Error writing JSON file: %s!', error.message);
       throw error;
     }
-
-    debug('Wrote %d chars.', json.length);
 
     return { results, filePath: outputPath };
   }

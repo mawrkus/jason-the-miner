@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - CSV transformer: options are split between "csv" and other file-related options
 - E-mail transformer: options are split between "smtp" and "message"
 - All processors now received their configuration object within an object: { config }
+- CSV and JSON file writers try to create the output folder if it does not exist, before saving the file
 
 ## [1.0.1] - 2018-04-13
 
