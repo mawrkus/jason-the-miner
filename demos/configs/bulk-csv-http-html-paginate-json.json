@@ -33,13 +33,17 @@
       }
     }
   },
-  "transform": {
+  "transform": [{
     "csv-file": {
-      "path": "demos/data/out/github-search-bulk.csv",
+      "path": "demos/data/out/github-search-bulk-{language}.csv",
       "csv": {
         "header": true,
         "delimiter": ";"
       }
     }
-  }
+  }, {
+    "json-file": {
+      "path": "demos/data/out/github-search-bulk-{language}.json"
+    }
+  }]
 }

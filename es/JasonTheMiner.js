@@ -18,13 +18,14 @@ class JasonTheMiner {
    * Creates a new instance and registers the default processors and the default parse helpers.
    * @param  {Object} [options={}]
    * @param  {Object} [options.fallbacks] Fallback processors for each category, defaults to
-   * { load: 'identity', parse: 'identity', transform: 'identity' }
+   * { bulk: null, load: 'identity', parse: 'identity', transform: 'identity' }
    */
   constructor({ fallbacks = {} } = {}) {
     this._processors = { ...defaultProcessors };
     this._parseHelpers = { ...defaultParserHelpers };
 
     this._fallbacks = {
+      bulk: null,
       load: 'identity',
       parse: 'identity',
       transform: 'identity',
@@ -32,9 +33,10 @@ class JasonTheMiner {
     };
 
     this.config = {
-      load: {},
-      parse: {},
-      transform: {},
+      bulk: null,
+      load: null,
+      parse: null,
+      transform: null,
     };
 
     debug('A new miner is born, and his name is Jason!');
@@ -113,11 +115,11 @@ class JasonTheMiner {
       // eslint-disable-next-line global-require, import/no-dynamic-require
       const config = require(path.join(process.cwd(), configPath));
 
-      // we don't want old configs, especially if a bulk was previously defined
       this.config = {
-        load: {},
-        parse: {},
-        transform: {},
+        bulk: null,
+        load: null,
+        parse: null,
+        transform: null,
       };
 
       ['bulk', 'load', 'parse', 'transform']
@@ -139,128 +141,73 @@ class JasonTheMiner {
   }
 
   /**
-   * @param  {Object} [options={}] An optional config that can override the current one
+   * @param  {Object} [options={}] Optional configs that can override the current ones
+   * @param  {Object} [options.bulk]
    * @param  {Object} [options.load]
    * @param  {Object} [options.parse]
    * @param  {Object|Array} [options.transform]
    * @return {Promise}
    */
-  async harvest({ load, parse, transform } = {}) {
-    const { bulk: bulkConfig } = this.config;
+  async harvest(configs = {}) {
+    debug('Harvesting...');
 
-    const loadOptionsList = await this._buildBulkLoadOptions({ load, bulkConfig });
+    const currentConfigs = this._resolveConfigs(configs);
+    const { bulk } = currentConfigs;
 
-    return this._harvest({
-      load,
-      parse,
-      transform,
-      loadOptionsList,
-    });
-  }
-
-  /**
-   * @param  {Object} options
-   * @param  {Object} [options.load]
-   * @param  {Object} [options.bulkConfig]
-   * @throws
-   * @return {Promise}
-   */
-  async _buildBulkLoadOptions({ load, bulkConfig }) {
-    if (!bulkConfig) {
-      return undefined;
+    if (!bulk) {
+      return this._harvest(currentConfigs);
     }
 
-    debug('Buildink bulk load options...');
+    debug('Bulk harvesting...');
 
-    const loader = this._buildProcessor('load', bulkConfig);
+    const bulkLoader = this._buildProcessor('load', bulk);
+    const bulkParamsList = await bulkLoader.run();
 
-    try {
-      const argsList = await loader.run();
+    debug('%d set(s) of params loaded.', bulkParamsList.length);
+    debug(bulkParamsList);
 
-      // TODO: create getCurrentConfig(category) -> use here and in _harvest()
-      const loadConfig = load || this.config.load || this._fallbacks.load;
-      const processorName = Object.keys(loadConfig)[0];
-      const optionsTemplate = loadConfig[processorName];
+    const bulkConfigsList = bulkParamsList
+      .map(params => this._renderConfigs(currentConfigs, params));
 
-      const loadOptionsList = argsList.map(args => this._renderOptionsTemplate({
-        optionsTemplate,
-        args,
-      }));
+    const bulkIterationsCount = bulkConfigsList.length;
 
-      debug('%d "%s" load config(s) rendered.', loadOptionsList.length, processorName);
-      debug(loadOptionsList);
+    debug('%d config(s) rendered...', bulkIterationsCount);
+    debug(bulkConfigsList);
 
-      return loadOptionsList;
-    } catch (error) {
-      this._formatError(error);
-      throw error;
+    const bulkResults = [];
+    let remainingCount = bulkIterationsCount;
+
+    /* eslint-disable no-restricted-syntax, no-await-in-loop */
+    for (const bulkConfigs of bulkConfigsList) {
+      debug('%d bulk iteration(s) remaining...', remainingCount);
+
+      const results = await this._harvest(bulkConfigs);
+      bulkResults.push(results);
+
+      remainingCount -= 1;
     }
-  }
 
-  /**
-   * E.g.:
-      optionsTemplate = {
-        "baseURL": "https://github.com",
-        "url": "/search?l={language}&o=desc&q={query},
-        "_concurrency": 42
-      }
-      args = { language: 'JavaScript', query: 'scraper' }
-      ->
-      {
-        "baseURL": "https://github.com",
-        "url": "/search?l=JavaScript&o=desc&q=scraper
-      }
-   * @param  {Object} optionsTemplate
-   * @param  {Object} args
-   * @return {Object}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  _renderOptionsTemplate({ optionsTemplate, args }) {
-    const renderedConfig = { ...optionsTemplate };
-
-    Object.keys(renderedConfig)
-      .forEach((param) => {
-        if (param[0] === '_') {
-          delete renderedConfig[param];
-          return;
-        }
-
-        if (typeof renderedConfig[param] !== 'string') {
-          return;
-        }
-
-        Object.keys(args).forEach((arg) => {
-          renderedConfig[param] = renderedConfig[param].replace(`{${arg}}`, args[arg]);
-        });
-      });
-
-    return renderedConfig;
+    return bulkResults;
   }
 
   /**
    * Launches the whole process: (load > parse) * m ---> transform * n
-   * @param  {Object} [options={}]
-   * @param  {Object} [options.load]
-   * @param  {Object} [options.parse]
-   * @param  {Object|Array} [options.transform]
-   * @param  {Array} [options.loadOptionsList]
+   * @param  {Object} config
+   * @param  {Object} config.load
+   * @param  {Object} config.parse
+   * @param  {Object|Array} config.transform
    * @throws
    * @return {Promise}
    */
-  async _harvest({
-    load,
-    parse,
-    transform,
-    loadOptionsList,
-  }) {
-    debug('Harvesting...');
-
+  async _harvest({ load, parse, transform }) {
     const loader = this._buildProcessor('load', load);
     const parser = this._buildProcessor('parse', parse);
-    const transformers = this._buildTransformers(transform);
+
+    const transforms = Array.isArray(transform) ? transform : [transform];
+    const transformers = transforms.map(t => this._buildProcessor('transform', t));
 
     try {
-      const parseResults = await this._crawl({ loader, parser, loadOptionsList });
+      const parseResults = await this._crawl({ loader, parser });
 
       let transformedResults = { results: parseResults };
       let transformParams = { parseResults, results: parseResults };
@@ -279,17 +226,6 @@ class JasonTheMiner {
       this._formatError(error);
       throw error;
     }
-  }
-
-  /**
-   * @param  {Object|Array} transform
-   * @return {Array}
-   */
-  _buildTransformers(transform) {
-    // TODO: create getCurrentConfig(category) -> use here and in harvest()
-    let transforms = transform || this.config.transform || this._fallbacks.transform || [];
-    transforms = Array.isArray(transforms) ? transforms : [transforms];
-    return transforms.map(t => this._buildProcessor('transform', t));
   }
 
   /**
@@ -564,21 +500,15 @@ class JasonTheMiner {
   }
 
   /**
-   * Creates a new instance of a processor from a given category.
-   * If the processor cannot be created (because the configuration doesn't specify a processor
-   * previously registered), this function returns the fallback processor defined for each
-   * category.
    * @param  {string} category "load", "parse", "paginate" or "transform"
-   * @param  {Object} [config={}] An optional config that can override the current category config
+   * @param  {Object} [config]
    * @return {Object} processor
    */
   _buildProcessor(category, config = {}) {
-    const categoryProcessors = this._processors[category];
-    const categoryConfig = this.config[category] || {};
-    const processorName = Object.keys(config)[0] || Object.keys(categoryConfig)[0];
+    const processorName = Object.keys(config)[0];
     const fallbackName = this._fallbacks[category];
+    const categoryProcessors = this._processors[category];
     const Processor = categoryProcessors[processorName] || categoryProcessors[fallbackName];
-    const customConfig = { ...categoryConfig[processorName], ...config[processorName] };
 
     if (!processorName) {
       debug('No "%s" processor specified. Using fallback "%s".', category, fallbackName);
@@ -586,9 +516,109 @@ class JasonTheMiner {
       debug('No "%s" processor found with the name "%s"! Using fallback "%s".', category, processorName, fallbackName);
     }
 
+    debug('Building "%s" processor "%s"...', category, processorName || fallbackName);
+
+    const processorConfig = config[processorName];
+
     return category === 'parse' ?
-      new Processor({ config: customConfig, helpers: this._parseHelpers, category }) :
-      new Processor({ config: customConfig, category });
+      new Processor({ config: processorConfig, helpers: this._parseHelpers, category }) :
+      new Processor({ config: processorConfig, category });
+  }
+
+  /**
+   * @param  {Object} configs
+   * @param  {Object} [configs.bulk]
+   * @param  {Object} [configs.load]
+   * @param  {Object} [configs.parse]
+   * @param  {Object} [configs.transform]
+   * @return {Object}
+   */
+  _resolveConfigs(configs) {
+    debug('Resolving current configs...');
+
+    const currentConfigs = ['bulk', 'load', 'parse', 'transform']
+      .reduce(
+        (acc, category) => {
+          let config = configs[category];
+          if (config) {
+            debug(' -> using "%s" config passed as parameter.', category);
+            acc[category] = config;
+            return acc;
+          }
+
+          config = this.config[category];
+          if (config) {
+            debug('-> using "%s" config previously set.', category);
+            acc[category] = config;
+            return acc;
+          }
+
+          debug('-> no "%s" config passed or set.', category);
+          return acc;
+        },
+        {},
+      );
+
+    return currentConfigs;
+  }
+
+  /**
+    E.g.:
+      configs = {
+        "load": {
+          "baseURL": "https://github.com",
+          "url": "/search?l={language}&o=desc&q={query},
+          "_concurrency": 42
+        },
+        ...
+      }
+
+      params = [{ language: 'JavaScript', query: 'scraper' }]
+
+      --->
+
+      [{
+        "load": {
+          "baseURL": "https://github.com",
+          "url": "/search?l=JavaScript&o=desc&q=scraper
+        },
+        ...
+      }]
+   * @param  {Object} configs
+   * @param  {Object} [configs.bulk]
+   * @param  {Object} [configs.load]
+   * @param  {Object} [configs.parse]
+   * @param  {Object} [configs.transform]
+   * @param  {Object} params
+   * @return {Object[]}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _renderConfigs(configs, params) {
+    const renderedConfigs = ['load', 'parse', 'transform'].reduce(
+      (acc, category) => {
+        const sourceConfig = configs[category];
+        const destConfig = Array.isArray(sourceConfig) ? [] : {};
+
+        acc[category] = mergeWith(
+          destConfig,
+          sourceConfig,
+          // eslint-disable-next-line consistent-return
+          (destValue, srcValue) => {
+            if (typeof srcValue === 'string') {
+              return Object.keys(params).reduce(
+                (renderedString, param) => renderedString.replace(`{${param}}`, params[param]),
+                srcValue,
+              );
+            }
+          },
+        );
+
+        return acc;
+      },
+      {},
+    );
+
+    return renderedConfigs;
   }
 }
 
