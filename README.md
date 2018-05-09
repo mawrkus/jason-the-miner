@@ -151,7 +151,7 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 
 ### Loaders
 
-Jason the Miner comes with 4 built-in loaders:
+Jason the Miner comes with 5 built-in loaders:
 
 | Name | Description | Options |
 | --- |---| --- |
