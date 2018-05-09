@@ -9,7 +9,7 @@ class IdentityProcessor {
    * @param  {Object} config.data
    */
   constructor({ config, category }) {
-    this._config = config;
+    this._config = config || {};
     this._category = category;
     debug('IdentityProcessor instance created.');
     debug('config', config);
