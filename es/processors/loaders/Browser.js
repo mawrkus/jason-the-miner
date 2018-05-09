@@ -49,9 +49,13 @@ class Browser {
   // eslint-disable-next-line class-methods-use-this
   async run({ options } = {}) {
     const runConfig = { ...this._config, ...options };
-    const { launch, goto, screenshot } = runConfig;
+    const {
+      launch,
+      goto,
+      screenshot,
+      pdf,
+    } = runConfig;
     const { url, options: gotoOptions } = goto;
-    const { path: screenshotPath } = screenshot;
 
     debug('Starting browser...');
     debug(launch);
@@ -65,13 +69,23 @@ class Browser {
     await page.goto(url, gotoOptions);
 
     if (screenshot) {
-      const screenshotFolder = path.dirname(screenshotPath);
+      const screenshotFolder = path.dirname(screenshot.path);
       debug('Creating screenshot folder "%s"...', screenshotFolder);
       await makeDir(screenshotFolder);
 
-      debug('Saving screenshot to "%s"...', screenshotPath);
+      debug('Saving screenshot to "%s"...', screenshot.path);
       debug(screenshot);
-      await page.screenshot({ path: screenshotPath });
+      await page.screenshot(screenshot);
+    }
+
+    if (pdf) {
+      const pdfFolder = path.dirname(pdf.path);
+      debug('Creating pdf folder "%s"...', pdfFolder);
+      await makeDir(pdfFolder);
+
+      debug('Saving pdf to "%s"...', pdf.path);
+      debug(pdf);
+      await page.pdf(pdf);
     }
 
     debug('Fetching content...');

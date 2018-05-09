@@ -156,7 +156,7 @@ Jason the Miner comes with 5 built-in loaders:
 | Name | Description | Options |
 | --- |---| --- |
 | `http` | Uses [axios](https://github.com/mzabriskie/axios) as HTTP client | All [axios](https://github.com/mzabriskie/axios) request options + `[_concurrency=1]` (to limit the number of concurrent requests when following/paginating) &  `[_cache]` (to cache responses on the file system) |
-| `browser` | Uses [puppeteer](https://github.com/GoogleChrome/puppeteer) as browser | [puppeteer](https://github.com/GoogleChrome/puppeteer) `launch`, `goto`and `screenshot` options |
+| `browser` | Uses [puppeteer](https://github.com/GoogleChrome/puppeteer) as browser | [puppeteer](https://github.com/GoogleChrome/puppeteer) `launch`, `goto`, `screenshot` and `pdf` options |
 | `file` | Reads the content of a file | `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]` (to limit the number of concurrent requests when paginating) |
 | `csv-file` | Uses [csv-parse](https://github.com/adaltas/node-csv-parse) to read a CSV file | All [csv-parse](http://csv.adaltas.com/parse) options in a `csv` object + `path`+ `[encoding="utf8"]` |
 | `stdin` | Reads the content from the standard input | `[encoding="utf8"]` |
