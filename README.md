@@ -201,13 +201,13 @@ Currently, Jason the Miner comes with a 2 built-in parsers:
     // Collection of values
     "repos": [".repo-list .repo-list-item h3 > a"]
 
-    // Object
+    // Single object
     "repo": {
       "name": ".repo-list .repo-list-item h3 > a",
       "description": ".repo-list .repo-list-item div:first-child"
     }
 
-    // Object, providing a root selector _$
+    // Single object, providing a root selector _$
     "repo": {
       "_$": ".repo-list .repo-list-item",
       "name": "h3 > a",
@@ -399,7 +399,17 @@ Jason supports a single transformer or an array of transformers:
       "_concurrency": 2
     }
   },
-  ...
+  "parse": {
+    "html": {
+      "title": "< text(Best {language} repos)",
+      "repos": [".repo-list .repo-list-item h3 > a"]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "./github-repos-{language}.json"
+    }
+  }  
 }
 ```
 
@@ -418,12 +428,14 @@ Python,scraper
 `fallbacks` defines which processor to use when not explicitly configured (or missing in the config file):
 - `load`: 'identity',
 - `parse`: 'identity',
-- `transform`: 'identity'
+- `transform`: 'identity',
+- `bulk`: null
 
 The fallbacks change when using the CLI (see `bin/jason-the-miner.js`):
 - `load`: 'stdin',
 - `parse`: 'html',
-- `transform`: 'stdout'
+- `transform`: 'stdout',
+- `bulk`: null
 
 ### loadConfig(configFile)
 
@@ -433,7 +445,7 @@ Loads a config from a JSON or JS file.
 jason.loadConfig('./harvest-me.json');
 ```
 
-### harvest({ load, parse, output, pagination } = {})
+### harvest({ bulk, load, parse, transform } = {})
 
 Launches the harvesting process:
 
@@ -459,7 +471,7 @@ jason
   .catch(error => console.error(error));
 ```
 
-To permanently override the current config, you can directly modify Jason's `config` property:
+To permanently override the current config, you can modify Jason's `config` property:
 
 ```js
 const allResults = [];

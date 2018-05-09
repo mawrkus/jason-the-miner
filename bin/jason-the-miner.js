@@ -28,6 +28,7 @@ const JasonTheMiner = require('..'); // must be AFTER setting the DEBUG environm
 
 const jason = new JasonTheMiner({
   fallbacks: {
+    bulk: null,
     load: 'stdin',
     parse: 'html',
     transform: 'stdout',
