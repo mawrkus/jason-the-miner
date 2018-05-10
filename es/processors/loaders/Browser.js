@@ -54,6 +54,7 @@ class Browser {
       goto,
       screenshot,
       pdf,
+      evaluate,
     } = runConfig;
     const { url, options: gotoOptions } = goto;
 
@@ -88,14 +89,19 @@ class Browser {
       await page.pdf(pdf);
     }
 
-    debug('Fetching content...');
+    if (evaluate) {
+      debug('Evaluating function...');
+      debug(evaluate);
+      return page.evaluate(evaluate);
+    }
+
+    debug('Fetching HTML...');
     const html = await page.content();
 
     debug('Closing browser...');
     await browser.close();
 
     debug('%d byte(s) of HTML read.', html ? html.length : 0);
-
     return html;
   }
 }
