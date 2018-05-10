@@ -89,20 +89,22 @@ class Browser {
       await page.pdf(pdf);
     }
 
+    let result;
+
     if (evaluate) {
       debug('Evaluating function...');
       debug(evaluate);
-      return page.evaluate(evaluate);
+      result = await page.evaluate(evaluate);
+    } else {
+      debug('Fetching HTML...');
+      result = await page.content();
+      debug('%d byte(s) of HTML read.', result ? result.length : 0);
     }
-
-    debug('Fetching HTML...');
-    const html = await page.content();
 
     debug('Closing browser...');
     await browser.close();
 
-    debug('%d byte(s) of HTML read.', html ? html.length : 0);
-    return html;
+    return result;
   }
 }
 
