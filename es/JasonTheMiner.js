@@ -56,6 +56,8 @@ class JasonTheMiner {
    * @param  {Processor} options.processor A processor class
    */
   registerProcessor({ category, name, processor }) {
+    debug('Registering new "%s" processor "%s"...', category, name);
+
     if (!['load', 'parse', 'transform'].includes(category)) {
       throw new Error(`Unknown processor category "${category}"!`);
     }
@@ -65,7 +67,7 @@ class JasonTheMiner {
     }
 
     if (typeof processor.prototype.run !== 'function') {
-      throw new TypeError(`Invalid "${category}" processor "${name}"! Missing method.`);
+      throw new TypeError(`Invalid "${category}" processor "${name}"! Missing "run()" method.`);
     }
 
     if (
@@ -74,7 +76,7 @@ class JasonTheMiner {
         typeof processor.prototype.buildLoadOptions !== 'function'
       )
     ) {
-      throw new TypeError(`Invalid "load" processor "${name}"! Missing method.`);
+      throw new TypeError(`Invalid "load" processor "${name}"! Missing "getConfig()" and/or "buildLoadOptions()" method(s).`);
     }
 
     this._processors[category][name] = processor;
@@ -91,6 +93,8 @@ class JasonTheMiner {
    * folder for examples
    */
   registerHelper({ category, name, helper }) {
+    debug('Registering new "%s" helper "%s"...', category, name);
+
     if (typeof helper !== 'function') {
       throw new TypeError(`Invalid helper "${name}"! Function expected.`);
     }
@@ -209,6 +213,8 @@ class JasonTheMiner {
     try {
       const parseResults = await this._crawl({ loader, parser });
 
+      debug('Transforming results...');
+
       let transformedResults = { results: parseResults };
       let transformParams = { parseResults, results: parseResults };
 
@@ -220,6 +226,8 @@ class JasonTheMiner {
       /* eslint-enable no-restricted-syntax, no-await-in-loop */
 
       delete transformedResults.parseResults;
+
+      debug('Finished transforming results.');
 
       return transformedResults;
     } catch (error) {
@@ -314,6 +322,8 @@ class JasonTheMiner {
 
       debug('Found %d more link(s) to crawl.', currentCrawls.length);
     } while (currentCrawls.length);
+
+    debug('Finished crawling.');
   }
 
   /**
