@@ -11,13 +11,11 @@
           "waitUntil": "networkidle0"
         }
       },
-      "screenshot": {
-        "path": "demos/data/out/pwas.png"
-      },
-      "pdf": {
-        "path": "demos/data/out/pwas.pdf",
-        "format": "A4"
-      }
+      "actions": [{
+        "screenshot": [{ "path": "demos/data/out/pwas.png" }],
+        "pdf": [{ "path": "demos/data/out/pwas.pdf", "format": "A4" }],
+        "content": []
+      }]
     }
   },
   "parse": {

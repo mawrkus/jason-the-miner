@@ -1,7 +1,5 @@
-const path = require('path');
 const puppeteer = require('puppeteer');
 const get = require('lodash.get');
-const makeDir = require('make-dir');
 const debug = require('debug')('jason:load:browser');
 
 /**
@@ -74,15 +72,10 @@ class Browser {
 
       if (actions) {
         debug('%d page action(s) to execute.', actions.length);
-        await this._executePageActions({ page, actions });
-      }
-
-      if (evaluate) {
-        debug('Evaluating function...');
-        debug(evaluate);
-        result = await page.evaluate(evaluate);
+        result = await this._executePageActions({ page, actions });
+        debug('All %d page action(s) executed, returning last result.', actions.length);
       } else {
-        debug('Fetching HTML...');
+        debug('Default action: fetching HTML...');
         result = await page.content();
         debug('%d byte(s) of HTML read.', result ? result.length : 0);
       }
@@ -105,30 +98,29 @@ class Browser {
    */
   // eslint-disable-next-line class-methods-use-this
   async _executePageActions({ page, actions }) {
+    let result;
+
     /* eslint-disable no-restricted-syntax, no-await-in-loop */
     for (const action of actions) {
       const actionPath = Object.keys(action)[0];
-      const actionParams = action[actionPath];
+      const actionParams = action[actionPath] || [];
       const pageMethod = get(page, actionPath);
 
       if (typeof pageMethod === 'function') {
-        debug('Executing "%s" page action...', actionPath);
+        debug('Executing "%s"...', actionPath);
         debug(actionParams);
-
-        if (actionParams.path) {
-          const folder = path.dirname(actionParams.path);
-          debug('Creating folder "%s"...', folder);
-          await makeDir(folder);
-        }
 
         const actionPathParts = actionPath.split('.');
         const methodObject = actionPathParts.length > 1 ? page[actionPathParts[0]] : page;
 
-        await pageMethod.apply(methodObject, actionParams);
+        result = await pageMethod.apply(methodObject, actionParams);
+        debug(result);
       } else {
         debug('Unknown "%s" page action, skipping.', action);
       }
     }
+
+    return result;
   }
 }
 
