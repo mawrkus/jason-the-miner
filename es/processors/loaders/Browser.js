@@ -1,5 +1,6 @@
 const path = require('path');
 const puppeteer = require('puppeteer');
+const get = require('lodash.get');
 const makeDir = require('make-dir');
 const debug = require('debug')('jason:load:browser');
 
@@ -14,10 +15,12 @@ class Browser {
    * @param {Object} config.goto Page "goto" options
    * @param {Object} config.screenshot Page "screenshot" options
    */
-  constructor({ config }) {
+  constructor({ config = {} }) {
     this._config = {
       ...config,
     };
+
+    this._browser = null;
 
     debug('Browser instance created.');
     debug('config', this._config);
@@ -46,65 +49,86 @@ class Browser {
    * @param {Object} [options] Optional read options.
    * @return {Promise}
    */
-  // eslint-disable-next-line class-methods-use-this
   async run({ options } = {}) {
     const runConfig = { ...this._config, ...options };
     const {
       launch,
       goto,
-      screenshot,
-      pdf,
+      actions,
       evaluate,
     } = runConfig;
-    const { url, options: gotoOptions } = goto;
 
     debug('Starting browser...');
     debug(launch);
-    const browser = await puppeteer.launch(launch);
-
-    debug('Opening new page...');
-    const page = await browser.newPage();
-
-    debug('Navigating to "%s"...', url);
-    debug(gotoOptions);
-    await page.goto(url, gotoOptions);
-
-    if (screenshot) {
-      const screenshotFolder = path.dirname(screenshot.path);
-      debug('Creating screenshot folder "%s"...', screenshotFolder);
-      await makeDir(screenshotFolder);
-
-      debug('Saving screenshot to "%s"...', screenshot.path);
-      debug(screenshot);
-      await page.screenshot(screenshot);
-    }
-
-    if (pdf) {
-      const pdfFolder = path.dirname(pdf.path);
-      debug('Creating pdf folder "%s"...', pdfFolder);
-      await makeDir(pdfFolder);
-
-      debug('Saving pdf to "%s"...', pdf.path);
-      debug(pdf);
-      await page.pdf(pdf);
-    }
+    this._browser = await puppeteer.launch(launch);
 
     let result;
 
-    if (evaluate) {
-      debug('Evaluating function...');
-      debug(evaluate);
-      result = await page.evaluate(evaluate);
-    } else {
-      debug('Fetching HTML...');
-      result = await page.content();
-      debug('%d byte(s) of HTML read.', result ? result.length : 0);
+    try {
+      debug('Opening new page...');
+      const page = await this._browser.newPage();
+
+      debug('Navigating to "%s"...', goto.url);
+      debug(goto.options);
+      await page.goto(goto.url, goto.options);
+
+      if (actions) {
+        debug('%d page action(s) to execute.', actions.length);
+        await this._executePageActions({ page, actions });
+      }
+
+      if (evaluate) {
+        debug('Evaluating function...');
+        debug(evaluate);
+        result = await page.evaluate(evaluate);
+      } else {
+        debug('Fetching HTML...');
+        result = await page.content();
+        debug('%d byte(s) of HTML read.', result ? result.length : 0);
+      }
+    } catch (error) {
+      debug('Error loading page: %s!', error.message);
+      this._browser.close();
+      throw error;
     }
 
     debug('Closing browser...');
-    await browser.close();
+    await this._browser.close();
 
     return result;
+  }
+
+  /**
+   * @param  {BrowserPage} page
+   * @param  {Object[]} actions
+   * @return {Promise}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  async _executePageActions({ page, actions }) {
+    /* eslint-disable no-restricted-syntax, no-await-in-loop */
+    for (const action of actions) {
+      const actionPath = Object.keys(action)[0];
+      const actionParams = action[actionPath];
+      const pageMethod = get(page, actionPath);
+
+      if (typeof pageMethod === 'function') {
+        debug('Executing "%s" page action...', actionPath);
+        debug(actionParams);
+
+        if (actionParams.path) {
+          const folder = path.dirname(actionParams.path);
+          debug('Creating folder "%s"...', folder);
+          await makeDir(folder);
+        }
+
+        const actionPathParts = actionPath.split('.');
+        const methodObject = actionPathParts.length > 1 ? page[actionPathParts[0]] : page;
+
+        await pageMethod.apply(methodObject, actionParams);
+      } else {
+        debug('Unknown "%s" page action, skipping.', action);
+      }
+    }
   }
 }
 

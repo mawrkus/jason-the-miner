@@ -1,0 +1,33 @@
+{
+  "load": {
+    "browser": {
+      "launch": {
+        "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "timeout": 10000
+      },
+      "goto": {
+        "url": "https://www.salarazzmatazz.com/en/agenda",
+        "options": {
+          "waitUntil": "load"
+        }
+      },
+      "actions": [{
+        "click": [".search-btn"]
+      }, {
+        "click": ["form > input[name='search']"]
+      }, {
+        "keyboard.type": ["Psychedelic", { "delay": 75 }]
+      }, {
+        "screenshot": [{ "path": "demos/data/out/events-search.png" }]
+      }, {
+        "pdf": [{ "path": "demos/data/out/events-search.pdf", "format": "A4" }]
+      }]
+    }
+  },
+  "parse": {
+    "noop": true
+  },
+  "transform": {
+    "noop": true
+  }
+}
