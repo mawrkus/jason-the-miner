@@ -18,7 +18,7 @@ class CsvFileLoader {
    * @param {number} [config.encoding='utf8']
    * @param {Object} config.csv csv-stringify options
    */
-  constructor({ config }) {
+  constructor({ config = {} }) {
     this._config = {
       basePath: process.cwd(),
       encoding: 'utf8',

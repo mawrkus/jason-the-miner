@@ -12,8 +12,8 @@ class CsvParser {
   /**
    * @param  {Object} config csv-parse options
    */
-  constructor({ config }) {
-    this._config = config || {};
+  constructor({ config = {} }) {
+    this._config = config;
     debug('CsvParser instance created.');
     debug('config', this._config);
   }

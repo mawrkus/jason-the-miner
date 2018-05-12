@@ -26,7 +26,7 @@ class HttpClient {
    * @param {number} [config._concurrency=1] The concurrency limit when following links and/or
    * paginating.
    */
-  constructor({ config }) {
+  constructor({ config = {} }) {
     this._httpConfig = {};
     this._config = {};
 

@@ -8,7 +8,7 @@ class StdinReader {
    * @param {Object} config
    * @param {string} [config.encoding='utf8']
    */
-  constructor({ config }) {
+  constructor({ config = {} }) {
     this._config = { encoding: config.encoding || 'utf8' };
     debug('StdinReader instance created.');
     debug('config', this._config);

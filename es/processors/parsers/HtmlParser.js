@@ -38,7 +38,7 @@ class HtmlParser {
    * @param  {Object} helpers.extract A set of extractors
    * @param  {Object} helpers.filter A set of filters
    */
-  constructor({ config, helpers }) {
+  constructor({ config = {}, helpers = {} }) {
     this._schema = config || {};
     this._helpers = helpers;
     this._$ = cheerio;

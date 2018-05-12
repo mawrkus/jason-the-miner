@@ -14,7 +14,7 @@ class Emailer {
    * @param {string} config.message.subject
    * @param {*} ... See the "nodemailer" package for all possible options.
    */
-  constructor({ config }) {
+  constructor({ config = {} }) {
     this._config = {
       smtp: {},
       message: {},

@@ -21,7 +21,7 @@ class CsvFileWriter {
    * @param {string} [config.encoding='utf8']
    * @param {boolean} [config.append=false]
    */
-  constructor({ config }) {
+  constructor({ config = {} }) {
     this._config = {
       encoding: 'utf8',
       append: false,

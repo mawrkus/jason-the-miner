@@ -225,7 +225,10 @@ class JasonTheMiner {
       }
       /* eslint-enable no-restricted-syntax, no-await-in-loop */
 
-      delete transformedResults.parseResults;
+      // Prevent NoOp transformer to make it fail
+      if (transformedResults) {
+        delete transformedResults.parseResults;
+      }
 
       debug('Finished transforming results.');
 
@@ -366,28 +369,31 @@ class JasonTheMiner {
     let allNextCrawls = [];
     const nodesToMerge = [];
 
-    crawlResults.forEach((crawlResult) => {
-      const { parent, mergePath, parserResult } = crawlResult;
-      const { result } = parserResult;
+    crawlResults
+      // Prevent NoOp parser to make it fail
+      .filter(({ parseResults }) => Boolean(parseResults))
+      .forEach((crawlResult) => {
+        const { parent, mergePath, parserResult } = crawlResult;
+        const { result } = parserResult;
 
-      const id = uuid();
-      const newNode = {
-        id,
-        parent,
-        mergePath,
-        result,
-        children: {},
-      };
-      parent.children[id] = newNode;
+        const id = uuid();
+        const newNode = {
+          id,
+          parent,
+          mergePath,
+          result,
+          children: {},
+        };
+        parent.children[id] = newNode;
 
-      const nextCrawls = this._getNextCrawls({ crawlResult, parent: newNode });
+        const nextCrawls = this._getNextCrawls({ crawlResult, parent: newNode });
 
-      if (nextCrawls.length) {
-        allNextCrawls = [...allNextCrawls, ...nextCrawls];
-      } else {
-        nodesToMerge.push(newNode);
-      }
-    });
+        if (nextCrawls.length) {
+          allNextCrawls = [...allNextCrawls, ...nextCrawls];
+        } else {
+          nodesToMerge.push(newNode);
+        }
+      });
 
     // as the merging process depends on the total number of children of a given node,
     // this must be done here, after adding all leaf nodes
