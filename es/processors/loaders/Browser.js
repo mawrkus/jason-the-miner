@@ -53,7 +53,6 @@ class Browser {
       launch,
       goto,
       actions,
-      evaluate,
     } = runConfig;
 
     debug('Starting browser...');
