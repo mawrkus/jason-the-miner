@@ -30,11 +30,11 @@ class HttpClient {
     this._httpConfig = {};
     this._config = {};
 
-    Object.keys(config).forEach((key) => {
+    Object.entries(config).forEach(([key, value]) => {
       if (key[0] !== '_') {
-        this._httpConfig[key] = config[key];
+        this._httpConfig[key] = value;
       } else {
-        this._config[key.slice(1)] = config[key];
+        this._config[key.slice(1)] = value;
       }
     });
 
@@ -49,8 +49,8 @@ class HttpClient {
     if (this._config.cache) {
       const cacheConfig = this._config.cache;
 
-      Object.keys(cacheConfig).forEach((key) => {
-        cacheConfig[key.slice(1)] = cacheConfig[key];
+      Object.entries(cacheConfig).forEach(([key, value]) => {
+        cacheConfig[key.slice(1)] = value;
         delete cacheConfig[key];
       });
 

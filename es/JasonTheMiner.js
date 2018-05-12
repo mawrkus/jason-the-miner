@@ -575,20 +575,20 @@ class JasonTheMiner {
       configs = {
         "load": {
           "baseURL": "https://github.com",
-          "url": "/search?l={language}&o=desc&q={query},
+          "url": "/search?l={language}&o=desc&q={query}",
           "_concurrency": 42
         },
         ...
       }
 
-      params = [{ language: 'JavaScript', query: 'scraper' }]
+      params = { language: 'JavaScript', query: 'scraper' }
 
       --->
 
       [{
         "load": {
           "baseURL": "https://github.com",
-          "url": "/search?l=JavaScript&o=desc&q=scraper
+          "url": "/search?l=JavaScript&o=desc&q=scraper"
         },
         ...
       }]
@@ -613,8 +613,8 @@ class JasonTheMiner {
           // eslint-disable-next-line consistent-return
           (destValue, srcValue) => {
             if (typeof srcValue === 'string') {
-              return Object.keys(params).reduce(
-                (renderedString, param) => renderedString.replace(`{${param}}`, params[param]),
+              return Object.entries(params).reduce(
+                (renderedString, [param, value]) => renderedString.replace(`{${param}}`, value),
                 srcValue,
               );
             }
