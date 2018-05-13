@@ -371,7 +371,7 @@ class JasonTheMiner {
 
     crawlResults
       // Prevent NoOp parser to make it fail
-      .filter(({ parseResults }) => Boolean(parseResults))
+      .filter(({ parserResult }) => Boolean(parserResult))
       .forEach((crawlResult) => {
         const { parent, mergePath, parserResult } = crawlResult;
         const { result } = parserResult;
