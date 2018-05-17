@@ -64,7 +64,7 @@ class FileDownloader {
     }
 
     const rootKey = Object.keys(results)[0];
-    const downloads = results[rootKey];
+    const downloads = Array.isArray(results) ? results : (results[rootKey] || []);
     const { parseKey, concurrency } = this._config;
 
     const urls = parseKey ? downloads.filter(d => d[parseKey]).map(d => d[parseKey]) : downloads;

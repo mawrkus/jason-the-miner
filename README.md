@@ -36,12 +36,13 @@ $ npm run demos
 
 ...and have a look at the "demos" folder, among them, you'll find:
 
-- Simple GitHub search (json, csv or md output)
-- Extended GitHub search with issues (including following links & paginating)
+- Simple GitHub search (json, csv or markdown output)
+- Extended GitHub search with issues (including following links & paginating issues)
 - Google search and following links for finding mobile apps
 - Goodreads books and following to Amazon to grab their product ID
 - Imdb images gallery links
 - Avatars download
+- Bulk insertions to Elasticsearch
 
 ## ⛏ Examples
 
@@ -410,7 +411,7 @@ Jason supports a single transformer or an array of transformers:
     "json-file": {
       "path": "./github-repos-{language}.json"
     }
-  }  
+  }
 }
 ```
 

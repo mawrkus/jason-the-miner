@@ -3,15 +3,29 @@
 const path = require('path');
 const ora = require('ora');
 
-const Templater = require('./processors/transformers/Templater');
 const isAppStoreLink = require('./processors/parsers/helpers/matchers/isAppStoreLink');
+const Templater = require('./processors/transformers/Templater');
+const EsBulkInserter = require('./processors/transformers/EsBulkInserter');
 
 const JasonTheMiner = require('..');
 
 const jason = new JasonTheMiner();
 
-jason.registerProcessor({ category: 'transform', name: 'tpl', processor: Templater });
-jason.registerHelper({ category: 'match', name: 'isAppStoreLink', helper: isAppStoreLink });
+jason.registerHelper({
+  category: 'match',
+  name: 'isAppStoreLink',
+  helper: isAppStoreLink,
+});
+jason.registerProcessor({
+  category: 'transform',
+  name: 'tpl',
+  processor: Templater,
+});
+jason.registerProcessor({
+  category: 'transform',
+  name: 'es-bulk-inserter',
+  processor: EsBulkInserter,
+});
 
 const demos = [
   /* GitHub searches */
@@ -61,6 +75,11 @@ const demos = [
   {
     name: 'Avatars download',
     file: 'http-html-download.json',
+  },
+  /* Elasticsearch bulk insertion */
+  {
+    name: 'Elasticsearch blog posts',
+    file: 'csv-identity-es-bulk.json',
   },
   /* Misc */
   /* {

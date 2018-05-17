@@ -234,7 +234,8 @@ class JasonTheMiner {
 
       return transformedResults;
     } catch (error) {
-      this._formatError(error);
+      debug('Error while harvesting!');
+      debug(error);
       throw error;
     }
   }
