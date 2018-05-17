@@ -13,7 +13,7 @@ class Browser {
    * @param {Object} config.goto Page "goto" options
    * @param {Object} config.screenshot Page "screenshot" options
    */
-  constructor({ config = {} }) {
+  constructor({ config = {} } = {}) {
     this._config = {
       ...config,
     };

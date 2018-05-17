@@ -13,7 +13,7 @@ class Templater {
    * @param {string} config.outputPath
    * @param {string} [config.encoding='utf8']
    */
-  constructor({ config }) {
+  constructor({ config = {} } = {}) {
     this._config = {
       templatePath: config.templatePath,
       outputPath: config.outputPath,

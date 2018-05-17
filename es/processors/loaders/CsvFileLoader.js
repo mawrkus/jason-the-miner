@@ -18,7 +18,7 @@ class CsvFileLoader {
    * @param {number} [config.encoding='utf8']
    * @param {Object} config.csv csv-stringify options
    */
-  constructor({ config = {} }) {
+  constructor({ config = {} } = {}) {
     this._config = {
       basePath: process.cwd(),
       encoding: 'utf8',
@@ -27,8 +27,8 @@ class CsvFileLoader {
 
     debug('CsvFileLoader instance created.');
     debug('CSV config', this._config.csv);
-    debug('path', this._config.path);
-    debug('encoding', this._config.encoding);
+    debug('path =', this._config.path);
+    debug('encoding =', this._config.encoding);
   }
 
   /**
