@@ -9,6 +9,7 @@ const mime = require('mime');
 const uuid = require('uuid');
 const padLeft = require('pad-left');
 const get = require('lodash.get');
+const makeDir = require('make-dir');
 const debug = require('debug')('jason:transform:download-file');
 
 const MB = 1024 * 1024;
@@ -68,11 +69,17 @@ class FileDownloader {
     const downloads = Array.isArray(results) ? results : (results[rootKey] || []);
     const { parseSelector, concurrency } = this._config;
 
-    const urls = parseSelector ? downloads.map(d => get(d, parseSelector)).filter(Boolean) : downloads;
+    const urls = parseSelector ?
+      downloads.map(d => get(d, parseSelector)).filter(Boolean) :
+      downloads;
+
     const total = urls.length;
 
     debug('Found %d file(s) to download at max concurrency=%d...', total, concurrency);
     // debug(urls);
+
+    debug('Creating ouput folder "%s"...', this._outputFolder);
+    await makeDir(this._outputFolder);
 
     const filePaths = await Bluebird.map(
       urls,
