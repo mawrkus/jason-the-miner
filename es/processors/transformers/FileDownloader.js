@@ -8,6 +8,7 @@ const parseContentDisposition = require('content-disposition').parse;
 const mime = require('mime');
 const uuid = require('uuid');
 const padLeft = require('pad-left');
+const get = require('lodash.get');
 const debug = require('debug')('jason:transform:download-file');
 
 const MB = 1024 * 1024;
@@ -23,10 +24,10 @@ class FileDownloader {
   /**
    * @param {Object} config
    * @param {string} [config.baseURL]
-   * @param {string} [config.parseKey] The key where the download url can be found in the parse data
    * @param {string} [config.folder='.'] The output folder
    * @param {string} [config.namePattern='{name}'] The pattern used to create the filenames:
    * {name}, {index}, {uuid}, {hash}
+   * @param {string} [config.parseSelector] The selector to retrieve the download urls in the array of parsed data
    * @param {Object} [config.maxSizeInMb=1]
    * @param {Object} [config.concurrency=1]
    */
@@ -65,9 +66,9 @@ class FileDownloader {
 
     const rootKey = Object.keys(results)[0];
     const downloads = Array.isArray(results) ? results : (results[rootKey] || []);
-    const { parseKey, concurrency } = this._config;
+    const { parseSelector, concurrency } = this._config;
 
-    const urls = parseKey ? downloads.filter(d => d[parseKey]).map(d => d[parseKey]) : downloads;
+    const urls = parseSelector ? downloads.map(d => get(d, parseSelector)).filter(Boolean) : downloads;
     const total = urls.length;
 
     debug('Found %d file(s) to download at max concurrency=%d...', total, concurrency);
