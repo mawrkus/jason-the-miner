@@ -33,7 +33,7 @@ class FileDownloader {
   constructor({ config = {} } = {}) {
     this._config = {
       folder: '',
-      name: '{name}',
+      namePattern: '{name}',
       maxSizeInMb: 1,
       concurrency: 1,
       ...config,
