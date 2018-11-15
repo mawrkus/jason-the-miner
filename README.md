@@ -43,6 +43,7 @@ $ npm run demos
 - Imdb images gallery links
 - Avatars download
 - Bulk insertions to Elasticsearch
+- ...
 
 ## ⛏ Examples
 

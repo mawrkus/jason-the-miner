@@ -14,7 +14,7 @@
   },
   "transform": {
     "download-file": {
-      "folder": "./demos/data/out/downloads",
+      "folder": "./demos/data/out/downloads/avatars",
       "namePattern": "avatar-{index}",
       "concurrency": 2,
       "maxSizeInMb": 1

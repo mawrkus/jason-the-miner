@@ -34,85 +34,91 @@ jason.registerHelper({
 });
 
 const demos = [
-  /* GitHub searches
+  /* Elasticsearch
   {
-    name: 'GitHub search from file (json output)',
-    file: 'file-html-json.json',
-  },
-  {
-    name: 'GitHub search from file (csv output)',
-    file: 'file-html-csv.json',
-  },
-  {
-    name: 'GitHub search from file (md output)',
-    file: 'file-html-tpl.json',
-  },
+    name: 'Elasticsearch blog posts bulk import to http://localhost:9200',
+    file: 'elasticsearch/csv-identity-es-bulk.json',
+  }, */
+  /* Github */
   {
     name: 'GitHub bulk search (queries from csv file)',
-    file: 'bulk-csv-http-html-paginate-json.json',
+    file: 'github/bulk-csv-http-html-paginate-json.json',
   },
   {
     name: 'GitHub bulk search (static pagination)',
-    file: 'bulk-identity-file-html-csv.json',
+    file: 'github/bulk-identity-file-html-csv.json',
   },
   {
     name: 'Extended GitHub search with issues',
-    file: 'http-html-follow-x2-paginate-x2-json.json',
+    file: 'github/http-html-follow-x2-paginate-x2-json.json',
   },
-  // Google search for apps
+  {
+    name: 'Simple GitHub search',
+    file: 'github/http-html-json.json',
+  },
+  /* Goodreads */
+  {
+    name: 'Goodreads search for books and download covers',
+    file: 'goodreads/http-html-csv-download',
+  },
+  {
+    name: 'Goodreads search for books and product ID on Amazon',
+    file: 'goodreads/http-html-follow-follow-json-csv-stdout.json',
+  },
+  /* Google */
   {
     name: 'Google search for app stores links',
-    file: 'http-html-follow-json.json',
+    file: 'google/http-html-follow-json.json',
   },
-  // Goodreads search for books
+  /* IMDb */
   {
-    name: 'CSV to JSON file conversion',
-    file: 'file-csv-json.json',
+    name: 'IMdb images gallery links',
+    file: 'imdb/http-html-follow-paginate-json.json',
   },
-  {
-    name: 'Goodreads books with Amazon ID',
-    file: 'http-html-follow-follow-json-csv-stdout.json',
-  },
-  // Imdb images
-  {
-    name: 'Imdb images gallery links',
-    file: 'http-html-follow-paginate-json.json',
-  },
-  {
-    name: 'Avatars download',
-    file: 'http-html-download.json',
-  },
-  /* Puppeteer browser */
-  {
-    name: 'PWA search',
-    file: 'browser-html-json.json',
-  },
-  /* Elasticsearch bulk insertion */
-  /* {
-    name: 'Elasticsearch blog posts',
-    file: 'csv-identity-es-bulk.json',
-  }, */
   /* Misc */
-  /* {
-    name: 'Misc',
-    file: 'file-html-stdout.json',
+  {
+    name: 'Misc: parse csv file -> json',
+    file: 'misc/file-csv-json.json',
   },
   {
-    name: 'Misc',
-    file: 'http-html-email.json',
+    name: 'Misc: parse html file -> json',
+    file: 'misc/file-html-json.json',
   },
   {
-    name: 'Misc',
-    file: 'http-html-email-from-parse.json',
+    name: 'Misc: parse html file -> stdout',
+    file: 'misc/file-html-stdout.json',
   },
   {
-    name: 'Misc',
-    file: 'http-html-json.json',
+    name: 'Misc: parse html file -> markdown (via templating)',
+    file: 'misc/file-html-tpl.json',
   },
   {
-    name: 'Misc',
-    file: 'identity-html-stdout.json',
+    name: 'Misc: parse static html -> stdout',
+    file: 'misc/identity-html-stdout.json',
+  },
+  // {
+  //    name: 'Misc',
+  //    file: 'misc/sdin-html-stdout.json',
+  // },
+  /* Mixcloud
+  {
+    name: 'Email stats from mixcloud.com (1)',
+    file: 'mixcloud/http-html-email-from-parse.json',
+  },
+  {
+    name: 'Email stats from mixcloud.com (2)',
+    file: 'mixcloud/http-html-email.json',
   }, */
+  /* Outweb */
+  {
+    name: 'Search outweb.io for PWAs',
+    file: 'outweb/browser-html-json.json',
+  },
+  /* UI faces */
+  {
+    name: 'Download avatars from uifaces.co',
+    file: 'uifaces/http-html-download.json',
+  },
 ];
 
 /* eslint-disable no-console */

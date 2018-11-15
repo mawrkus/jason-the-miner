@@ -22,7 +22,7 @@
     "html": {
       "repos": [{
         "_$": ".repo-list .repo-list-item",
-        "language": "div:nth-child(2) | trim",
+        "language": "< text({language})",
         "name": "h3 > a",
         "description": "div:first-child > p | trim"
       }],

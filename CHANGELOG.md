@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - New HTML parse extractor: "count" -> counts the number of elements matching the selector (requires an array schema definition)
 - New Bulk processor
 - New demos (incl. new "browser" loader based on Puppeteer https://github.com/GoogleChrome/puppeteer/)
+- New "nameSelector" option for the file downloader processor
 
 ### Removed
 

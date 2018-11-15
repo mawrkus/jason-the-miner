@@ -13,6 +13,7 @@
     "jest/no-focused-tests": "error",
     "jest/no-identical-title": "warn",
     "no-underscore-dangle": "off",
-    "consistent-return": "warn"
+    "consistent-return": "warn",
+    "import/no-extraneous-dependencies": "off"
   }
 }
