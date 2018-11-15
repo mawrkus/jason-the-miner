@@ -17,6 +17,7 @@ const REGEX_UUID = /{uuid}/g;
 const REGEX_HASH = /{hash}/g;
 const REGEX_INDEX = /{index}/g;
 const REGEX_NAME = /{name}/g;
+const REGEX_SELECTOR = /{selector}/g;
 
 /**
  * A processor that downloads files.
@@ -26,9 +27,16 @@ class FileDownloader {
    * @param {Object} config
    * @param {string} [config.baseURL]
    * @param {string} [config.folder='.'] The output folder
+   * @param {string} [config.parseSelector] Selector to retrieve the download urls in the
+   * array of parsed data
+   * @param {string} [config.nameSelector] Selector to retrieve the file name in the
+   * array of parsed data
    * @param {string} [config.namePattern='{name}'] The pattern used to create the filenames:
-   * {name}, {index}, {uuid}, {hash}
-   * @param {string} [config.parseSelector] The selector to retrieve the download urls in the array of parsed data
+   *  {name} -> the base name of the downloaded file
+   *  {index} -> the file index
+   *  {uuid} -> a unique id
+   *  {hash} -> the sha256 hash of the downloaded file
+   *  {selector} -> the value extracted using the nameSelector option
    * @param {Object} [config.maxSizeInMb=1]
    * @param {Object} [config.concurrency=1]
    */
@@ -67,23 +75,39 @@ class FileDownloader {
 
     const rootKey = Object.keys(results)[0];
     const downloads = Array.isArray(results) ? results : (results[rootKey] || []);
-    const { parseSelector, concurrency } = this._config;
+    const { parseSelector, nameSelector, concurrency } = this._config;
 
-    const urls = parseSelector ?
-      downloads.map(d => get(d, parseSelector)).filter(Boolean) :
-      downloads;
+    const downloadsWithUrlAndName = parseSelector ?
+      downloads.map(d => ({
+        url: get(d, parseSelector),
+        parsedName: get(d, nameSelector, ''),
+      })) :
+      downloads.map(url => ({
+        url,
+        parsedName: '',
+      }));
 
-    const total = urls.length;
+    const downloadsWithUrl = downloadsWithUrlAndName.filter(({ url }) => Boolean(url));
+
+    const total = downloadsWithUrl.length;
 
     debug('Found %d file(s) to download at max concurrency=%d...', total, concurrency);
-    // debug(urls);
+    // debug(downloadsWithUrl);
 
     debug('Creating ouput folder "%s"...', this._outputFolder);
     await makeDir(this._outputFolder);
 
     const filePaths = await Bluebird.map(
-      urls,
-      (url, index) => this._download({ url, index, total }),
+      downloadsWithUrl,
+      (d, index) => {
+        const { url, parsedName } = d;
+        return this._download({
+          url,
+          parsedName,
+          index,
+          total,
+        });
+      },
       { concurrency },
     );
 
@@ -92,11 +116,17 @@ class FileDownloader {
 
   /**
    * @param {string} url
+   * @param {string} [parsedName]
    * @param {number} index
    * @param {number} total
    * @return {Promise}
    */
-  async _download({ url, index, total }) {
+  async _download({
+    url,
+    parsedName,
+    index,
+    total,
+  }) {
     debug('Dowloading "%s" (%d/%d)...', url, index + 1, total);
 
     try {
@@ -107,6 +137,7 @@ class FileDownloader {
 
       const filename = this._buildFilename({
         url,
+        parsedName,
         headers,
         index,
         total,
@@ -133,7 +164,8 @@ class FileDownloader {
   }
 
   /**
-   * @param {string} fileUrl
+   * @param {string} url
+   * @param {string} [parsedName]
    * @param {Object} headers
    * @param {number} currentCount
    * @param {number} total
@@ -141,6 +173,7 @@ class FileDownloader {
    */
   _buildFilename({
     url,
+    parsedName,
     headers,
     index,
     total,
@@ -148,18 +181,19 @@ class FileDownloader {
     const parsedUrl = nodeUrl.parse(url);
     const { name: baseNameFromUrl } = path.parse(parsedUrl.pathname);
 
-    const name = [
+    const finalName = [
       FileDownloader.replacers.name.bind(null, baseNameFromUrl),
       FileDownloader.replacers.index.bind(null, index, total),
       FileDownloader.replacers.uuid,
       FileDownloader.replacers.hash,
+      FileDownloader.replacers.selector.bind(null, parsedName),
     ].reduce(
       (currentName, replacer) => replacer(currentName),
       this._config.namePattern,
     );
 
     const ext = this._getFileExtensionFromHeaders({ headers });
-    const fileName = `${name}${ext}`;
+    const fileName = `${finalName}${ext}`;
 
     return fileName;
   }
@@ -222,6 +256,7 @@ FileDownloader.replacers = {
     const hash = crypto.createHash('sha256').update(namePattern).digest('hex');
     return namePattern.replace(REGEX_HASH, hash);
   },
+  selector: (parsedName, namePattern) => namePattern.replace(REGEX_SELECTOR, parsedName),
 };
 
 module.exports = FileDownloader;
