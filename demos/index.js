@@ -3,18 +3,19 @@
 const path = require('path');
 const ora = require('ora');
 
-const isAppStoreLink = require('./processors/parsers/helpers/matchers/isAppStoreLink');
+const Browser = require('./processors/loaders/Browser');
 const Templater = require('./processors/transformers/Templater');
 const EsBulkInserter = require('./processors/transformers/EsBulkInserter');
+const isAppStoreLink = require('./processors/parsers/helpers/matchers/isAppStoreLink');
 
 const JasonTheMiner = require('..');
 
 const jason = new JasonTheMiner();
 
-jason.registerHelper({
-  category: 'match',
-  name: 'isAppStoreLink',
-  helper: isAppStoreLink,
+jason.registerProcessor({
+  category: 'load',
+  name: 'browser',
+  processor: Browser,
 });
 jason.registerProcessor({
   category: 'transform',
@@ -26,9 +27,14 @@ jason.registerProcessor({
   name: 'es-bulk-inserter',
   processor: EsBulkInserter,
 });
+jason.registerHelper({
+  category: 'match',
+  name: 'isAppStoreLink',
+  helper: isAppStoreLink,
+});
 
 const demos = [
-  /* GitHub searches */
+  /* GitHub searches
   {
     name: 'GitHub search from file (json output)',
     file: 'file-html-json.json',
@@ -53,12 +59,12 @@ const demos = [
     name: 'Extended GitHub search with issues',
     file: 'http-html-follow-x2-paginate-x2-json.json',
   },
-  /* Google search for apps */
+  // Google search for apps
   {
     name: 'Google search for app stores links',
     file: 'http-html-follow-json.json',
   },
-  /* Goodreads search for books */
+  // Goodreads search for books
   {
     name: 'CSV to JSON file conversion',
     file: 'file-csv-json.json',
@@ -67,7 +73,7 @@ const demos = [
     name: 'Goodreads books with Amazon ID',
     file: 'http-html-follow-follow-json-csv-stdout.json',
   },
-  /* Imdb images */
+  // Imdb images
   {
     name: 'Imdb images gallery links',
     file: 'http-html-follow-paginate-json.json',
@@ -76,11 +82,16 @@ const demos = [
     name: 'Avatars download',
     file: 'http-html-download.json',
   },
-  /* Elasticsearch bulk insertion */
+  /* Puppeteer browser */
   {
+    name: 'PWA search',
+    file: 'browser-html-json.json',
+  },
+  /* Elasticsearch bulk insertion */
+  /* {
     name: 'Elasticsearch blog posts',
     file: 'csv-identity-es-bulk.json',
-  },
+  }, */
   /* Misc */
   /* {
     name: 'Misc',

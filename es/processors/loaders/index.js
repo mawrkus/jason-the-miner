@@ -2,7 +2,6 @@ const StdinReader = require('./StdinReader');
 const HttpClient = require('./HttpClient');
 const FileReader = require('./FileReader');
 const CsvFileLoader = require('./CsvFileLoader');
-const Browser = require('./Browser');
 const IdentityProcessor = require('../IdentityProcessor');
 const NoOperationProcessor = require('../NoOperationProcessor');
 
@@ -16,7 +15,6 @@ module.exports = {
   http: HttpClient,
   file: FileReader,
   'csv-file': CsvFileLoader,
-  browser: Browser,
   identity: IdentityProcessor,
   noop: NoOperationProcessor,
 };

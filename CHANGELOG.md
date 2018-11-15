@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.0] - 2018-05-xxx
+## [1.1.0] - 2018-11-xx
 
 ### Added
 
@@ -13,11 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Identity processor: allow static data definition in its config
 - New "csv-file" loader
 - New "csv" parser
-- New HTML parse filter: "json-parse" (useful for parsing json-ld for instance)
-- New HTML parse extractor: "count" -> counts the number of elements matching the selector (needs an array schema definition)
+- New HTML parse filter: "json-parse" (useful for parsing json-ld)
+- New HTML parse extractor: "count" -> counts the number of elements matching the selector (requires an array schema definition)
 - New Bulk processor
-- New Browser loader based on Puppeteer (https://github.com/GoogleChrome/puppeteer/)
-- New demos
+- New demos (incl. new "browser" loader based on Puppeteer https://github.com/GoogleChrome/puppeteer/)
 
 ### Removed
 
@@ -32,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - E-mail transformer: options are split between "smtp" and "message"
 - All processors now received their configuration object within an object: { config }
 - CSV and JSON file writers try to create the output folder if it does not exist, before saving the file
+- The file downloader processor tries also to create the output folder if it does not exist
 
 ## [1.0.1] - 2018-04-13
 
