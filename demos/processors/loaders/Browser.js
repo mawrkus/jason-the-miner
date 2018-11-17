@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const devices = require('puppeteer/DeviceDescriptors');
 const get = require('lodash.get');
 const debug = require('debug')('jason:load:browser');
 
@@ -51,6 +52,7 @@ class Browser {
     const runConfig = { ...this._config, ...options };
     const {
       launch,
+      emulate,
       goto,
       actions,
     } = runConfig;
@@ -64,6 +66,11 @@ class Browser {
     try {
       debug('Opening new page...');
       const page = await this._browser.newPage();
+
+      if (emulate) {
+        debug('Emulating "%s" device.', emulate);
+        await page.emulate(devices[emulate]);
+      }
 
       debug('Navigating to "%s"...', goto.url);
       debug(goto.options);
