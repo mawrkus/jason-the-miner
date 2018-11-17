@@ -45,21 +45,35 @@ class Browser {
   }
 
   /**
-   * @param {Object} [options] Optional read options.
+   * @param {Object} [options] Optional options.
    * @return {Promise}
    */
   async run({ options } = {}) {
     const runConfig = { ...this._config, ...options };
-    const {
-      launch,
-      emulate,
-      goto,
-      actions,
-    } = runConfig;
+    const { launch } = runConfig;
 
     debug('Starting browser...');
     debug(launch);
     this._browser = await puppeteer.launch(launch);
+
+    const result = await this._runPage(runConfig);
+
+    debug('Closing browser...');
+    await this._browser.close();
+
+    return result;
+  }
+
+  /**
+   * @param {Object} [options] Optional read options.
+   * @return {Promise}
+   */
+  async _runPage(runConfig) {
+    const {
+      emulate,
+      goto,
+      actions,
+    } = runConfig;
 
     let result;
 
@@ -87,12 +101,10 @@ class Browser {
       }
     } catch (error) {
       debug('Error loading page: %s!', error.message);
+      debug('Closing browser...');
       await this._browser.close();
       throw error;
     }
-
-    debug('Closing browser...');
-    await this._browser.close();
 
     return result;
   }
@@ -122,7 +134,7 @@ class Browser {
         result = await pageMethod.apply(methodObject, actionParams);
         debug(result);
       } else {
-        debug('Cannot execute "%s" action (function expected), skipping.', actionPath, action);
+        debug('Unknown action "%s" (function expected), skipping.', actionPath, action);
       }
     }
 
