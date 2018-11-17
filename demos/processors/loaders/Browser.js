@@ -80,7 +80,7 @@ class Browser {
       }
     } catch (error) {
       debug('Error loading page: %s!', error.message);
-      this._browser.close();
+      await this._browser.close();
       throw error;
     }
 
