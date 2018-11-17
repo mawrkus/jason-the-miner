@@ -122,7 +122,7 @@ class Browser {
         result = await pageMethod.apply(methodObject, actionParams);
         debug(result);
       } else {
-        debug('Unknown "%s" page action, skipping.', action);
+        debug('Cannot execute "%s" action (function expected), skipping.', actionPath, action);
       }
     }
 
