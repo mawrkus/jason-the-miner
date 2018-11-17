@@ -126,9 +126,7 @@ const demos = [
 (async () => {
   const spinner = ora({ spinner: 'dots4' });
 
-  /* eslint-disable no-await-in-loop */
-  // eslint-disable-next-line no-restricted-syntax
-  for (const demo of demos) {
+  demos.reduce(async (p, demo) => {
     const { file, name } = demo;
     spinner.start().text = `Launching "${name}" demo (${file})...`;
 
@@ -142,7 +140,7 @@ const demos = [
       spinner.fail('Ooops! Something went wrong. :(');
       console.error(error);
     }
-  }
+  }, Promise.resolve());
 
   spinner.start().stopAndPersist({
     symbol: '⛏ ',
