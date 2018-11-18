@@ -100,7 +100,7 @@ class Browser {
         debug('%d byte(s) of HTML read.', result ? result.length : 0);
       }
     } catch (error) {
-      debug('Error loading page: %s!', error.message);
+      debug('Error loading page "%s": %s!', goto.url, error.message);
       debug('Closing browser...');
       await this._browser.close();
       throw error;
