@@ -69,26 +69,13 @@ class Browser {
    * @return {Promise}
    */
   async _runPage(runConfig) {
-    const {
-      emulate,
-      goto,
-      actions,
-    } = runConfig;
+    const { actions } = runConfig;
 
     let result;
 
     try {
       debug('Opening new page...');
       const page = await this._browser.newPage();
-
-      if (emulate) {
-        debug('Emulating "%s" device.', emulate);
-        await page.emulate(devices[emulate]);
-      }
-
-      debug('Navigating to "%s"...', goto.url);
-      debug(goto.options);
-      await page.goto(goto.url, goto.options);
 
       if (actions) {
         debug('%d page action(s) to execute.', actions.length);
@@ -100,7 +87,7 @@ class Browser {
         debug('%d byte(s) of HTML read.', result ? result.length : 0);
       }
     } catch (error) {
-      debug('Error loading page "%s": %s!', goto.url, error.message);
+      debug('Error loading page %s!', error.message);
       debug('Closing browser...');
       await this._browser.close();
       throw error;
@@ -118,24 +105,34 @@ class Browser {
   async _executePageActions({ page, actions }) {
     let result;
 
-    /* eslint-disable no-restricted-syntax, no-await-in-loop */
+    /* eslint-disable no-restricted-syntax, no-await-in-loop, no-continue */
     for (const action of actions) {
       const actionPath = Object.keys(action)[0];
       const actionParams = action[actionPath] || [];
       const pageMethod = get(page, actionPath);
 
-      if (typeof pageMethod === 'function') {
-        debug('Executing "%s"...', actionPath);
-        debug(actionParams);
-
-        const actionPathParts = actionPath.split('.');
-        const methodObject = actionPathParts.length > 1 ? page[actionPathParts[0]] : page;
-
-        result = await pageMethod.apply(methodObject, actionParams);
-        debug(result);
-      } else {
-        debug('Unknown action "%s" (function expected), skipping.', actionPath, action);
+      if (typeof pageMethod !== 'function') {
+        debug('Unknown action "%s", function expected! Skipping.', actionPath, action);
+        continue;
       }
+
+      if (actionPath === 'emulate' && typeof actionParams[0] === 'string') {
+        const deviceName = actionParams[0];
+        const device = devices[deviceName];
+        if (!device) {
+          debug('Unknown device name "%s"! Skipping "emulate" action.', deviceName);
+          continue;
+        }
+        actionParams[0] = device;
+      }
+
+      debug('Executing "%s" action ->', actionPath, actionParams);
+
+      const actionPathParts = actionPath.split('.');
+      const methodObject = actionPathParts.length > 1 ? page[actionPathParts[0]] : page;
+
+      result = await pageMethod.apply(methodObject, actionParams);
+      debug(result);
     }
 
     return result;
