@@ -73,69 +73,116 @@ class Browser {
 
     let result;
 
-    try {
-      debug('Opening new page...');
-      const page = await this._browser.newPage();
+    const page = await this._browser.newPage();
+    this._logPageInfo(page, 'New page created!');
 
+    try {
       if (actions) {
-        debug('%d page action(s) to execute.', actions.length);
+        const actionsCount = actions.length;
+        const actionNames = actions.map(action => Object.keys(action)[0]);
+
+        this._logPageInfo(page, `${actionsCount} action(s) to execute:`, actionNames);
         result = await this._executePageActions({ page, actions });
-        debug('All %d page action(s) executed, returning last result.', actions.length);
+        this._logPageInfo(page, `Done: ${actionsCount} action(s) executed.`);
       } else {
-        debug('Default action: fetching HTML...');
+        this._logPageInfo(page, 'Default action: fetching HTML...');
         result = await page.content();
-        debug('%d byte(s) of HTML read.', result ? result.length : 0);
+        this._logPageInfo(page, `Done: ${result ? result.length : 0} byte(s) of HTML read.`);
       }
     } catch (error) {
-      debug('Error loading page %s!', error.message);
-      debug('Closing browser...');
+      this._logPageInfo(page, `Unexpected browser error: ${error.message}!`);
+      this._logPageInfo(page, 'Closing browser...');
       await this._browser.close();
       throw error;
     }
+
+    debug(result);
 
     return result;
   }
 
   /**
-   * @param  {BrowserPage} page
+   * @param  {Browser.Page} page
    * @param  {Object[]} actions
    * @return {Promise}
    */
-  // eslint-disable-next-line class-methods-use-this
   async _executePageActions({ page, actions }) {
-    let result;
+    const actionsCount = actions.length;
 
-    /* eslint-disable no-restricted-syntax, no-await-in-loop, no-continue */
-    for (const action of actions) {
-      const actionPath = Object.keys(action)[0];
-      const actionParams = action[actionPath] || [];
-      const pageMethod = get(page, actionPath);
+    const result = actions.reduce(async (p, action, index) => {
+      await p;
 
-      if (typeof pageMethod !== 'function') {
-        debug('Unknown action "%s", function expected! Skipping.', actionPath, action);
-        continue;
+      let parsed;
+
+      try {
+        parsed = this._parsePageAction({ page, action });
+      } catch (parseError) {
+        this._logPageInfo(page, parseError, action);
+        return Promise.resolve();
       }
 
-      if (actionPath === 'emulate' && typeof actionParams[0] === 'string') {
-        const deviceName = actionParams[0];
-        const device = devices[deviceName];
-        if (!device) {
-          debug('Unknown device name "%s"! Skipping "emulate" action.', deviceName);
-          continue;
-        }
-        actionParams[0] = device;
-      }
+      const {
+        actionPath,
+        actionParams,
+        pageMethod,
+        methodObject,
+      } = parsed;
 
-      debug('Executing "%s" action ->', actionPath, actionParams);
+      this._logPageInfo(page, `${index + 1}/${actionsCount} -> "${actionPath}"`, actionParams);
 
-      const actionPathParts = actionPath.split('.');
-      const methodObject = actionPathParts.length > 1 ? page[actionPathParts[0]] : page;
-
-      result = await pageMethod.apply(methodObject, actionParams);
-      debug(result);
-    }
+      return pageMethod.apply(methodObject, actionParams);
+    }, Promise.resolve());
 
     return result;
+  }
+
+  /**
+   * @param  {Browser.Page} page
+   * @param {Object} action
+   * @return {Object}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _parsePageAction({ page, action }) {
+    const actionPath = Object.keys(action)[0];
+    const actionParams = action[actionPath] || [];
+    const pageMethod = get(page, actionPath);
+
+    if (typeof pageMethod !== 'function') {
+      const msg = `Unknown action "${actionPath}" (function expected)! Skipping.`;
+      throw new Error(msg);
+    }
+
+    if (actionPath === 'emulate' && typeof actionParams[0] === 'string') {
+      const deviceName = actionParams[0];
+      const device = devices[deviceName];
+
+      if (!device) {
+        const msg = `Unknown device name "${deviceName}"! Skipping "emulate" action.`;
+        throw new Error(msg);
+      }
+
+      actionParams[0] = device;
+    }
+
+    const actionPathParts = actionPath.split('.');
+    const methodObject = actionPathParts.length > 1 ? page[actionPathParts[0]] : page;
+
+    return {
+      actionPath,
+      actionParams,
+      pageMethod,
+      methodObject,
+    };
+  }
+
+  /**
+   * @param {Browser.Page} page
+   * @param  {...any} args
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _logPageInfo(page, ...args) {
+    const pageId = page.mainFrame()._id;
+    debug(`[${pageId}]`, ...args);
   }
 }
 
