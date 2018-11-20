@@ -97,8 +97,9 @@ class HtmlParser {
     tab = '',
   }) {
     switch (typeOf(schema)) {
-      case 'string': // eslint-disable-line no-case-declarations
+      case 'string':
         debug('%sParsing value from "%s"...', tab, schema);
+        // eslint-disable-next-line no-case-declarations
         const value = this._extractElementValue({
           selectorDef: schema,
           $context,
@@ -323,16 +324,16 @@ class HtmlParser {
     } = this._parseSelectorDef({ selectorDef, tab });
 
     // allow empty selector to get the value from the root/current element
-    const { $elements, elementsCount } = selector ?
-      this._findSlicedElements({
+    const { $elements, elementsCount } = selector
+      ? this._findSlicedElements({
         selector,
         matcher,
         extractor,
         slice: '',
         $context,
         tab,
-      }) :
-      {
+      })
+      : {
         $elements: $context,
         elementsCount: $context.length,
       };
@@ -348,9 +349,9 @@ class HtmlParser {
     const $first = $elements.first();
 
     // We prevent the default extractor ("text") to be used
-    const rawLink = extractor._name === 'default' ?
-      $first.attr('href') || $first.attr('src') :
-      extractor($first);
+    const rawLink = extractor._name === 'default'
+      ? $first.attr('href') || $first.attr('src')
+      : extractor($first);
 
     const link = filter(rawLink);
 
@@ -414,9 +415,9 @@ class HtmlParser {
       const $element = this._$(domElement);
 
       // We prevent the default extractor ("text") to be used
-      const rawLink = extractor._name === 'default' ?
-        $element.attr('href') || $element.attr('src') :
-        extractor($element);
+      const rawLink = extractor._name === 'default'
+        ? $element.attr('href') || $element.attr('src')
+        : extractor($element);
 
       const link = filter(rawLink);
 
@@ -482,8 +483,7 @@ class HtmlParser {
    */
   _parseSelectorDef({ selectorDef, tab }) {
     debug('%sParsing selector definition="%s".', tab, selectorDef);
-    const [
-      ,
+    const [,
       rawSelector = '',
       rawMatcher = '',
       rawExtractor = '',
@@ -582,15 +582,15 @@ class HtmlParser {
     } = this._parseSelectorDef({ selectorDef, tab });
 
     // allow empty selector to get the value from the root/current element
-    const { $elements, elementsCount } = selector ?
-      this._findSlicedElements({
+    const { $elements, elementsCount } = selector
+      ? this._findSlicedElements({
         selector,
         matcher,
         slice: '',
         $context,
         tab,
-      }) :
-      {
+      })
+      : {
         $elements: $context,
         elementsCount: $context.length,
       };

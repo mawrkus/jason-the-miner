@@ -5,8 +5,11 @@ function createAndRegisterProcessors({ jason, names }) {
   /* eslint-disable class-methods-use-this */
   class Loader {
     constructor({ config }) { Loader.config = config || 'default'; }
+
     async run() { return []; }
+
     getConfig() { return {}; }
+
     buildLoadOptions() { return {}; }
   }
 
@@ -20,6 +23,7 @@ function createAndRegisterProcessors({ jason, names }) {
 
   class Parser {
     constructor({ config }) { Parser.config = config || 'default'; }
+
     async run() { return { result: {}, follows: [], paginates: [] }; }
   }
 
@@ -33,6 +37,7 @@ function createAndRegisterProcessors({ jason, names }) {
 
   class Transformer {
     constructor({ config }) { Transformer.config = config || 'default'; }
+
     async run() { return {}; }
   }
 

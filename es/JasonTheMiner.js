@@ -72,8 +72,8 @@ class JasonTheMiner {
 
     if (
       category === 'load' && (
-        typeof processor.prototype.getConfig !== 'function' ||
-        typeof processor.prototype.buildLoadOptions !== 'function'
+        typeof processor.prototype.getConfig !== 'function'
+        || typeof processor.prototype.buildLoadOptions !== 'function'
       )
     ) {
       throw new TypeError(`Invalid "load" processor "${name}"! Missing "getConfig()" and/or "buildLoadOptions()" method(s).`);
@@ -129,10 +129,9 @@ class JasonTheMiner {
       ['bulk', 'load', 'parse', 'transform']
         .filter(category => !!config[category])
         .forEach((category) => {
-          this.config[category] = Array.isArray(config[category]) ?
-            // eslint-disable-next-line array-bracket-spacing
-            [ ...config[category] ] :
-            { ...config[category] };
+          this.config[category] = Array.isArray(config[category])
+            ? [...config[category]]
+            : { ...config[category] };
 
           debug('"%s" config set', category, this.config[category]);
         });
@@ -535,9 +534,9 @@ class JasonTheMiner {
 
     const processorConfig = config[processorName];
 
-    return category === 'parse' ?
-      new Processor({ config: processorConfig, helpers: this._parseHelpers, category }) :
-      new Processor({ config: processorConfig, category });
+    return category === 'parse'
+      ? new Processor({ config: processorConfig, helpers: this._parseHelpers, category })
+      : new Processor({ config: processorConfig, category });
   }
 
   /**

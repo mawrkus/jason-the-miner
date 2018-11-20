@@ -77,12 +77,12 @@ class FileDownloader {
     const downloads = Array.isArray(results) ? results : (results[rootKey] || []);
     const { parseSelector, nameSelector, concurrency } = this._config;
 
-    const downloadsWithUrlAndName = parseSelector ?
-      downloads.map(d => ({
+    const downloadsWithUrlAndName = parseSelector
+      ? downloads.map(d => ({
         url: get(d, parseSelector),
         parsedName: get(d, nameSelector, ''),
-      })) :
-      downloads.map(url => ({
+      }))
+      : downloads.map(url => ({
         url,
         parsedName: '',
       }));
@@ -215,7 +215,7 @@ class FileDownloader {
     }
 
     const contentType = headers['content-type'];
-    const extension = `.${mime.extension(contentType)}`;
+    const extension = `.${mime.getExtension(contentType)}`;
 
     return extension;
   }
