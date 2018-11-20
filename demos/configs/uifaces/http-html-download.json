@@ -14,8 +14,8 @@
   },
   "transform": {
     "download-file": {
-      "folder": "./demos/data/out/downloads/avatars",
-      "namePattern": "avatar-{index}",
+      "folder": "./demos/data/out/downloads",
+      "namePattern": "ui-faces-avatar-{index}",
       "concurrency": 2,
       "maxSizeInMb": 1
     }

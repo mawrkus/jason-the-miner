@@ -12,7 +12,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demos/data/out/goodreads-books-transformed.json"
+      "path": "demos/data/out/misc-goodreads-books-transformed.json"
     }
   }
 }

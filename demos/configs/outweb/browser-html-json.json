@@ -5,15 +5,10 @@
         "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
         "timeout": 10000
       },
-      "goto": {
-        "url": "https://outweb.io/",
-        "options": {
-          "waitUntil": "networkidle0"
-        }
-      },
       "actions": [
-        { "screenshot": [{ "path": "demos/data/out/pwas.png" }] },
-        { "pdf": [{ "path": "demos/data/out/pwas.pdf", "format": "A4" }] },
+        { "goto": ["https://outweb.io/", { "waitUntil": "networkidle0" }] },
+        { "screenshot": [{ "path": "demos/data/out/outweb-pwas.png" }] },
+        { "pdf": [{ "path": "demos/data/out/outweb-pwas.pdf", "format": "A4" }] },
         { "content": [] }
       ]
     }
@@ -33,7 +28,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demos/data/out/pwas.json"
+      "path": "demos/data/out/outweb-pwas.json"
     }
   }
 }

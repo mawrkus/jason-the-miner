@@ -25,10 +25,10 @@
   }, {
     "download-file": {
       "parseSelector": "cover",
-      "folder": "./demos/data/out/downloads/covers",
+      "folder": "./demos/data/out/downloads",
       "concurrency": 3,
       "nameSelector": "title",
-      "namePattern": "{index}-{selector}"
+      "namePattern": "goodreads-cover-{index}-{selector}"
     }
   }]
 }

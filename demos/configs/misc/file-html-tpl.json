@@ -19,7 +19,7 @@
   "transform": {
     "tpl": {
       "templatePath": "demos/data/in/github-search.md.tpl",
-      "outputPath": "demos/data/out/github-search.md"
+      "outputPath": "demos/data/out/misc-github-search.md"
     }
   }
 }

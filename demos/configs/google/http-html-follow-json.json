@@ -28,7 +28,7 @@
   },
   "transform": {
     "json-file": {
-      "path": "demos/data/out/search-apps.json"
+      "path": "demos/data/out/google-search-apps.json"
     }
   }
 }
