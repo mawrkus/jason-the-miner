@@ -127,6 +127,8 @@ const demos = [
   const spinner = ora({ spinner: 'dots4' });
 
   demos.reduce(async (p, demo) => {
+    await p;
+
     const { file, name } = demo;
     spinner.start().text = `Launching "${name}" demo (${file})...`;
 
