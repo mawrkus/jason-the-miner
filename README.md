@@ -34,15 +34,17 @@ $ npm install
 $ npm run demos
 ```
 
-...and have a look at the "demos" folder, among them, you'll find:
+...and have a look at the "demos" folder, among them, you'll find scraping:
 
-- Simple GitHub search (json, csv or markdown output)
+- Simple GitHub search (JSON, CSV, Markdown output)
 - Extended GitHub search with issues (including following links & paginating issues)
-- Google search and following links for finding mobile apps
 - Goodreads books and following to Amazon to grab their product ID
-- Imdb images gallery links
+- Google search and follow search results for finding mobile apps
+- Imdb images gallery links (with pagination)
+- Mixcloud stats, templating them & sending them by mail
+- Controlling the Chrome browser to scrape PWAs
 - Avatars download
-- Bulk insertions to Elasticsearch
+- Bulk insertions to Elasticsearch from a CSV file
 - ...
 
 ## ⛏ Examples
