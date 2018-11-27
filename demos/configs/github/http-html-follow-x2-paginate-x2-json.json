@@ -11,35 +11,39 @@
   },
   "parse": {
     "html": {
-      "repos": [{
-        "_$": ".repo-list .repo-list-item",
-        "name": "h3 > a",
-        "last-update": "relative-time < attr(datetime)",
-        "_follow": {
-          "_link": "h3 > a",
-          "description": "meta[property='og:description'] < attr(content)",
-          "url": "link[rel='canonical'] < attr(href)",
-          "stats": {
-            "_$": ".pagehead-actions",
-            "watchers": "li:nth-child(1) a.social-count | trim",
-            "stars": "li:nth-child(2) a.social-count | trim",
-            "forks": "li:nth-child(3) a.social-count | trim"
-          },
+      "repos": [
+        {
+          "_$": ".repo-list .repo-list-item",
+          "name": "h3 > a",
+          "last-update": "relative-time < attr(datetime)",
           "_follow": {
-            "_link": ".js-repo-nav span[itemprop='itemListElement']:nth-child(2) > a",
-            "open-issues": [{
-              "_$": ".js-navigation-container li > div > div:nth-child(3)",
-              "desc": "a:first-child | trim",
-              "opened": "relative-time < attr(datetime)"
-            }],
-            "_paginate": {
-              "_link": ".pagination > a",
-              "_slice": "0,3",
-              "_depth": 1
+            "_link": "h3 > a",
+            "description": "meta[property='og:description'] < attr(content)",
+            "url": "link[rel='canonical'] < attr(href)",
+            "stats": {
+              "_$": ".pagehead-actions",
+              "watchers": "li:nth-child(1) a.social-count | trim",
+              "stars": "li:nth-child(2) a.social-count | trim",
+              "forks": "li:nth-child(3) a.social-count | trim"
+            },
+            "_follow": {
+              "_link": ".js-repo-nav span[itemprop='itemListElement']:nth-child(2) > a",
+              "open-issues": [
+                {
+                  "_$": ".js-issue-row",
+                  "desc": "a[data-hovercard-type='issue'] | trim",
+                  "opened": "relative-time < attr(datetime)"
+                }
+              ],
+              "_paginate": {
+                "_link": ".pagination > a",
+                "_slice": "0,3",
+                "_depth": 1
+              }
             }
           }
         }
-      }],
+      ],
       "_paginate": {
         "_link": ".pagination > a[rel='next']",
         "_slice": "0,1",
