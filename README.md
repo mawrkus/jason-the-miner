@@ -566,7 +566,7 @@ $ npm install
 $ npm run test
 ```
 
-## ⛏ References & related links
+## ⛏ Resources
 
 - Web Scraping With Node.js: https://www.smashingmagazine.com/2015/04/web-scraping-with-nodejs/
 - X-ray, The next web scraper. See through the <html> noise: https://github.com/lapwinglabs/x-ray
@@ -575,6 +575,7 @@ $ npm run test
 - https://www.scrapesentry.com/scraping-wiki/web-scraping-legal-or-illegal/
 - http://blog.icreon.us/web-scraping-and-you-a-legal-primer-for-one-of-its-most-useful-tools/
 - Web scraping o rastreo de webs y legalidad: https://www.youtube.com/watch?v=EJzugD0l0Bw
+- Scraper API blog: https://www.scraperapi.com/blog/
 
 ## ⛏ A final note...
 
