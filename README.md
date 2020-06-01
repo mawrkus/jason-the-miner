@@ -7,7 +7,7 @@ Harvesting data at the `<html>` mine... Jason the Miner, a versatile Web scraper
 
 ## ⛏ Features
 
-- **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 3 processor categories:
+- **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 3 types of processors:
   1. loaders: to fetch the data (via HTTP requests, by reading text files, etc.)
   2. parsers: to parse the data (HTML by default) & extract the relevant parts according to a predefined schema
   3. transformers: to transform and/or output the results (to a CSV file, via email, etc.)
@@ -40,9 +40,9 @@ $ npm run demos
 - Extended GitHub search with issues (including following links & paginating issues)
 - Goodreads books and following to Amazon to grab their product ID
 - Google search and follow search results for finding mobile apps
-- Imdb images gallery links (with pagination)
+- IMDb images gallery links (with pagination)
 - Mixcloud stats, templating them & sending them by mail
-- Controlling the Chrome browser to scrape PWAs
+- Mixcloud SPA scraping controlling a headless browser
 - Avatars download
 - Bulk insertions to Elasticsearch from a CSV file
 - ...
@@ -385,6 +385,8 @@ Jason supports a single transformer or an array of transformers:
 ```
 
 ### ⛏ Bulk processing
+
+Parameters can be defined in a CSV file and applied to configure the processors:
 
 ```js
 {

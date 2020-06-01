@@ -33,6 +33,7 @@
     "bin",
     "es",
     "lib",
+    "CHANGELOG.md",
     "README.md"
   ],
   "scripts": {
