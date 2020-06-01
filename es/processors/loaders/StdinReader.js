@@ -8,7 +8,7 @@ class StdinReader {
    * @param {Object} config
    * @param {string} [config.encoding='utf8']
    */
-  constructor(config) {
+  constructor({ config = {} } = {}) {
     this._config = { encoding: config.encoding || 'utf8' };
     debug('StdinReader instance created.');
     debug('config', this._config);
@@ -53,17 +53,7 @@ class StdinReader {
   }
 
   /**
-   * Builds all the links defined by the pagination config.
-   * @return {Array}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  buildPaginationLinks() {
-    // dummy link to allow the harvesting process to start
-    return ['stdin is in the house'];
-  }
-
-  /**
-   * Builds new load options. Used for following/paginating.
+   * Builds new load options.
    * @param {string} link
    * @return {Object}
    */

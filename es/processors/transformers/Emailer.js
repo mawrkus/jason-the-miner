@@ -8,48 +8,68 @@ const debug = require('debug')('jason:transform:email');
 class Emailer {
   /**
    * @param {Object} config.smtp
-   * @param {string} config.from
-   * @param {string} config.to
-   * @param {string} config.subject
+   * @param {Object} config.message
+   * @param {string} config.message.from
+   * @param {string} config.message.to
+   * @param {string} config.message.subject
    * @param {*} ... See the "nodemailer" package for all possible options.
    */
-  constructor(config) {
-    this._config = { ...config };
+  constructor({ config = {} } = {}) {
+    this._config = {
+      smtp: {},
+      message: {},
+      ...config,
+    };
     debug('Emailer instance created.');
-    debug('config', config);
+    debug('config', this._config);
   }
 
   /**
-   * @param {Object} results
+   * @param {Object} results The results from the previous transformer if any, or the
+   * parse results by default
+   * @param {string} [results.to]
    * @param {string} [results.subject]
-   * @param {string} [results.body]
+   * @param {string} [results.text]
+   * @param {string} [results.html]
+   * @param {Object[]} [results.attachments]
+   * @param {Object} parseResults The original parse results
    * @return {Promise}
    */
   run({ results }) {
-    debug('E-mailing results to "%s"...', this._config.to);
+    const { smtp, message } = this._config;
+    debug('E-mailing results to "%s"...', message.to);
 
     return new Promise((resolve, reject) => {
-      const body = results.body || JSON.stringify(results);
+      const jsonResults = JSON.stringify(results);
+      const {
+        to = message.to,
+        subject = message.subject,
+        text = jsonResults,
+        html = jsonResults,
+        attachments = message.attachments,
+      } = results;
+
       const mailOptions = {
-        from: this._config.from,
-        to: this._config.to,
-        subject: results.subject || this._config.subject,
-        text: body,
-        html: body,
+        ...message,
+        to,
+        subject,
+        text,
+        html,
+        attachments,
       };
 
-      // debug('Sending e-mail...', mailOptions);
+      debug('Sending e-mail...', mailOptions);
 
-      nodemailer.createTransport(this._config.smtp)
-        .sendMail(mailOptions, (error, info) => {
+      nodemailer.createTransport(smtp)
+        .sendMail(mailOptions, (error, mailInfo) => {
           if (error) {
             debug(error.message);
             reject(error);
             return;
           }
 
-          debug('E-mail sent:', info.response);
-          resolve(info);
+          debug('E-mail sent:', mailInfo.response);
+          resolve({ results, mailInfo });
         });
     });
   }

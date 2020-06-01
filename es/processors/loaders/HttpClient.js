@@ -8,7 +8,6 @@ const makeDir = require('make-dir');
 const get = require('lodash.get');
 const debug = require('debug')('jason:load:http');
 
-const REGEX_PAGINATION_EXP = /{(.+)}/;
 const REGEX_ABSOLUTE_LINK = /^https?:\/\//;
 
 const readFileAsync = promisify(fs.readFile);
@@ -22,36 +21,43 @@ class HttpClient {
   /**
    * @param {Object} config The config object
    * @param {*} config.*
-   * Keys prefixed with "_" will be used for the loader own configuration.
+   * Keys prefixed with "_" will be used for the loader's own configuration.
    * Other keys will be used as axios options.
    * @param {number} [config._concurrency=1] The concurrency limit when following links and/or
    * paginating.
    */
-  constructor(config) {
+  constructor({ config = {} } = {}) {
     this._httpConfig = {};
     this._config = {};
 
-    Object.keys(config).forEach((key) => {
+    Object.entries(config).forEach(([key, value]) => {
       if (key[0] !== '_') {
-        this._httpConfig[key] = config[key];
+        this._httpConfig[key] = value;
       } else {
-        this._config[key.slice(1)] = config[key];
+        this._config[key.slice(1)] = value;
       }
     });
 
-    this._httpClient = axios.create(this._httpConfig);
-    this._lastHttpConfig = this._httpConfig;
+    this._httpClient = axios.create();
+
+    debug('HttpClient instance created.');
+    debug('HTTP config', this._httpConfig);
 
     this._config = { concurrency: 1, ...this._config };
     this._config.concurrency = Number(this._config.concurrency); // just in case
 
-    debug('HttpClient instance created.');
-    debug('HTTP config', this._httpConfig);
-    debug('config', this._config);
-
     if (this._config.cache) {
+      const cacheConfig = this._config.cache;
+
+      Object.entries(cacheConfig).forEach(([key, value]) => {
+        cacheConfig[key.slice(1)] = value;
+        delete cacheConfig[key];
+      });
+
       this._setupCache();
     }
+
+    debug('config', this._config);
 
     this._runs = 0;
   }
@@ -74,11 +80,12 @@ class HttpClient {
         }
 
         const response = await readFileAsync(cacheFile);
-        debug('Response from cache file "%s".', cacheKey, args);
+        debug('Response from cache file "%s".', cacheKey);
 
         return JSON.parse(response);
       } catch (readError) {
-        debug('Response not from cache file "%s".', cacheKey, args, readError.toString());
+        debug('Creating cache file... Reason ->', readError.toString());
+
         const response = await originalRequest(args);
 
         try {
@@ -91,9 +98,9 @@ class HttpClient {
           };
 
           await writeFileAsync(cacheFile, JSON.stringify(cachedResponse));
-          debug('Cache file "%s" written.', cacheKey, args);
+          debug('Cache file "%s" created.', cacheKey);
         } catch (writeError) {
-          debug('Error writing cache file "%s"!', cacheKey, args, writeError.toString());
+          debug('Error creating cache file "%s"!', cacheKey, args, writeError.toString());
         }
 
         return response;
@@ -112,48 +119,12 @@ class HttpClient {
   }
 
   /**
-   * Builds all the links defined by the pagination config.
-   * @return {Array}
-   */
-  buildPaginationLinks() {
-    const configUrl = this._httpConfig.url || '';
-
-    const matches = configUrl.match(REGEX_PAGINATION_EXP);
-    if (!matches) {
-      return [configUrl];
-    }
-
-    let [start, end] = matches[1].split(',').map(s => Number(s));
-
-    if (end === undefined) {
-      end = start;
-    } else if (Number.isNaN(end) || end < start) {
-      debug('Warning: invalid end value for pagination ("%s")! Forcing to %s.', end, start);
-      end = start;
-    }
-
-    debug('Building pagination from %d -> %d.', start, end);
-
-    const links = [];
-
-    while (start <= end) {
-      const url = configUrl.replace(REGEX_PAGINATION_EXP, start);
-      links.push(url);
-      start += 1;
-    }
-
-    debug(links);
-
-    return links;
-  }
-
-  /**
-   * Builds new load options. Used for following/paginating.
+   * Builds new load options.
    * @param {string} link
    * @return {Object}
    */
   buildLoadOptions({ link }) {
-    const options = { ...this._lastHttpConfig };
+    const options = {};
 
     if (link.match(REGEX_ABSOLUTE_LINK)) {
       options.baseURL = link;
@@ -167,19 +138,19 @@ class HttpClient {
   }
 
   /**
-   * @param {Object} [options] Optional HTTP options, used when following/paginating.
+   * @param {Object} [options] Optional HTTP options.
    * @return {Promise}
    */
-  async run({ options }) {
-    this._lastHttpConfig = { ...this._lastHttpConfig, ...options };
+  async run({ options } = {}) {
+    const httpConfig = { ...this._httpConfig, ...options };
     this._runs += 1;
 
     debug('Run #%s...', this._runs);
 
-    const start = this._logRequest(this._lastHttpConfig);
+    const start = this._logRequest(httpConfig);
 
     try {
-      const response = await this._httpClient.request(this._lastHttpConfig);
+      const response = await this._httpClient.request(httpConfig);
 
       this._logResponse(response, start);
 
@@ -188,7 +159,7 @@ class HttpClient {
       if (requestError.response) {
         this._logResponse(requestError.response, start);
       } else {
-        debug(requestError.message);
+        debug(requestError.toString());
       }
 
       throw requestError;
@@ -206,9 +177,11 @@ class HttpClient {
       baseURL = '',
       url = '',
       params = '',
+      headers,
     } = request;
 
     debug('%s %s%s...', method.toUpperCase(), baseURL, url, params);
+    debug(headers);
 
     return Date.now();
   }

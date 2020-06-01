@@ -1,0 +1,18 @@
+{
+  "load": {
+    "file": {
+      "path": "demos/data/in/goodreads-books.csv"
+    }
+  },
+  "parse": {
+    "csv": {
+      "columns": true,
+      "delimiter": ","
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/misc-goodreads-books-transformed.json"
+    }
+  }
+}

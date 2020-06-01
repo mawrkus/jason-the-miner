@@ -3,7 +3,7 @@ const HtmlParser = require('../HtmlParser');
 const defaultParserHelpers = require('../helpers');
 
 function createParser() {
-  return new HtmlParser({}, defaultParserHelpers);
+  return new HtmlParser({ helpers: defaultParserHelpers });
 }
 
 describe('HtmlParser', () => {
@@ -461,6 +461,7 @@ describe('HtmlParser', () => {
             title: 'span < text | trim',
             url: 'a < attr(data-url)',
           }],
+          totalSongs: ['li < count()'],
           anchors: ['a ? attr(href,^#\\d) < attr(href)'],
           note: '< text(Jason, you\'re fantastic!)',
         };
@@ -479,6 +480,7 @@ describe('HtmlParser', () => {
               url: 'http://luavega.com/',
             },
           ],
+          totalSongs: 3,
           anchors: ['#1', '#3'],
           note: 'Jason, you\'re fantastic!',
         });
@@ -500,15 +502,15 @@ describe('HtmlParser', () => {
               name: 'img < attr(alt)',
               src: 'img < attr(src)',
               _paginate: {
-                link: '.more',
-                depth: 2,
+                _link: '.more',
+                _depth: 2,
               },
             }],
           }],
           _paginate: {
-            link: '.next-page',
-            slice: '0,3',
-            depth: 1,
+            _link: '.next-page | trim',
+            _slice: '0,3',
+            _depth: 1,
           },
         };
 

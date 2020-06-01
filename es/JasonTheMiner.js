@@ -18,13 +18,14 @@ class JasonTheMiner {
    * Creates a new instance and registers the default processors and the default parse helpers.
    * @param  {Object} [options={}]
    * @param  {Object} [options.fallbacks] Fallback processors for each category, defaults to
-   * { load: 'identity', parse: 'identity', transform: 'identity' }
+   * { bulk: null, load: 'identity', parse: 'identity', transform: 'identity' }
    */
   constructor({ fallbacks = {} } = {}) {
     this._processors = { ...defaultProcessors };
     this._parseHelpers = { ...defaultParserHelpers };
 
     this._fallbacks = {
+      bulk: null,
       load: 'identity',
       parse: 'identity',
       transform: 'identity',
@@ -32,9 +33,10 @@ class JasonTheMiner {
     };
 
     this.config = {
-      load: {},
-      parse: {},
-      transform: {},
+      bulk: null,
+      load: null,
+      parse: null,
+      transform: null,
     };
 
     debug('A new miner is born, and his name is Jason!');
@@ -54,6 +56,8 @@ class JasonTheMiner {
    * @param  {Processor} options.processor A processor class
    */
   registerProcessor({ category, name, processor }) {
+    debug('Registering new "%s" processor "%s"...', category, name);
+
     if (!['load', 'parse', 'transform'].includes(category)) {
       throw new Error(`Unknown processor category "${category}"!`);
     }
@@ -63,17 +67,16 @@ class JasonTheMiner {
     }
 
     if (typeof processor.prototype.run !== 'function') {
-      throw new TypeError(`Invalid "${category}" processor "${name}"! Missing method.`);
+      throw new TypeError(`Invalid "${category}" processor "${name}"! Missing "run()" method.`);
     }
 
     if (
       category === 'load' && (
-        typeof processor.prototype.getConfig !== 'function' ||
-        typeof processor.prototype.buildPaginationLinks !== 'function' ||
-        typeof processor.prototype.buildLoadOptions !== 'function'
+        typeof processor.prototype.getConfig !== 'function'
+        || typeof processor.prototype.buildLoadOptions !== 'function'
       )
     ) {
-      throw new TypeError(`Invalid "load" processor "${name}"! Missing method.`);
+      throw new TypeError(`Invalid "load" processor "${name}"! Missing "getConfig()" and/or "buildLoadOptions()" method(s).`);
     }
 
     this._processors[category][name] = processor;
@@ -90,6 +93,8 @@ class JasonTheMiner {
    * folder for examples
    */
   registerHelper({ category, name, helper }) {
+    debug('Registering new "%s" helper "%s"...', category, name);
+
     if (typeof helper !== 'function') {
       throw new TypeError(`Invalid helper "${name}"! Function expected.`);
     }
@@ -105,7 +110,7 @@ class JasonTheMiner {
   /**
    * Loads a JSON/JS config file.
    * @param  {string} configPath The path to the config file
-   * @return {Promise.<Object|Error>}
+   * @return {Promise}
    */
   loadConfig(configPath) {
     debug('Loading config file "%s"...', configPath);
@@ -114,10 +119,20 @@ class JasonTheMiner {
       // eslint-disable-next-line global-require, import/no-dynamic-require
       const config = require(path.join(process.cwd(), configPath));
 
-      ['load', 'parse', 'transform']
+      this.config = {
+        bulk: null,
+        load: null,
+        parse: null,
+        transform: null,
+      };
+
+      ['bulk', 'load', 'parse', 'transform']
         .filter(category => !!config[category])
         .forEach((category) => {
-          this.config[category] = { ...config[category] };
+          this.config[category] = Array.isArray(config[category])
+            ? [...config[category]]
+            : { ...config[category] };
+
           debug('"%s" config set', category, this.config[category]);
         });
 
@@ -129,27 +144,97 @@ class JasonTheMiner {
   }
 
   /**
-   * Launches the whole process: (load > parse) * n -> transform
-   * TODO: think about "streaming", (load > parse > transform) * n
-   * @param  {Object} [options={}] An optional config that can override the current one
+   * @param  {Object} [options={}] Optional configs that can override the current ones
+   * @param  {Object} [options.bulk]
    * @param  {Object} [options.load]
    * @param  {Object} [options.parse]
-   * @param  {Object} [options.transform]
-   * @throws
-   * @return {Promise.<Object>}
+   * @param  {Object|Array} [options.transform]
+   * @return {Promise}
    */
-  async harvest({ load, parse, transform } = {}) {
+  async harvest(configs = {}) {
     debug('Harvesting...');
 
+    const currentConfigs = this._resolveConfigs(configs);
+    const { bulk } = currentConfigs;
+
+    if (!bulk) {
+      return this._harvest(currentConfigs);
+    }
+
+    debug('Bulk harvesting...');
+
+    const bulkLoader = this._buildProcessor('load', bulk);
+    const bulkParamsList = await bulkLoader.run();
+
+    debug('%d set(s) of params loaded.', bulkParamsList.length);
+    debug(bulkParamsList);
+
+    const bulkConfigsList = bulkParamsList
+      .map(params => this._renderConfigs(currentConfigs, params));
+
+    const bulkIterationsCount = bulkConfigsList.length;
+
+    debug('%d config(s) rendered...', bulkIterationsCount);
+    debug(bulkConfigsList);
+
+    const bulkResults = [];
+    let remainingCount = bulkIterationsCount;
+
+    /* eslint-disable no-restricted-syntax, no-await-in-loop */
+    for (const bulkConfigs of bulkConfigsList) {
+      debug('%d bulk iteration(s) remaining...', remainingCount);
+
+      const results = await this._harvest(bulkConfigs);
+      bulkResults.push(results);
+
+      remainingCount -= 1;
+    }
+
+    return bulkResults;
+  }
+
+  /**
+   * Launches the whole process: (load > parse) * m ---> transform * n
+   * @param  {Object} config
+   * @param  {Object} config.load
+   * @param  {Object} config.parse
+   * @param  {Object|Array} config.transform
+   * @throws
+   * @return {Promise}
+   */
+  async _harvest({ load, parse, transform }) {
     const loader = this._buildProcessor('load', load);
     const parser = this._buildProcessor('parse', parse);
-    const transformer = this._buildProcessor('transform', transform);
+
+    const transforms = Array.isArray(transform) ? transform : [transform];
+    const transformers = transforms.map(t => this._buildProcessor('transform', t));
 
     try {
-      const results = await this._harvest({ loader, parser });
-      return transformer.run({ results }); // TODO: support array of transformers ?
+      const parseResults = await this._crawl({ loader, parser });
+
+      debug('Transforming results...');
+
+      let transformedResults = { results: parseResults };
+      let transformParams = { parseResults, results: parseResults };
+
+      /* eslint-disable no-restricted-syntax, no-await-in-loop */
+      for (const t of transformers) {
+        transformedResults = await t.run(transformParams);
+        transformParams = { ...transformedResults, parseResults };
+      }
+      /* eslint-enable no-restricted-syntax, no-await-in-loop */
+
+      // Prevent NoOp transformer to make it fail
+      if (transformedResults) {
+        delete transformedResults.parseResults;
+      }
+
+      debug('Finished transforming results.');
+
+      return transformedResults;
     } catch (error) {
-      this._formatError(error);
+      debug('Error while harvesting!');
+      debug(error);
       throw error;
     }
   }
@@ -157,11 +242,11 @@ class JasonTheMiner {
   /**
    * @param  {Loader} loader
    * @param  {Parser} parser
-   * @return {Promise.<Object>}
+   * @param  {Array} [options.loadOptionsList=[{}]]
+   * @return {Promise}
    */
-  async _harvest({ loader, parser }) {
+  async _crawl({ loader, parser, loadOptionsList = [{}] }) {
     const { concurrency = 1 } = loader.getConfig();
-    const paginationLinks = loader.buildPaginationLinks();
 
     const root = {
       id: 1,
@@ -170,9 +255,9 @@ class JasonTheMiner {
       children: {},
     };
 
-    const crawls = paginationLinks
-      .map(link => ({
-        link,
+    const crawls = loadOptionsList
+      .map(loadOptions => ({
+        loadOptions,
         parent: root,
         mergePath: [],
         level: 0,
@@ -211,7 +296,7 @@ class JasonTheMiner {
         currentCrawls,
         (async (crawl) => {
           const {
-            link,
+            loadOptions,
             schema,
             parent,
             mergePath,
@@ -220,12 +305,13 @@ class JasonTheMiner {
 
           const parserResult = await this._crawLink({
             loader,
-            link,
+            loadOptions,
             parser,
             schema,
           });
 
           return {
+            loader,
             parent,
             mergePath,
             parserResult,
@@ -239,25 +325,26 @@ class JasonTheMiner {
 
       debug('Found %d more link(s) to crawl.', currentCrawls.length);
     } while (currentCrawls.length);
+
+    debug('Finished crawling.');
   }
 
   /**
-   * @param  {string} link
+   * @param  {Object} loadOptions
    * @param  {Loader} loader
    * @param  {Parser} parser
    * @param  {Object} schema
    * @return {Promise}
    */
   async _crawLink({
-    link,
+    loadOptions,
     loader,
     parser,
     schema,
   }) {
-    debug('Crawling "%s"...', link);
+    debug('Crawling...', loadOptions);
     try {
-      const options = loader.buildLoadOptions({ link });
-      const loadResult = await loader.run({ options });
+      const loadResult = await loader.run({ options: loadOptions });
       return parser.run({ data: loadResult, schema });
     } catch (error) {
       debug(error);
@@ -282,28 +369,31 @@ class JasonTheMiner {
     let allNextCrawls = [];
     const nodesToMerge = [];
 
-    crawlResults.forEach((crawlResult) => {
-      const { parent, mergePath, parserResult } = crawlResult;
-      const { result } = parserResult;
+    crawlResults
+      // Prevent NoOp parser to make it fail
+      .filter(({ parserResult }) => Boolean(parserResult))
+      .forEach((crawlResult) => {
+        const { parent, mergePath, parserResult } = crawlResult;
+        const { result } = parserResult;
 
-      const id = uuid();
-      const newNode = {
-        id,
-        parent,
-        mergePath,
-        result,
-        children: {},
-      };
-      parent.children[id] = newNode;
+        const id = uuid();
+        const newNode = {
+          id,
+          parent,
+          mergePath,
+          result,
+          children: {},
+        };
+        parent.children[id] = newNode;
 
-      const nextCrawls = this._getNextCrawls({ crawlResult, parent: newNode });
+        const nextCrawls = this._getNextCrawls({ crawlResult, parent: newNode });
 
-      if (nextCrawls.length) {
-        allNextCrawls = [...allNextCrawls, ...nextCrawls];
-      } else {
-        nodesToMerge.push(newNode);
-      }
-    });
+        if (nextCrawls.length) {
+          allNextCrawls = [...allNextCrawls, ...nextCrawls];
+        } else {
+          nodesToMerge.push(newNode);
+        }
+      });
 
     // as the merging process depends on the total number of children of a given node,
     // this must be done here, after adding all leaf nodes
@@ -319,7 +409,7 @@ class JasonTheMiner {
    */
   // eslint-disable-next-line class-methods-use-this
   _getNextCrawls({ crawlResult, parent }) {
-    const { parserResult, level } = crawlResult;
+    const { loader, parserResult, level } = crawlResult;
     const { schema, follows, paginates } = parserResult;
 
     const filteredPaginates = paginates
@@ -335,7 +425,7 @@ class JasonTheMiner {
       } = follow;
 
       return {
-        link,
+        loadOptions: loader.buildLoadOptions({ link }),
         schema: !schemaPath.length ? schema : get(schema, schemaPath),
         parent,
         mergePath: parsedPath,
@@ -426,21 +516,15 @@ class JasonTheMiner {
   }
 
   /**
-   * Creates a new instance of a processor from a given category.
-   * If the processor cannot be created (because the configuration doesn't specify a processor
-   * previously registered), this function returns the fallback processor defined for each
-   * category.
    * @param  {string} category "load", "parse", "paginate" or "transform"
-   * @param  {Object} [config={}] An optional config that can override the current category config
+   * @param  {Object} [config]
    * @return {Object} processor
    */
   _buildProcessor(category, config = {}) {
-    const categoryProcessors = this._processors[category];
-    const categoryConfig = this.config[category] || {};
-    const processorName = Object.keys(config)[0] || Object.keys(categoryConfig)[0];
+    const processorName = Object.keys(config)[0];
     const fallbackName = this._fallbacks[category];
+    const categoryProcessors = this._processors[category];
     const Processor = categoryProcessors[processorName] || categoryProcessors[fallbackName];
-    const customConfig = { ...categoryConfig[processorName], ...config[processorName] };
 
     if (!processorName) {
       debug('No "%s" processor specified. Using fallback "%s".', category, fallbackName);
@@ -448,7 +532,107 @@ class JasonTheMiner {
       debug('No "%s" processor found with the name "%s"! Using fallback "%s".', category, processorName, fallbackName);
     }
 
-    return category === 'parse' ? new Processor(customConfig, this._parseHelpers) : new Processor(customConfig);
+    const processorConfig = config[processorName];
+
+    return category === 'parse'
+      ? new Processor({ config: processorConfig, helpers: this._parseHelpers, category })
+      : new Processor({ config: processorConfig, category });
+  }
+
+  /**
+   * @param  {Object} configs
+   * @param  {Object} [configs.bulk]
+   * @param  {Object} [configs.load]
+   * @param  {Object} [configs.parse]
+   * @param  {Object} [configs.transform]
+   * @return {Object}
+   */
+  _resolveConfigs(configs) {
+    debug('Resolving current configs...');
+
+    const currentConfigs = ['bulk', 'load', 'parse', 'transform']
+      .reduce(
+        (acc, category) => {
+          let config = configs[category];
+          if (config) {
+            debug(' -> using "%s" config passed as parameter.', category);
+            acc[category] = config;
+            return acc;
+          }
+
+          config = this.config[category];
+          if (config) {
+            debug('-> using "%s" config previously set.', category);
+            acc[category] = config;
+            return acc;
+          }
+
+          debug('-> no "%s" config passed or set.', category);
+          return acc;
+        },
+        {},
+      );
+
+    return currentConfigs;
+  }
+
+  /**
+    E.g.:
+      configs = {
+        "load": {
+          "baseURL": "https://github.com",
+          "url": "/search?l={language}&o=desc&q={query}",
+          "_concurrency": 42
+        },
+        ...
+      }
+
+      params = { language: 'JavaScript', query: 'scraper' }
+
+      --->
+
+      [{
+        "load": {
+          "baseURL": "https://github.com",
+          "url": "/search?l=JavaScript&o=desc&q=scraper"
+        },
+        ...
+      }]
+   * @param  {Object} configs
+   * @param  {Object} [configs.bulk]
+   * @param  {Object} [configs.load]
+   * @param  {Object} [configs.parse]
+   * @param  {Object} [configs.transform]
+   * @param  {Object} params
+   * @return {Object[]}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  _renderConfigs(configs, params) {
+    const renderedConfigs = ['load', 'parse', 'transform'].reduce(
+      (acc, category) => {
+        const sourceConfig = configs[category];
+        const destConfig = Array.isArray(sourceConfig) ? [] : {};
+
+        acc[category] = mergeWith(
+          destConfig,
+          sourceConfig,
+          // eslint-disable-next-line consistent-return
+          (destValue, srcValue) => {
+            if (typeof srcValue === 'string') {
+              return Object.entries(params).reduce(
+                (renderedString, [param, value]) => renderedString.replace(`{${param}}`, value),
+                srcValue,
+              );
+            }
+          },
+        );
+
+        return acc;
+      },
+      {},
+    );
+
+    return renderedConfigs;
   }
 }
 

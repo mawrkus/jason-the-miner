@@ -1,5 +1,6 @@
 # Jason the Miner
- [![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
+
+[![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
 ![Node version](https://img.shields.io/node/v/jason-the-miner.svg?style=flat-square)
 
 Harvesting data at the `<html>` mine... Jason the Miner, a versatile Web scraper for Node.js.
@@ -7,9 +8,9 @@ Harvesting data at the `<html>` mine... Jason the Miner, a versatile Web scraper
 ## ⛏ Features
 
 - **Composable:** via a modular architecture based on pluggable processors. The output of one processor feeds the input of the next one. There are 3 processor categories:
-  1. `loaders`: to fetch the data (via HTTP requests, by reading text files, etc.)
-  2. `parsers`: to parse the data (HTML by default) & extract the relevant parts according to a predefined schema
-  3. `transformers`: to transform and/or output the results (to a CSV file, via email, etc.)
+  1. loaders: to fetch the data (via HTTP requests, by reading text files, etc.)
+  2. parsers: to parse the data (HTML by default) & extract the relevant parts according to a predefined schema
+  3. transformers: to transform and/or output the results (to a CSV file, via email, etc.)
 - **Configurable:** each processor can be chosen & configured independently
 - **Extensible:** you can register your own custom processors
 - **CLI-friendly:** Jason the Miner works well with pipes & redirections
@@ -33,7 +34,18 @@ $ npm install
 $ npm run demos
 ```
 
-...and have a look at the "demos" folder.
+...and have a look at the "demos" folder, among them, you'll find scraping:
+
+- Simple GitHub search (JSON, CSV, Markdown output)
+- Extended GitHub search with issues (including following links & paginating issues)
+- Goodreads books and following to Amazon to grab their product ID
+- Google search and follow search results for finding mobile apps
+- Imdb images gallery links (with pagination)
+- Mixcloud stats, templating them & sending them by mail
+- Controlling the Chrome browser to scrape PWAs
+- Avatars download
+- Bulk insertions to Elasticsearch from a CSV file
+- ...
 
 ## ⛏ Examples
 
@@ -48,21 +60,17 @@ Scraping the most popular Javascript scrapers from GitHub:
     "http": {
       "url": "https://github.com/search",
       "params": {
-        "l": "JavaScript",
-        "o": "desc",
         "q": "scraper",
+        "l": "JavaScript",
+        "type": "Repositories",
         "s": "stars",
-        "type": "Repositories"
+        "o": "desc"
       }
     }
   },
   "parse": {
     "html": {
-      "repos": [{
-        "_$": ".repo-list .repo-list-item",
-        "name": "h3 > a",
-        "description": "div:first-child > p | trim"
-      }]
+      "repos": [".repo-list .repo-list-item h3 > a"]
     }
   },
   "transform": {
@@ -84,18 +92,14 @@ Alternatively, with pipes & redirections:
 {
   "parse": {
     "html": {
-      "repos": [{
-        "_$": ".repo-list .repo-list-item",
-        "name": "h3 > a",
-        "description": "div:first-child > p | trim"
-      }]
+      "repos": [".repo-list .repo-list-item h3 > a"]
     }
   }
 }
 ```
 
 ```shell
-$ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories | jason-the-miner -c github-config.json > github-repos.json
+$ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories&s=stars&o=desc | jason-the-miner -c github-config.json > github-repos.json
 ```
 
 #### API
@@ -120,11 +124,7 @@ const load = {
 
 const parse = {
   html: {
-    repos: [{
-      _$: ".repo-list .repo-list-item",
-      name: "h3 > a",
-      description: "div:first-child > p | trim"
-    }]
+    "repos": [".repo-list .repo-list-item h3 > a"]
   }
 };
 
@@ -155,42 +155,108 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 
 ### Loaders
 
-Jason the Miner comes with 3 built-in loaders:
+Jason the Miner comes with 5 built-in loaders:
 
 | Name | Description | Options |
 | --- |---| --- |
 | `http` | Uses [axios](https://github.com/mzabriskie/axios) as HTTP client | All [axios](https://github.com/mzabriskie/axios) request options + `[_concurrency=1]` (to limit the number of concurrent requests when following/paginating) &  `[_cache]` (to cache responses on the file system) |
+| `browser` | Uses [puppeteer](https://github.com/GoogleChrome/puppeteer) as browser | [puppeteer](https://github.com/GoogleChrome/puppeteer) `launch`, `goto`, `screenshot`, `pdf` and `evaluate` options |
 | `file` | Reads the content of a file | `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]` (to limit the number of concurrent requests when paginating) |
+| `csv-file` | Uses [csv-parse](https://github.com/adaltas/node-csv-parse) to read a CSV file | All [csv-parse](http://csv.adaltas.com/parse) options in a `csv` object + `path`+ `[encoding="utf8"]` |
 | `stdin` | Reads the content from the standard input | `[encoding="utf8"]` |
 
-For example, an HTTP load config with pagination (pages 1 -> 3) where responses will be cached in the "tests/http-cache" folder:
+For example, an HTTP load config which responses will be cached in the "tests/http-cache" folder:
 
 ```js
 ...
 "load": {
   "http": {
     "baseURL": "https://github.com",
-    "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories&p={1,3}",
+    "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
     "_concurrency": 2,
     "_cache": {
-      "folder": "tests/http-cache"
+      "_folder": "tests/http-cache"
     }
   }
 }
 ...
 ```
 
-Check the "demos" folder for more examples.
+Check the [demos](demos/configs) folder for more examples.
 
 ### Parsers
 
-Currently, Jason the Miner comes with a single built-in parser:
+Currently, Jason the Miner comes with a 2 built-in parsers:
 
 | Name | Description | Options |
 | --- |---| --- |
 |`html`|Parses HTML, built with [Cheerio](https://github.com/cheeriojs/cheerio)|A parse schema|
+|`csv`|Parses CSV, built with [csv-parse](https://github.com/adaltas/node-csv-parse)|All [csv-parse](http://csv.adaltas.com/parse) options|
 
-#### Schema definition
+#### HTML schema definition
+
+##### Examples
+
+```js
+...
+  "html": {
+    // Single value
+    "repo": ".repo-list .repo-list-item h3 > a"
+
+    // Collection of values
+    "repos": [".repo-list .repo-list-item h3 > a"]
+
+    // Single object
+    "repo": {
+      "name": ".repo-list .repo-list-item h3 > a",
+      "description": ".repo-list .repo-list-item div:first-child"
+    }
+
+    // Single object, providing a root selector _$
+    "repo": {
+      "_$": ".repo-list .repo-list-item",
+      "name": "h3 > a",
+      "description": "div:first-child"
+    }
+
+    // Collection of objects
+    "repos": [{
+      "_$": ".repo-list .repo-list-item",
+      "name": "h3 > a",
+      "description": "div:first-child"
+    }]
+
+    // Following
+    "repos": [{
+      "_$": ".repo-list .repo-list-item",
+      "name": "h3 > a",
+      "description": "div:first-child",
+      "_follow": {
+        "_link": "h3 > a",
+        "stats": {
+          "_$": ".pagehead-actions",
+          "watchers": "li:nth-child(1) a.social-count",
+          "stars": "li:nth-child(2) a.social-count",
+          "forks": "li:nth-child(3) a.social-count"
+        }
+      }
+    }]
+
+    // Paginating
+    "repos": [{
+      "_$": ".repo-list .repo-list-item",
+      "name": "h3 > a",
+      "description": "div:first-child",
+      "_paginate": {
+        "_link": ".pagination > a[rel='next']",
+        "_depth": 1
+      }
+    }]
+  }
+...
+```
+
+**Full flavour**
 
 ```js
 ...
@@ -224,9 +290,9 @@ Currently, Jason the Miner comes with a single built-in parser:
             "opened": "relative-time < attr(datetime)"
           }],
           "_paginate": {
-            "link": "a[rel='next']",
-            "slice": "0,1",
-            "depth": 2
+            "_link": "a[rel='next']",
+            "_slice": "0,1",
+            "_depth": 2
           }
         }
       }
@@ -235,7 +301,7 @@ Currently, Jason the Miner comes with a single built-in parser:
 ...
 ```
 
-A schema is a plain object that recursively defines:
+As you can see, a schema is a plain object that recursively defines:
  - the names of the values/collection of values that you want to extract: "title" (single value), "metas" (object), "stylesheets" (collection of values), "repos" (collection of objects)
  - how to extract them: `[selector] ? [matcher] < [extractor] | [filter]` (check "Parse helpers" below)
 
@@ -273,7 +339,7 @@ Jason has 4 built-in element **matchers**:
 They are used to test an element in order to decide whether to include/discard it from parsing.
 If not specified, Jason includes every element.
 
-6 built-in text **extractors**:
+7 built-in text **extractors**:
 
 - `text([optionalStaticText])` (by default)
 - `html()`
@@ -281,13 +347,15 @@ If not specified, Jason includes every element.
 - `regex(regexString)`
 - `date(inputFormat,outputFormat)` (parses a date with [moment](https://www.npmjs.com/package/moment))
 - `uuid()` (generates a uuid v1 with [uuid](https://www.npmjs.com/package/uuid))
+- `count()` (counts the number of elements matching the selector, needs an array schema definition)
 
-and 4 built-in text **filters**:
+and 5 built-in text **filters**:
 
 - `trim`
 - `single-space`
 - `lowercase`
 - `uppercase`
+- `json-parse` (to parse JSON, like [JSON-LD](https://json-ld.org/))
 
 ### Transformers
 
@@ -295,9 +363,68 @@ and 4 built-in text **filters**:
 | --- |---| --- |
 | `stdout` | Writes the results to stdout | `[encoding="utf8"]` |
 | `json-file` | Writes the results to a JSON file | `path` & `[encoding="utf8"]` |
-| `csv-file` | Writes the results to a CSV file using [csv-stringify](http://csv.adaltas.com/stringify/) | Same as [csv-stringify](http://csv.adaltas.com/stringify/) + `path` & `[encoding='utf8']` |
+| `csv-file` | Writes the results to a CSV file using [csv-stringify](http://csv.adaltas.com/stringify/) | `csv`: same as [csv-stringify](http://csv.adaltas.com/stringify/) + `path`, `[encoding='utf8']` and `[append=false]` (whether to append the results to an existing file or not) |
 | `download-file` | Downloads files to a given folder using [axios](https://github.com/mzabriskie/axios) | `[baseURL]`, `[parseKey]`, `[folder='.']`, `[namePattern='{name}']`, `[maxSizeInMb=1]` & `[concurrency=1]`
-| `email` | Sends the results by email using [nodemailer](https://github.com/nodemailer/nodemailer/) | Same as [nodemailer](https://github.com/nodemailer/nodemailer/) |
+| `email` | Sends the results by email using [nodemailer](https://github.com/nodemailer/nodemailer/) | Same as [nodemailer](https://github.com/nodemailer/nodemailer/), split between the `smtp` and `message` options |
+
+Jason supports a single transformer or an array of transformers:
+
+```js
+{
+  ...
+  "transform": [{
+    "json-file": {
+      "path": "./github-repos.json"
+    }
+  }, {
+    "csv-file": {
+      "path": "./github-repos.csv"
+    }
+  }]
+}
+```
+
+### ⛏ Bulk processing
+
+```js
+{
+  "bulk": {
+    "csv-file": {
+      "path": "./github-search-queries.csv",
+      "csv": {
+        "columns": true,
+        "delimiter": ","
+      }
+    }
+  },
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l={language}&o=desc&q={query}&s=stars&type=Repositories",
+      "_concurrency": 2
+    }
+  },
+  "parse": {
+    "html": {
+      "title": "< text(Best {language} repos)",
+      "repos": [".repo-list .repo-list-item h3 > a"]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "./github-repos-{language}.json"
+    }
+  }
+}
+```
+
+github-search-queries.csv :
+
+```
+language,query
+JavaScript,scraper
+Python,scraper
+```
 
 ## ⛏ API
 
@@ -306,12 +433,14 @@ and 4 built-in text **filters**:
 `fallbacks` defines which processor to use when not explicitly configured (or missing in the config file):
 - `load`: 'identity',
 - `parse`: 'identity',
-- `transform`: 'identity'
+- `transform`: 'identity',
+- `bulk`: null
 
 The fallbacks change when using the CLI (see `bin/jason-the-miner.js`):
 - `load`: 'stdin',
 - `parse`: 'html',
-- `transform`: 'stdout'
+- `transform`: 'stdout',
+- `bulk`: null
 
 ### loadConfig(configFile)
 
@@ -321,7 +450,7 @@ Loads a config from a JSON or JS file.
 jason.loadConfig('./harvest-me.json');
 ```
 
-### harvest({ load, parse, output, pagination } = {})
+### harvest({ bulk, load, parse, transform } = {})
 
 Launches the harvesting process:
 
@@ -347,7 +476,7 @@ jason
   .catch(error => console.error(error));
 ```
 
-To permanently override the current config, you can directly modify Jason's `config` property:
+To permanently override the current config, you can modify Jason's `config` property:
 
 ```js
 const allResults = [];
@@ -374,10 +503,20 @@ Registers a parse helper in one of the 3 categories: `match`, `extract` or `filt
 `helper` must be a function.
 
 ```js
+const url = require('url');
+
 jason.registerHelper({
   category: 'filter',
-  name: 'remove-protocol',
-  helper: text => text.replace(/^https?:/, '')
+  name: 'remove-query-params',
+  helper: (href = '') => {
+    if (!href || href === '#') {
+      return href;
+    }
+
+    const { protocol, host, pathname } = url.parse(href);
+
+    return `${protocol}//${host}${pathname}`;
+  }
 });
 ```
 
@@ -394,7 +533,7 @@ jason.registerProcessor({
 });
 
 class Templater {
-  constructor(config) {
+  constructor({ config }) {
     // receives automatically its config
   }
 
@@ -415,7 +554,7 @@ jason.config.transform = {
 };
 ```
 
-Be aware that loaders **must also implement** the `getConfig()`, `buildPaginationLinks()` and `buildLoadOptions({ link })` methods.
+Be aware that loaders **must also implement** the `getConfig()` and `buildLoadOptions({ link })` methods.
 Have a look at the source code for more info.
 
 ## ⛏ Testing
@@ -427,7 +566,7 @@ $ npm install
 $ npm run test
 ```
 
-## ⛏ References & related links
+## ⛏ Resources
 
 - Web Scraping With Node.js: https://www.smashingmagazine.com/2015/04/web-scraping-with-nodejs/
 - X-ray, The next web scraper. See through the <html> noise: https://github.com/lapwinglabs/x-ray
@@ -436,6 +575,7 @@ $ npm run test
 - https://www.scrapesentry.com/scraping-wiki/web-scraping-legal-or-illegal/
 - http://blog.icreon.us/web-scraping-and-you-a-legal-primer-for-one-of-its-most-useful-tools/
 - Web scraping o rastreo de webs y legalidad: https://www.youtube.com/watch?v=EJzugD0l0Bw
+- Scraper API blog: https://www.scraperapi.com/blog/
 
 ## ⛏ A final note...
 

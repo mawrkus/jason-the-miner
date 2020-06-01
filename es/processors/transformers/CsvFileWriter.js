@@ -2,43 +2,44 @@ const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
 const csvStringify = require('csv-stringify');
+const makeDir = require('make-dir');
 const debug = require('debug')('jason:transform:csv-file');
 
 const csvStringifyAsync = promisify(csvStringify);
 const writeFileAsync = promisify(fs.writeFile);
+const appendFileAsync = promisify(fs.appendFile);
 
 /**
- * A processor that writes results to CSV files. Depends on the "csv-stringify" package.
+ * A processor that writes results to a CSV file. Depends on the "csv-stringify" package.
  * @see http://csv.adaltas.com/stringify/
  */
 class CsvFileWriter {
   /**
-   * @param {Object} config
-   * @param {string} config.path
+   * @param {Object} config The config object
+   * @param {Object} config.csv csv-stringify options
+   * @param {number} config.path
    * @param {string} [config.encoding='utf8']
-   * @param {string} [config.header=true]
-   * @param {string} [config.delimiter=';']
-   * @param {*} ... See the "csv-stringify" package for all possible options.
+   * @param {boolean} [config.append=false]
    */
-  constructor(config) {
+  constructor({ config = {} } = {}) {
     this._config = {
+      encoding: 'utf8',
+      append: false,
+      ...config,
       outputPath: path.join(process.cwd(), config.path),
-      encoding: config.encoding || 'utf8',
-      csv: {
-        header: true,
-        delimiter: ';',
-        ...config,
-      },
     };
 
-    delete this._config.csv.path;
-
     debug('CsvFileWriter instance created.');
-    debug('config', this._config);
+    debug('CSV config', this._config.csv);
+    debug('path =', this._config.path);
+    debug('encoding =', this._config.encoding);
+    debug('append =', this._config.append);
   }
 
   /**
-   * @param {Object} results
+   * @param {Object} results The results from the previous transformer if any, or the
+   * parse results by default
+   * @param {Object} parseResults The original parse results
    * @return {Promise}
    */
   async run({ results }) {
@@ -47,17 +48,29 @@ class CsvFileWriter {
       return results;
     }
 
-    const { outputPath, encoding, csv: csvConfig } = this._config;
+    const {
+      csv,
+      outputPath,
+      encoding,
+      append,
+    } = this._config;
 
+    const outputFolder = path.dirname(outputPath);
     const rootKey = Object.keys(results)[0];
-    const lines = results[rootKey];
-
-    debug('Writing %d lines to "%s" CSV file "%s"...', lines.length, encoding, outputPath);
+    const lines = Array.isArray(results) ? results : (results[rootKey] || []);
 
     try {
-      const csvString = await csvStringifyAsync(lines, csvConfig);
+      debug('Creating ouput folder "%s"...', outputFolder);
+      await makeDir(outputFolder);
 
-      await writeFileAsync(outputPath, csvString, encoding);
+      debug('Writing %d lines to "%s" CSV file "%s"...', lines.length, encoding, outputPath);
+      const csvString = await csvStringifyAsync(lines, csv);
+
+      if (append) {
+        await appendFileAsync(outputPath, csvString, encoding);
+      } else {
+        await writeFileAsync(outputPath, csvString, encoding);
+      }
 
       debug('Wrote %d chars.', csvString.length);
     } catch (error) {
@@ -65,7 +78,7 @@ class CsvFileWriter {
       throw error;
     }
 
-    return outputPath;
+    return { results, filePath: outputPath };
   }
 }
 

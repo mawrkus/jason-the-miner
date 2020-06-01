@@ -1,4 +1,5 @@
 const HtmlParser = require('./HtmlParser');
+const CsvParser = require('./CsvParser');
 const IdentityProcessor = require('../IdentityProcessor');
 const NoOperationProcessor = require('../NoOperationProcessor');
 
@@ -9,6 +10,7 @@ const NoOperationProcessor = require('../NoOperationProcessor');
  */
 module.exports = {
   html: HtmlParser,
+  csv: CsvParser,
   identity: IdentityProcessor,
   noop: NoOperationProcessor,
 };

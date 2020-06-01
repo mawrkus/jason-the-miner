@@ -6,10 +6,13 @@ const debug = require('debug')('jason:noop');
 class NoOperationProcessor {
   /**
    * @param  {Object} config
+   * @param  {Object} config.data
+   * @param  {string} category
    */
-  constructor(config) {
+  constructor({ config = {}, category } = {}) {
     debug('NoOperationProcessor instance created.');
     debug('config', config);
+    debug('category =', category);
   }
 
   /**
@@ -27,15 +30,6 @@ class NoOperationProcessor {
    */
   getConfig() {
     return this._config;
-  }
-
-  /**
-   * Builds all the links defined by the pagination config.
-   * @return {Array}
-   */
-  // eslint-disable-next-line class-methods-use-this
-  buildPaginationLinks() {
-    return [];
   }
 
   /**

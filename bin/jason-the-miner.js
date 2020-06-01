@@ -28,6 +28,7 @@ const JasonTheMiner = require('..'); // must be AFTER setting the DEBUG environm
 
 const jason = new JasonTheMiner({
   fallbacks: {
+    bulk: null,
     load: 'stdin',
     parse: 'html',
     transform: 'stdout',
@@ -36,14 +37,13 @@ const jason = new JasonTheMiner({
 
 const configPath = path.join(config);
 
-const spinner = ora({ spinner: 'dots4' }).start();
+const spinner = ora({ spinner: 'dots4' }).start('⛏  Harvesting...');
 
 jason
   .loadConfig(configPath)
   .then(() => jason.harvest())
-  .then(() => spinner.succeed())
+  .then(() => spinner.succeed('All good! :D'))
   .catch((error) => {
-    spinner.fail();
-    console.error('Ooops! Something went wrong. :(');
+    spinner.fail('Ooops! Something went wrong. :(');
     console.error(error);
   });

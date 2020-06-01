@@ -1,0 +1,35 @@
+{
+  "load": {
+    "csv-file": {
+      "path": "demos/data/in/blogs.csv",
+      "csv": {
+        "quote": false,
+        "delimiter": ";",
+        "columns": [
+          "title",
+          "seo_title",
+          "url",
+          "author",
+          "date",
+          "category",
+          "locales",
+          "content"
+        ]
+      }
+    }
+  },
+  "parse": {
+    "identity": true
+  },
+  "transform": [{
+    "es-bulk-inserter": {
+      "url": "http://localhost:9200",
+      "index": "blog-v1",
+      "type": "_doc"
+    }
+  }, {
+    "json-file": {
+      "path": "demos/data/out/es-response.json"
+    }
+  }]
+}

@@ -32,14 +32,14 @@ function typeOf(definition) {
  */
 class HtmlParser {
   /**
-   * @param  {Object} schema The schema definition
+   * @param  {Object} config The schema definition
    * @param  {Object} helpers A set of parse helpers
    * @param  {Object} helpers.match A set of matchers
    * @param  {Object} helpers.extract A set of extractors
    * @param  {Object} helpers.filter A set of filters
    */
-  constructor(schema, helpers) {
-    this._schema = schema || {};
+  constructor({ config = {}, helpers = {} } = {}) {
+    this._schema = config || {};
     this._helpers = helpers;
     this._$ = cheerio;
     this._follows = [];
@@ -97,8 +97,9 @@ class HtmlParser {
     tab = '',
   }) {
     switch (typeOf(schema)) {
-      case 'string': // eslint-disable-line no-case-declarations
+      case 'string':
         debug('%sParsing value from "%s"...', tab, schema);
+        // eslint-disable-next-line no-case-declarations
         const value = this._extractElementValue({
           selectorDef: schema,
           $context,
@@ -256,17 +257,7 @@ class HtmlParser {
       slice = definition._slice;
     }
 
-    const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
-
-    if (definitionType === 'string') {
-      // Ideally the matcher part of the selector definition should be removed as well
-      // but it works because _extractElementValue() makes a special case for empty selectors
-      newSchema = selectorDef.replace(selector, '');
-    } else {
-      newSchema = { ...definition };
-      delete newSchema._$;
-      delete newSchema._slice;
-    }
+    const { selector, matcher, extractor } = this._parseSelectorDef({ selectorDef, tab });
 
     const { $elements, elementsCount } = this._findSlicedElements({
       selector,
@@ -275,6 +266,22 @@ class HtmlParser {
       $context,
       tab,
     });
+
+    if (definitionType === 'string') {
+      if (extractor._name === 'count') {
+        const value = elementsCount;
+        debug('%s* Value="%s"', `${tab}  `, value);
+        return value;
+      }
+
+      // Ideally the matcher part of the selector definition should be removed as well
+      // but it works because _extractElementValue() makes a special case for empty selectors
+      newSchema = selectorDef.replace(selector, '');
+    } else {
+      newSchema = { ...definition };
+      delete newSchema._$;
+      delete newSchema._slice;
+    }
 
     $elements.each((index, domElement) => {
       debug('%s--> %d/%d', tab, index + 1, elementsCount);
@@ -309,18 +316,24 @@ class HtmlParser {
     tab,
   }) {
     const { _link: selectorDef } = schema;
-    const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
+    const {
+      selector,
+      matcher,
+      extractor,
+      filter,
+    } = this._parseSelectorDef({ selectorDef, tab });
 
     // allow empty selector to get the value from the root/current element
-    const { $elements, elementsCount } = selector ?
-      this._findSlicedElements({
+    const { $elements, elementsCount } = selector
+      ? this._findSlicedElements({
         selector,
         matcher,
+        extractor,
         slice: '',
         $context,
         tab,
-      }) :
-      {
+      })
+      : {
         $elements: $context,
         elementsCount: $context.length,
       };
@@ -333,13 +346,21 @@ class HtmlParser {
     if (elementsCount > 1) {
       debug('%sWarning: keeping only the first link!', tab);
     }
+    const $first = $elements.first();
 
-    // TODO: allow custom extractor and filter?
-    const link = ($elements.first().attr('href') || '').trim();
+    // We prevent the default extractor ("text") to be used
+    const rawLink = extractor._name === 'default'
+      ? $first.attr('href') || $first.attr('src')
+      : extractor($first);
+
+    const link = filter(rawLink);
+
     if (!link) {
       debug('%sWarning: empty link found for selector "%s"! Nothing to follow.', tab, selector);
       return;
     }
+
+    debug('%s* Link="%s"', tab, link);
 
     this._follows = this._follows.concat({ link, schemaPath, parsedPath });
   }
@@ -358,14 +379,19 @@ class HtmlParser {
     parsedPath,
     tab,
   }) {
-    const { link: selectorDef, slice = '', depth = 1 } = schema;
+    const { _link: selectorDef, _slice: slice = '', _depth: depth = 1 } = schema;
 
     if (!selectorDef) {
       debug('%sWarning: no link selector! Skipping pagination.', tab);
       return;
     }
 
-    const { selector, matcher } = this._parseSelectorDef({ selectorDef, tab });
+    const {
+      selector,
+      matcher,
+      extractor,
+      filter,
+    } = this._parseSelectorDef({ selectorDef, tab });
 
     const { $elements, elementsCount } = this._findSlicedElements({
       selector,
@@ -386,12 +412,21 @@ class HtmlParser {
     }
 
     $elements.each((index, domElement) => {
-      // TODO: allow custom extractor and filter?
-      const link = (this._$(domElement).attr('href') || '').trim();
+      const $element = this._$(domElement);
+
+      // We prevent the default extractor ("text") to be used
+      const rawLink = extractor._name === 'default'
+        ? $element.attr('href') || $element.attr('src')
+        : extractor($element);
+
+      const link = filter(rawLink);
+
       if (!link) {
         debug('%sWarning: empty link found for one of the elements of selector "%s"! Skipping pagination for this element.', tab, selector);
         return;
       }
+
+      debug('%s* Link="%s"', tab, link);
 
       this._paginates = this._paginates.concat({
         link,
@@ -448,8 +483,7 @@ class HtmlParser {
    */
   _parseSelectorDef({ selectorDef, tab }) {
     debug('%sParsing selector definition="%s".', tab, selectorDef);
-    const [
-      ,
+    const [,
       rawSelector = '',
       rawMatcher = '',
       rawExtractor = '',
@@ -471,7 +505,9 @@ class HtmlParser {
 
       if (!helperDef) {
         helperDebug.push(`no ${category} helper (using default)`);
-        return categoryHelpers.default.bind(categoryHelpers);
+        const helper = categoryHelpers.default.bind(categoryHelpers);
+        helper._name = 'default';
+        return helper;
       }
 
       const { name, params, rawParams } = this._parseHelperDef({ helperDef });
@@ -484,11 +520,15 @@ class HtmlParser {
       // until a better idea/syntax for parsing
       if (category === 'extract' && name === 'text' && params.length) {
         helperDebug.push(`${category}="${name}(${rawParams})"`);
-        return categoryHelpers[name].bind(categoryHelpers, rawParams);
+        const helper = categoryHelpers[name].bind(categoryHelpers, rawParams);
+        helper._name = name;
+        return helper;
       }
 
       helperDebug.push(`${category}="${name}(${params})"`);
-      return categoryHelpers[name].bind(categoryHelpers, ...params);
+      const helper = categoryHelpers[name].bind(categoryHelpers, ...params);
+      helper._name = name;
+      return helper;
     });
 
     debug('%sselector="%s"', tab, selector);
@@ -542,15 +582,15 @@ class HtmlParser {
     } = this._parseSelectorDef({ selectorDef, tab });
 
     // allow empty selector to get the value from the root/current element
-    const { $elements, elementsCount } = selector ?
-      this._findSlicedElements({
+    const { $elements, elementsCount } = selector
+      ? this._findSlicedElements({
         selector,
         matcher,
         slice: '',
         $context,
         tab,
-      }) :
-      {
+      })
+      : {
         $elements: $context,
         elementsCount: $context.length,
       };

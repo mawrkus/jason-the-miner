@@ -1,0 +1,46 @@
+{
+  "load": {
+    "http": {
+      "url": "https://www.mixcloud.com/mawrkus",
+      "headers": {
+        "Accept-Language": "en",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:42.0) Gecko/20100101 Firefox/42.0"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "subject": "title",
+      "to": "< text(web@sparring-partner.be)",
+      "text": [{
+        "_$": ".card",
+        "name": ".card-title h1 | trim",
+        "stats": {
+          "_$": ".card-stats",
+          "plays": "dd:nth-child(2)",
+          "published": "dd:nth-child(4)"
+        }
+      }]
+    }
+  },
+  "transform": [{
+    "stdout": true
+  }, {
+    "email": {
+      "smtp": {
+        "host": "host",
+        "port": 1337,
+        "secure": true,
+        "auth": {
+          "user": "user",
+          "pass": "pass"
+        }
+      },
+      "message": {
+        "from": "\"⛏ Jason the Miner\" <jason@mine.biz>",
+        "to": "jack@riper.com",
+        "subject": "🎧 Mixcloud stats"
+      }
+    }
+  }]
+}

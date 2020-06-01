@@ -1,0 +1,59 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
+      "_concurrency": 4,
+      "_cache": {
+        "_folder": "demos/data/out/cache"
+      }
+    }
+  },
+  "parse": {
+    "html": {
+      "repos": [
+        {
+          "_$": ".repo-list .repo-list-item",
+          "name": "a",
+          "last-update": "relative-time < attr(datetime)",
+          "_follow": {
+            "_link": "a",
+            "description": "meta[property='og:description'] < attr(content)",
+            "url": "link[rel='canonical'] < attr(href)",
+            "stats": {
+              "_$": ".pagehead-actions",
+              "watchers": "li:nth-child(1) a.social-count | trim",
+              "stars": "li:nth-child(2) a.social-count | trim",
+              "forks": "li:nth-child(3) a.social-count | trim"
+            },
+            "_follow": {
+              "_link": ".pagehead nav > ul > li:nth-child(2) > a",
+              "open-issues": [
+                {
+                  "_$": ".js-issue-row",
+                  "desc": "a | trim",
+                  "opened": "relative-time < attr(datetime)"
+                }
+              ],
+              "_paginate": {
+                "_link": ".pagination > a",
+                "_slice": "0,3",
+                "_depth": 1
+              }
+            }
+          }
+        }
+      ],
+      "_paginate": {
+        "_link": ".pagination > a[rel='next']",
+        "_slice": "0,1",
+        "_depth": 1
+      }
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/github-search-with-issues.json"
+    }
+  }
+}

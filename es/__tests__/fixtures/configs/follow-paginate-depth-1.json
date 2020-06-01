@@ -5,7 +5,7 @@
       "url": "/search?l=JavaScript&o=desc&q=scraper&s=stars&type=Repositories",
       "_concurrency": 2,
       "_cache": {
-        "folder": "es/__tests__/fixtures/cache"
+        "_folder": "es/__tests__/fixtures/cache"
       }
     }
   },
@@ -21,9 +21,9 @@
         }
       }],
       "_paginate": {
-        "link": ".pagination > a[rel='next']",
-        "slice": "0,1",
-        "depth": 1
+        "_link": ".pagination > a[rel='next']",
+        "_slice": "0,1",
+        "_depth": 1
       }
     }
   }

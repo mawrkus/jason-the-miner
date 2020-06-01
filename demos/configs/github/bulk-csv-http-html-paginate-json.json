@@ -1,0 +1,49 @@
+{
+  "bulk": {
+    "csv-file": {
+      "path": "demos/data/in/github-search-queries.csv",
+      "csv": {
+        "columns": true,
+        "delimiter": ","
+      }
+    }
+  },
+  "load": {
+    "http": {
+      "baseURL": "https://github.com",
+      "url": "/search?l={language}&o=desc&q={query}&s=stars&type=Repositories",
+      "_cache": {
+        "_folder": "demos/data/out/cache"
+      },
+      "_concurrency": 2
+    }
+  },
+  "parse": {
+    "html": {
+      "repos": [{
+        "_$": ".repo-list .repo-list-item",
+        "language": "< text({language})",
+        "name": "a",
+        "description": "p | trim"
+      }],
+      "_paginate": {
+        "_link": ".pagination > a[rel='next']",
+        "_slice": "0,1",
+        "_depth": 1
+      }
+    }
+  },
+  "transform": [{
+    "csv-file": {
+      "path": "demos/data/out/github-search-bulk-{language}.csv",
+      "csv": {
+        "header": true,
+        "delimiter": ";"
+      }
+    }
+  }, {
+    "json-file": {
+      "path": "demos/data/out/github-search-bulk-{language}.json"
+    }
+  }]
+}

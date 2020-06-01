@@ -1,0 +1,16 @@
+{
+  "load": {
+    "identity": {
+      "data": "<div><h1>Check my JSON baby</h1><a href=\"#\" data-config='{\"debug\":true}'>x</a>"
+    }
+  },
+  "parse": {
+    "html": {
+      "linkConfig": "a < attr(data-config) | json-parse"
+    }
+  },
+  "transform": {
+    "stdout": {
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "load": {
+    "http": {
+      "baseURL": "https://www.goodreads.com",
+      "url": "/list/show/11.Best_Crime_Mystery_Books"
+    }
+  },
+  "parse": {
+    "html": {
+      "books": [{
+        "_$": ".tableList tr ? slice(0, 3)",
+        "title": "td .bookTitle > span | trim",
+        "cover": ".bookCover < attr(src)"
+      }]
+    }
+  },
+  "transform": [{
+    "csv-file": {
+      "path": "demos/data/out/goodreads-list.csv",
+      "csv": {
+        "header": true,
+        "delimiter": ";"
+      }
+    }
+  }, {
+    "download-file": {
+      "parseSelector": "cover",
+      "folder": "./demos/data/out/downloads",
+      "concurrency": 3,
+      "nameSelector": "title",
+      "namePattern": "goodreads-cover-{index}-{selector}"
+    }
+  }]
+}

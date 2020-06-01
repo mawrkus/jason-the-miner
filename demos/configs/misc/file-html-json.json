@@ -1,0 +1,25 @@
+{
+  "load": {
+    "file": {
+      "path": "demos/data/in/github-search-p1.html"
+    }
+  },
+  "parse": {
+    "html": {
+      "repos": [{
+        "_$": ".repo-list .repo-list-item",
+        "name": "h3 > a",
+        "description": "div:first-child > p | trim",
+        "stats": {
+          "stars": ".col-2.text-right > a | trim",
+          "last-update": "relative-time < attr(datetime)"
+        }
+      }]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/misc-github-search.json"
+    }
+  }
+}
