@@ -1,0 +1,43 @@
+{
+  "load": {
+    "browser": {
+      "launch": {
+        "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "timeout": 10000,
+        "headless": true,
+        "viewPort": {
+          "width": 1440,
+          "height": 900,
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "isLandscape": false
+        }
+      },
+      "actions": [
+        { "goto": ["https://www.mixcloud.com/select/explore/", { "waitUntil": "load" }] },
+        { "screenshot": [{ "path": "demos/data/out/mixcloud-creators-1.png", "fullPage": true }] },
+        { "pdf": [{ "path": "demos/data/out/mixcloud-creators-1.pdf", "format": "A4" }] },
+        { "click": [".load-more button"] },
+        { "waitFor": [3000] },
+        { "screenshot": [{ "path": "demos/data/out/mixcloud-creators-2.png", "fullPage": true }] },
+        { "pdf": [{ "path": "demos/data/out/mixcloud-creators-2.pdf", "format": "A4" }] },
+        { "content": [] }
+      ]
+    }
+  },
+  "parse": {
+    "html": {
+      "concerts": [{
+          "_$": ".explore-grid .grid-card",
+          "name": "h3",
+          "genre": ".content-text-wrapper p"
+      }]
+    }
+  },
+  "transform": {
+    "json-file": {
+      "path": "demos/data/out/mixcloud-creators.json"
+    }
+  }
+}

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.0] - 2018-11-xx
+## [1.1.0] - 2020-06-01
 
 ### Added
 
@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - All processors now received their configuration object within an object: { config }
 - CSV and JSON file writers try to create the output folder if it does not exist, before saving the file
 - The file downloader processor tries also to create the output folder if it does not exist
+- Upgraded dependencies
 
 ## [1.0.1] - 2018-04-13
 

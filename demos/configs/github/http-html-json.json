@@ -9,10 +9,10 @@
     "html": {
       "repos": [{
         "_$": ".repo-list .repo-list-item",
-        "name": "h3 > a",
-        "description": "div:first-child > p | trim",
+        "name": "a",
+        "description": "p | trim",
         "stats": {
-          "stars": ".col-2.text-right > a | trim",
+          "stars": "a.muted-link | trim",
           "last-update": "relative-time < attr(datetime)"
         }
       }]

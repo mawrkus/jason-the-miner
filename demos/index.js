@@ -72,7 +72,7 @@ const demos = [
   },
   /* IMDb */
   {
-    name: 'IMdb images gallery links',
+    name: 'IMDb images gallery links',
     file: 'imdb/http-html-follow-paginate-json.json',
   },
   /* Misc */
@@ -100,20 +100,19 @@ const demos = [
   //    name: 'Misc',
   //    file: 'misc/sdin-html-stdout.json',
   // },
-  /* Mixcloud
+  // Mixcloud
   {
-    name: 'Email stats from mixcloud.com (1)',
-    file: 'mixcloud/http-html-email-from-parse.json',
+    name: 'Mixcloud creators',
+    file: 'mixcloud/browser-html-json.json',
   },
-  {
-    name: 'Email stats from mixcloud.com (2)',
-    file: 'mixcloud/http-html-email.json',
-  }, */
-  /* Outweb */
-  {
-    name: 'Search outweb.io for PWAs',
-    file: 'outweb/browser-html-json.json',
-  },
+  // {
+  //   name: 'Email stats from mixcloud.com (1)',
+  //   file: 'mixcloud/http-html-email-from-parse.json',
+  // },
+  // {
+  //   name: 'Email stats from mixcloud.com (2)',
+  //   file: 'mixcloud/http-html-email.json',
+  // },
   /* UI faces */
   {
     name: 'Download avatars from uifaces.co',

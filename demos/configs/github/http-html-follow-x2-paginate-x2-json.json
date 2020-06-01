@@ -14,10 +14,10 @@
       "repos": [
         {
           "_$": ".repo-list .repo-list-item",
-          "name": "h3 > a",
+          "name": "a",
           "last-update": "relative-time < attr(datetime)",
           "_follow": {
-            "_link": "h3 > a",
+            "_link": "a",
             "description": "meta[property='og:description'] < attr(content)",
             "url": "link[rel='canonical'] < attr(href)",
             "stats": {
@@ -27,11 +27,11 @@
               "forks": "li:nth-child(3) a.social-count | trim"
             },
             "_follow": {
-              "_link": ".js-repo-nav span[itemprop='itemListElement']:nth-child(2) > a",
+              "_link": ".pagehead nav > ul > li:nth-child(2) > a",
               "open-issues": [
                 {
                   "_$": ".js-issue-row",
-                  "desc": "a[data-hovercard-type='issue'] | trim",
+                  "desc": "a | trim",
                   "opened": "relative-time < attr(datetime)"
                 }
               ],

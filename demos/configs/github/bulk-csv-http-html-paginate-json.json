@@ -23,8 +23,8 @@
       "repos": [{
         "_$": ".repo-list .repo-list-item",
         "language": "< text({language})",
-        "name": "h3 > a",
-        "description": "div:first-child > p | trim"
+        "name": "a",
+        "description": "p | trim"
       }],
       "_paginate": {
         "_link": ".pagination > a[rel='next']",
