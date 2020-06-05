@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/l/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner) [![npm](https://img.shields.io/npm/v/jason-the-miner.svg)](https://www.npmjs.org/package/jason-the-miner)
 ![Node version](https://img.shields.io/node/v/jason-the-miner.svg?style=flat-square)
 
-Harvesting data at the `<html>` mine... Jason the Miner, a versatile Web scraper for Node.js.
+Harvesting data at the `<html>` mine... Here comes Jason the Miner, a versatile Web scraper for Node.js.
 
 ## ⛏ Features
 
@@ -20,12 +20,18 @@ Harvesting data at the `<html>` mine... Jason the Miner, a versatile Web scraper
 ## ⛏ Installing
 
 ```shell
-$ npm install -g jason-the-miner
+npm install -g jason-the-miner
+```
+
+If you don't want to install it, you can use it directly with [npx](https://blog.npmjs.org/post/162869356040/introducing-npx-an-npm-package-runner):
+
+```shell
+npx jason-the-miner -c my-config.json
 ```
 
 ## ⛏ Demos
 
-Clone the project...
+Clone the project:
 
 ```shell
 $ git clone https://github.com/mawrkus/jason-the-miner.git
@@ -34,18 +40,17 @@ $ npm install
 $ npm run demos
 ```
 
-...and have a look at the "demos" folder, among them, you'll find scraping:
+Then have a look at the [demos](demos/configs) folder, you'll find examples of scraping:
 
-- Simple GitHub search (JSON, CSV, Markdown output)
-- Extended GitHub search with issues (including following links & paginating issues)
-- Goodreads books and following to Amazon to grab their product ID
-- Google search and follow search results for finding mobile apps
-- IMDb images gallery links (with pagination)
+- Simple GitHub search results (JSON, CSV, Markdown output)
+- More complex GitHub search results (including following links & paginating issues)
+- Goodreads books, following links to Amazon to grab their product ID
+- Google search results for finding mobile apps in various blogs, etc.
+- IMDb images gallery links with pagination
 - Mixcloud stats, templating them & sending them by mail
-- Mixcloud SPA scraping controlling a headless browser
-- Avatars download
-- Bulk insertions to Elasticsearch from a CSV file
-- ...
+- Mixcloud SPA scraping, by controlling a headless Chrome browser with [Puppeteer](https://github.com/puppeteer/puppeteer/)
+- Avatars and downloading them
+- A CSV file to bulk insert data to Elasticsearch
 
 ## ⛏ Examples
 
@@ -82,7 +87,7 @@ Scraping the most popular Javascript scrapers from GitHub:
 ```
 
 ```shell
-$ jason-the-miner -c github-config.json
+jason-the-miner -c github-config.json
 ```
 
 Alternatively, with pipes & redirections:
@@ -99,7 +104,7 @@ Alternatively, with pipes & redirections:
 ```
 
 ```shell
-$ curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories&s=stars&o=desc | jason-the-miner -c github-config.json > github-repos.json
+curl https://github.com/search?q=scraper&l=JavaScript&type=Repositories&s=stars&o=desc | jason-the-miner -c github-config.json > github-repos.json
 ```
 
 #### API
@@ -155,17 +160,16 @@ jason.harvest({ load, parse }).then(results => console.log(results));
 
 ### Loaders
 
-Jason the Miner comes with 5 built-in loaders:
+Jason the Miner comes with 4 built-in loaders:
 
 | Name | Description | Options |
 | --- |---| --- |
 | `http` | Uses [axios](https://github.com/mzabriskie/axios) as HTTP client | All [axios](https://github.com/mzabriskie/axios) request options + `[_concurrency=1]` (to limit the number of concurrent requests when following/paginating) &  `[_cache]` (to cache responses on the file system) |
-| `browser` | Uses [puppeteer](https://github.com/GoogleChrome/puppeteer) as browser | [puppeteer](https://github.com/GoogleChrome/puppeteer) `launch`, `goto`, `screenshot`, `pdf` and `evaluate` options |
 | `file` | Reads the content of a file | `path`, `[stream=false]`, `[encoding="utf8"]` & `[_concurrency=1]` (to limit the number of concurrent requests when paginating) |
 | `csv-file` | Uses [csv-parse](https://github.com/adaltas/node-csv-parse) to read a CSV file | All [csv-parse](http://csv.adaltas.com/parse) options in a `csv` object + `path`+ `[encoding="utf8"]` |
 | `stdin` | Reads the content from the standard input | `[encoding="utf8"]` |
 
-For example, an HTTP load config which responses will be cached in the "tests/http-cache" folder:
+For example, an HTTP load config with responses cached in the "tests/http-cache" folder:
 
 ```js
 ...
@@ -186,7 +190,7 @@ Check the [demos](demos/configs) folder for more examples.
 
 ### Parsers
 
-Currently, Jason the Miner comes with a 2 built-in parsers:
+Currently, Jason the Miner comes with 2 built-in parsers:
 
 | Name | Description | Options |
 | --- |---| --- |
@@ -307,7 +311,7 @@ As you can see, a schema is a plain object that recursively defines:
 
 Additional instructions can be passed to the parser:
  - `_$` acts as a root selector: further parsing will happen in the context of the element identified by this selector
- - `_slice` limits the number of elements to parse, like `String.prototype.slice(begin[, end])`
+ - `_slice` limits the number of elements to parse, like `Array.prototype.slice(begin[, end])`
  - `_follow` tells Jason to follow a **single link** (fetch new data) & to continue scraping after the new data is received
  - `_paginate` tells Jason to paginate (fetch & scrape new data) & to merge the new values in the current context, here **multiple links** can be selected to scrape in parallel multiple pages
 
@@ -329,7 +333,7 @@ For instance:
 
 Will extract a "repos" array of values from the links identified by the ".repo-list-item h3 > a" selector, matching only the ones containing the text "crawler". The values will be retrieved from the "title" attribute of each link and will be trimmed.
 
-Jason has 4 built-in element **matchers**:
+**Matchers**:
 
 - `text(regexString)`
 - `html(regexString)`
@@ -339,7 +343,7 @@ Jason has 4 built-in element **matchers**:
 They are used to test an element in order to decide whether to include/discard it from parsing.
 If not specified, Jason includes every element.
 
-7 built-in text **extractors**:
+**Extractors**:
 
 - `text([optionalStaticText])` (by default)
 - `html()`
@@ -349,7 +353,7 @@ If not specified, Jason includes every element.
 - `uuid()` (generates a uuid v1 with [uuid](https://www.npmjs.com/package/uuid))
 - `count()` (counts the number of elements matching the selector, needs an array schema definition)
 
-and 5 built-in text **filters**:
+**Filters**:
 
 - `trim`
 - `single-space`
@@ -386,7 +390,7 @@ Jason supports a single transformer or an array of transformers:
 
 ### ⛏ Bulk processing
 
-Parameters can be defined in a CSV file and applied to configure the processors:
+Scraping parameters can be defined in a CSV file and applied to configure the processors:
 
 ```js
 {
