@@ -50,7 +50,7 @@
     "demos:debug": "DEBUG=jason:* npm run demos"
   },
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "bluebird": "^3.5.3",
     "cheerio": "^1.0.0-rc.2",
     "commander": "^2.19.0",
